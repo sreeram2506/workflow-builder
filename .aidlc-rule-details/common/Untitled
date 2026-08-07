@@ -1,0 +1,5 @@
+Verify Setup:
+
+Open Cursor Settings → Rules, Commands
+Under Project Rules, you should see ai-dlc-workflow listed
+For AGENTS.md, it will be automatically detected and applied

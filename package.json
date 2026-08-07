@@ -1,0 +1,12 @@
+{
+  "name": "workflow-builder",
+  "version": "1.0.0",
+  "description": "Workflow Builder is a visual, drag-and-drop platform for designing, configuring, and automating workflows. It enables users to create multi-step processes by connecting triggers, actions, conditions, and integrations without writing code.",
+  "license": "ISC",
+  "author": "Platform UI",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
