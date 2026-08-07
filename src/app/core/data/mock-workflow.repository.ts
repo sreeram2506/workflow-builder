@@ -1,0 +1,71 @@
+import { Injectable } from '@angular/core';
+import type { WorkflowDocument } from '../domain/workflow.models';
+
+export const SAMPLE_WORKFLOW: WorkflowDocument = {
+  id: 'wf-sample-001',
+  name: 'Sample Automation',
+  status: 'draft',
+  version: 1,
+  updatedAt: '2026-08-07T10:00:00.000Z',
+  viewport: { x: 0, y: 0, scale: 1 },
+  nodes: [
+    {
+      id: 'n-trigger',
+      type: 'Trigger',
+      label: 'Webhook Trigger',
+      subtitle: 'Start on HTTP event',
+      position: { x: 80, y: 120 },
+      status: 'idle',
+      data: {},
+    },
+    {
+      id: 'n-action',
+      type: 'Action',
+      label: 'Enrich Payload',
+      subtitle: 'Normalize fields',
+      position: { x: 320, y: 120 },
+      status: 'idle',
+      data: {},
+    },
+    {
+      id: 'n-condition',
+      type: 'Condition',
+      label: 'Needs Delay?',
+      subtitle: 'Branch on rule',
+      position: { x: 560, y: 120 },
+      status: 'idle',
+      data: {},
+    },
+    {
+      id: 'n-delay',
+      type: 'Delay',
+      label: 'Wait 5m',
+      subtitle: 'Timer',
+      position: { x: 800, y: 40 },
+      status: 'idle',
+      data: {},
+    },
+    {
+      id: 'n-end',
+      type: 'End',
+      label: 'Complete',
+      subtitle: 'Terminal',
+      position: { x: 800, y: 220 },
+      status: 'idle',
+      data: {},
+    },
+  ],
+  edges: [
+    { id: 'e1', source: 'n-trigger', target: 'n-action' },
+    { id: 'e2', source: 'n-action', target: 'n-condition' },
+    { id: 'e3', source: 'n-condition', target: 'n-delay' },
+    { id: 'e4', source: 'n-condition', target: 'n-end' },
+  ],
+};
+
+@Injectable({ providedIn: 'root' })
+export class MockWorkflowRepository {
+  getSampleWorkflow(): WorkflowDocument {
+    return structuredClone(SAMPLE_WORKFLOW);
+  }
+}
