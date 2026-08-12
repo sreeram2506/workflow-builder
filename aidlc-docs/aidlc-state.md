@@ -4,9 +4,9 @@
 - **Project Name**: Angular Workflow Builder
 - **Project Type**: Greenfield
 - **Start Date**: 2026-08-07T07:50:55Z
-- **Current Stage**: CONSTRUCTION - U1 Code Generation (awaiting approval)
-- **Current Phase**: CONSTRUCTION
-- **Current Unit**: U1 — App Shell, Tokens, Theme, Seed Store
+- **Current Stage**: OPERATIONS - Placeholder (acknowledged)
+- **Current Phase**: OPERATIONS
+- **Current Unit**: None (U1–U8 construction closed)
 
 ## Extension Configuration
 | Extension | Enabled | Mode |
@@ -20,17 +20,14 @@
 ### INCEPTION PHASE
 - [x] All inception stages complete
 
-### CONSTRUCTION PHASE — U1
-- [x] Functional Design (APPROVED)
-- [x] NFR Requirements (APPROVED)
-- [x] NFR Design (APPROVED)
-- [x] Infrastructure Design (SKIPPED)
-- [x] Code Generation (artifacts complete — awaiting approval)
-- [ ] Build and Test
+### CONSTRUCTION PHASE — U1–U8
+- [x] U1–U8 Functional Design through Code Generation
+- [x] Build and Test (U1–U8 APPROVED)
 
 ### OPERATIONS PHASE
-- [ ] Operations - PLACEHOLDER
+- [x] Operations - PLACEHOLDER (acknowledged)
 
 ## Current Status
-- **Next**: Approve U1 code → Build and Test instructions (then Phase 1 hard stop before U2)
-- **Verify**: `npm start`, `npm test`, `npm run build` succeed
+- **Workflow**: Complete for planned units U1–U8
+- **App verify**: `npm start` / `npm test` (66) / `npm run build`
+- **Ops doc**: `aidlc-docs/operations/operations-placeholder.md`

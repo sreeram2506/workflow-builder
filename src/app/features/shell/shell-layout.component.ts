@@ -14,15 +14,15 @@ import { CanvasHostComponent } from '../canvas/canvas-host.component';
       @if (facade.bootstrapError(); as err) {
         <div class="error-banner" role="alert">{{ err }}</div>
       }
-      <wb-top-bar />
-      <div class="body">
+      <div class="stage">
+        <wb-canvas-host />
+        <div class="header-overlay">
+          <wb-top-bar />
+        </div>
         <wb-left-sidebar
           [collapsed]="facade.leftSidebarCollapsed()"
           (collapsedChange)="facade.setLeftCollapsed($event)"
         />
-        <main class="main">
-          <wb-canvas-host />
-        </main>
         <wb-right-sidebar
           [collapsed]="facade.rightSidebarCollapsed()"
           (collapsedChange)="facade.setRightCollapsed($event)"
@@ -43,15 +43,26 @@ import { CanvasHostComponent } from '../canvas/canvas-host.component';
       border-bottom: 1px solid var(--wb-danger);
       padding: 0.6rem 1rem;
       font-size: 0.9rem;
+      z-index: 20;
     }
-    .body {
-      display: flex;
+    .stage {
+      position: relative;
       flex: 1;
       min-height: 0;
+      overflow: hidden;
     }
-    .main {
-      flex: 1;
-      min-width: 0;
+    .header-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 1rem;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    .header-overlay > * {
+      pointer-events: all;
     }
   `,
 })

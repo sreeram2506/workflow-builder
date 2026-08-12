@@ -18,7 +18,7 @@
 | US-4.x Palette | ● | Locked in view mode |
 | US-5.x Connections | ● | Locked |
 | US-6.x Properties | ● | Read-only inspect |
-| US-E7 / US-E8 Epics | ● | ○ |
+| US-E7 / US-E8 (expanded ACs) | ● | ● |
 | US-9.x Serialize / history / autosave | ● | Export optional; mutations locked |
 | US-10.x Run | ● | ○ / non-mutating watch |
 | US-VM.* View mode | ● toggle | ● consume |
@@ -317,27 +317,78 @@ And inputs are disabled / non-editable
 
 ---
 
-# Phase 7 — Smart Edge Routing (EPIC ONLY)
+# Phase 7 — Smart Edge Routing
 
-## US-E7 — Smart edge routing (deferred detail)
-**Epic**: Auto-route edges to reduce overlaps and stay readable at zoom  
-**Phase**: 7 · **FR**: FR-06  
+## US-E7 — Route edges (obstacle-aware)
+**As a** Workflow Author  
+**I want** an explicit “Route edges” action that computes obstacle-aware paths  
+**So that** connections stay readable without manually dragging every waypoint  
 
-**Notes**
-- Detailed user stories intentionally omitted until Phase 7 complexity gate answers are provided
-- Placeholder acceptance: “Routing behavior as confirmed in Phase 7 stop-and-ask”
+**Phase**: 7 · **FR**: FR-06 · **Persona**: P-AUTHOR  
+
+**Acceptance criteria**
+```
+Given a workflow with nodes and edges on the canvas
+When I click “Route edges”
+Then each edge’s waypoints are replaced with a medium obstacle-aware route (hand-rolled grid/A* or equivalent)
+And node AABBs are treated as obstacles (excluding the edge’s own ports)
+And routing does not run on node-move debounce or live during drag
+And if a path cannot be found for an edge, that edge falls back to the existing horizontal bezier without throwing
+And in view mode the Route control is disabled / no-op
+```
+
+## US-E7.1 — Reshape after auto-route
+**As a** Workflow Author  
+**I want** to reshape waypoints after routing  
+**So that** I can fine-tune paths the auto-router produced  
+
+**Phase**: 7 · **FR**: FR-06 · **Persona**: P-AUTHOR  
+
+**Acceptance criteria**
+```
+Given Route edges has replaced waypoints
+When I drag waypoints / use U4 reshape gestures
+Then the edge updates like any hand-edited multi-waypoint edge
+And a later Route edges run again replaces those waypoints
+```
 
 ---
 
-# Phase 8 — Auto-Layout (EPIC ONLY)
+# Phase 8 — Auto-Layout
 
-## US-E8 — Auto-layout (deferred detail)
-**Epic**: One-click vertical / horizontal / layered layout  
-**Phase**: 8 · **FR**: FR-07  
+## US-E8 — One-click layouts
+**As a** Workflow Author  
+**I want** Vertical, Horizontal, and Layered one-click layouts  
+**So that** I can tidy graph positions without a layout library  
 
-**Notes**
-- Detailed user stories intentionally omitted until Phase 8 hand-rolled vs library gate answers are provided
-- Placeholder acceptance: “Layout options as confirmed in Phase 8 stop-and-ask”
+**Phase**: 8 · **FR**: FR-07 · **Persona**: P-AUTHOR  
+
+**Acceptance criteria**
+```
+Given a workflow with multiple nodes
+When I choose Layout ▾ → Vertical
+Then nodes are packed along Y with fixed spacing (hand-rolled; no new npm deps)
+When I choose Layout ▾ → Horizontal
+Then nodes are packed along X with fixed spacing
+When I choose Layout ▾ → Layered
+Then nodes are ranked left→right via BFS from indegree-0 / Trigger-like sources, stacked within rank on Y
+And in view mode Layout controls are disabled / no-op
+```
+
+## US-E8.1 — Layout then auto-route
+**As a** Workflow Author  
+**I want** applying a layout to also route edges once  
+**So that** positions and paths update together  
+
+**Phase**: 8 · **FR**: FR-07 · **Persona**: P-AUTHOR  
+
+**Acceptance criteria**
+```
+Given I apply any layout mode (Vertical, Horizontal, or Layered)
+When layout finishes updating node positions
+Then Route edges runs once automatically (same behavior as US-E7)
+And I can still click Route edges alone later without re-layout
+```
 
 ---
 
@@ -495,8 +546,8 @@ Then previously locked editing controls become available again
 | FR-03 | US-4.1–4.2 |
 | FR-04 | US-3.1 |
 | FR-05 | US-3.2, US-5.1–5.2 |
-| FR-06 | US-E7 (epic only) |
-| FR-07 | US-E8 (epic only) |
+| FR-06 | US-E7, US-E7.1 |
+| FR-07 | US-E8, US-E8.1 |
 | FR-08 | US-6.1–6.2 |
 | FR-09 | US-5.3 |
 | FR-10 | US-9.1–9.2 |

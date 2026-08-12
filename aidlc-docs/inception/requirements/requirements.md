@@ -36,7 +36,7 @@ Deliver an internal, frontend-only visual workflow builder that matches the layo
 | Visual fidelity | High fidelity to workflowbuilder.io (spacing, sidebars, control placement) |
 | Browser baseline | Modern evergreen desktop (Chrome/Edge/Firefox/Safari latest); no mobile layout goal |
 | Build gates | Implement **Phase 1 only**, then stop for review before Phase 2 |
-| Node catalog (v1) | Trigger, Action, Condition, Delay, End |
+| Node catalog (v1) | Trigger, Action, Condition, Delay, End, Decision, Notification, AI Agent (expanded 2026-08-07 per change request) |
 | Forbidden libs | No ngx-vflow, React Flow wrappers, or other canvas/node graph libraries without explicit approval |
 
 ---
@@ -124,7 +124,7 @@ Each node displays:
 
 ---
 
-## 4. Node Catalog (v1 — locked unless user approves changes)
+## 4. Node Catalog (v1)
 
 | Type | Role |
 |---|---|
@@ -132,9 +132,12 @@ Each node displays:
 | Action | Generic processing step |
 | Condition | Branching decision |
 | Delay | Wait / timer step |
+| Decision | Route the workflow |
+| Notification | Send alerts or notifications |
+| AI Agent | AI-assisted step |
 | End | Terminal node |
 
-No additional node types, fields, or interactions may be added without an explicit stop-and-ask confirmation using the project’s required question format.
+Catalog expanded 2026-08-07 (Decision, Notification, AI Agent) from reference UI change request. Further types still require explicit approval.
 
 ---
 

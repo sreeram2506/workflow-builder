@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { App } from './app';
 import { WorkflowFacade } from './core/facade/workflow.facade';
@@ -10,6 +11,7 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(App);
@@ -17,12 +19,29 @@ describe('App', () => {
     fixture.detectChanges();
   });
 
-  it('initializes and shows workflow title', () => {
+  it('initializes and renders seeded canvas nodes', () => {
     expect(facade.workflowName()).toBe('Sample Automation');
+    expect(facade.nodeCount()).toBe(5);
+    expect(facade.edgeCount()).toBe(4);
     const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Drafts /');
     expect(text).toContain('Sample Automation');
-    expect(text).toContain('draft');
-    expect(text).toContain('Undo');
-    expect(text).toContain('Canvas engine in Phase 2');
+    expect(text).toContain('Webhook Trigger');
+    expect(text).toContain('Nodes Library');
+    expect(text).toContain('Properties');
+    expect(text).toContain('Search nodes');
+    // Catalog items (click-to-add targets)
+    expect(text).toContain('Initiate workflows');
+    expect(text).toContain('AI Agent');
+    expect(text).not.toContain('Canvas engine in Phase 2');
+  });
+
+  it('createNode from facade increases node count', () => {
+    const before = facade.nodeCount();
+    const id = facade.createNode('Notification', { x: 50, y: 60 });
+    expect(id).toBeTruthy();
+    expect(facade.nodeCount()).toBe(before + 1);
+    fixture.detectChanges();
+    expect(facade.selection().nodeIds).toContain(id!);
   });
 });

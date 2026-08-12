@@ -56,10 +56,10 @@ export const SAMPLE_WORKFLOW: WorkflowDocument = {
     },
   ],
   edges: [
-    { id: 'e1', source: 'n-trigger', target: 'n-action' },
-    { id: 'e2', source: 'n-action', target: 'n-condition' },
-    { id: 'e3', source: 'n-condition', target: 'n-delay' },
-    { id: 'e4', source: 'n-condition', target: 'n-end' },
+    { id: 'e1', source: 'n-trigger', target: 'n-action', label: '', waypoints: [] },
+    { id: 'e2', source: 'n-action', target: 'n-condition', label: '', waypoints: [] },
+    { id: 'e3', source: 'n-condition', target: 'n-delay', label: '', waypoints: [] },
+    { id: 'e4', source: 'n-condition', target: 'n-end', label: '', waypoints: [] },
   ],
 };
 

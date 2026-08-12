@@ -1,0 +1,11 @@
+{
+  "/enso-api": {
+    "target": "http://enso-suite-be.red6.discovery.xpms.ai",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "warn",
+    "pathRewrite": {
+      "^/enso-api": ""
+    }
+  }
+}

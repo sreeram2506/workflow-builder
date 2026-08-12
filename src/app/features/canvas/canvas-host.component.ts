@@ -1,39 +1,61 @@
 import { Component, inject } from '@angular/core';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { CanvasViewportComponent } from './canvas-viewport.component';
 
 @Component({
   selector: 'wb-canvas-host',
   standalone: true,
+  imports: [CanvasViewportComponent],
   template: `
-    <section class="canvas" aria-label="Workflow canvas placeholder">
-      <p class="hint">Canvas engine in Phase 2</p>
-      <p class="meta">
-        Seed loaded: {{ facade.nodeCount() }} nodes · {{ facade.edgeCount() }} edges (store only)
-      </p>
+    <section class="canvas-host" aria-label="Workflow canvas">
+      @if (facade.canvasError(); as err) {
+        <div class="canvas-error" role="status">{{ err }}</div>
+      }
+      @if (facade.canvasStatus(); as status) {
+        <div class="canvas-status" role="status">{{ status }}</div>
+      }
+      <wb-canvas-viewport />
     </section>
   `,
   styles: `
-    .canvas {
+    .canvas-host {
       position: relative;
       height: 100%;
       width: 100%;
-      background-color: var(--wb-bg-canvas);
-      background-image: radial-gradient(var(--wb-grid-dot) 1px, transparent 1px);
-      background-size: 18px 18px;
-      display: grid;
-      place-content: center;
-      text-align: center;
-      gap: 0.35rem;
+      min-height: 0;
     }
-    .hint {
-      margin: 0;
-      color: var(--wb-text-muted);
-      font-size: 0.95rem;
-    }
-    .meta {
-      margin: 0;
-      color: var(--wb-text-muted);
+    .canvas-error {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      max-width: min(480px, 90%);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--wb-danger) 18%, var(--wb-bg-elevated));
+      border: 1px solid var(--wb-danger);
+      color: var(--wb-danger);
       font-size: 0.8rem;
+      pointer-events: none;
+    }
+    .canvas-status {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      max-width: min(480px, 90%);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--wb-accent) 14%, var(--wb-bg-elevated));
+      border: 1px solid var(--wb-border);
+      color: var(--wb-text);
+      font-size: 0.8rem;
+      pointer-events: none;
+    }
+    .canvas-error + .canvas-status {
+      top: 48px;
     }
   `,
 })

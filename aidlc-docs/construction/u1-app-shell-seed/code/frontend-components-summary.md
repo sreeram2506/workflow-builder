@@ -1,16 +1,18 @@
 # Frontend Components Summary — U1
 
 ## Created
-- `App` — initialize facade with error handling
-- `ShellLayoutComponent` — layout + bootstrap error banner
-- `TopBarComponent` — title, status pill, disabled actions, theme toggle
-- `ThemeToggleComponent`
-- `LeftSidebarComponent` / `RightSidebarComponent` — placeholders + collapse
-- `CanvasHostComponent` — dotted grid CSS; seed counts only; no node cards
+- Floating **Nodes Library** (left): full-height overlay panel + collapsed chip; mock catalog rows; Templates disabled
+- Floating **Properties** (right): matching overlay panel + chip; mock grouped fields (readonly); API/schema later
+- Floating **top bar** over canvas (reference-style): logo, icon tools (undo/redo/save/run disabled), centered `Drafts / title`, theme sun/moon, read-only + overflow placeholders
+- Canvas host (grid placeholder); `ThemeToggleComponent` file retained but theme control lives in top bar
 
-## Tokens
-- `src/styles/tokens.css` — light/dark CSS variables
-- Default `data-theme="dark"` on `html`
+## Catalog (library mock)
+Trigger, Action, Delay, Condition, Decision, Notification, AI Agent, End
+
+## Change requests
+- Round 1: Nodes Library chip/panel vs docked sidebar
+- Round 2: full panel height; Properties same layout; mock data both sides; catalog expanded
+- Round 3: header/icons match Workflow Builder floating app bar; side panels offset below header
 
 ## Tests
-- `app.spec.ts` — shell shows title/status/disabled Undo/canvas hint
+- `app.spec.ts` checks `Drafts /`, title, Nodes Library, Properties, canvas hint

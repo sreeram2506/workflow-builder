@@ -390,3 +390,1155 @@ Approve the plan at aidlc-docs/construction/plans/u1-app-shell-seed-code-generat
 Request Changes or Continue to Next Stage (Build and Test) for U1.
 
 ---
+
+## U1 Code Generation — Changes Requested
+**Timestamp**: 2026-08-07T10:40:48Z
+**User Input**: "Request Changes "
+**AI Response**: "User requested changes. Created u1-app-shell-seed-code-change-requests.md to capture specific modifications. Awaiting answers before editing code."
+**Context**: Code Generation — change request gate
+
+---
+
+## U1 Code Generation — Change Request Applied
+**Timestamp**: 2026-08-07T10:45:26Z
+**User Input**: "answered"
+**AI Response**: "Applied visual polish: LeftSidebar restyled as floating Nodes Library (collapsed chip + expanded panel) per screenshots; locked v1 types only; Templates disabled. Docs updated. Tests/build pass. Re-presented Code Generation Complete for approval."
+**Context**: Code Generation — changes implemented, awaiting re-approval
+
+### Change summary from user
+- Q1 A (visual), Q2 sidebar expand/collapse reference screenshots, Q3 A polish, Q4 B update docs
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U1.
+
+---
+
+## U1 Code Generation — Changes Requested (Round 2)
+**Timestamp**: 2026-08-07T10:47:29Z
+**User Input**: "Request Changes"
+**AI Response**: "Created u1-app-shell-seed-code-change-requests-r2.md to capture further modifications. Awaiting answers before editing code."
+**Context**: Code Generation — second change request gate
+
+---
+
+## U1 Code Generation — Round 2 Changes Applied
+**Timestamp**: 2026-08-07T10:51:13Z
+**User Input**: "answered"
+**AI Response**: "Applied: full-height Nodes Library; matching floating Properties with mock fields; catalog expanded (Decision, Notification, AIAgent); requirements/docs updated; tests/build pass. Re-presented Code Generation Complete."
+**Context**: Code Generation — round 2 implemented, awaiting re-approval
+
+### Answers
+- Q1 A, Q2 height + right panel parity + mock data, Q3 B expand catalog, Q4 B update docs
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U1.
+
+---
+
+## U1 Code Generation — Changes Requested (Round 3)
+**Timestamp**: 2026-08-11T06:24:12Z
+**User Input**: "Request Changes"
+**AI Response**: "Created u1-app-shell-seed-code-change-requests-r3.md. Awaiting detailed answers before editing code."
+**Context**: Code Generation — third change request gate
+
+---
+
+## U1 Code Generation — Round 3 Changes Applied
+**Timestamp**: 2026-08-11T06:30:29Z
+**User Input**: "answered"
+**AI Response**: "Applied Round 3: floating reference-style top bar with logo + Phosphor-style icons; canvas full-bleed under header; Nodes Library / Properties offset below header; docs updated; npm test (5) and npm run build pass. Re-presented Code Generation Complete."
+**Context**: Code Generation — round 3 implemented, awaiting re-approval
+
+### Answers
+- Q1 C (top bar / theme / canvas), Q2 header icons match reference, Q3 A visual only, Q4 B update docs
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U1.
+
+---
+
+## U1 Code Generation — Approved
+**Timestamp**: 2026-08-11T06:32:06Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U1 Code Generation approval. Started Build and Test for Phase 1 / U1."
+**Context**: Code Generation approved; proceeding to Build and Test
+
+---
+
+## Build and Test Stage
+**Timestamp**: 2026-08-11T06:32:28Z
+**User Input**: "Continue to Next Stage"
+**Build Status**: Success
+**Test Status**: Pass (5/5 unit tests)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- build-and-test-summary.md
+**AI Response**: "Generated Phase 1 build/test instructions; verified npm test and npm run build; presented Build and Test Complete for approval. Phase 1 hard stop before U2 noted."
+**Context**: Build and Test artifacts complete — awaiting approval before Operations placeholder
+
+### Approval prompt
+Request Changes or Approve & Continue (Operations placeholder); U2 not started until explicitly requested.
+
+---
+
+## Build and Test — Approved → Operations Placeholder
+**Timestamp**: 2026-08-11T06:34:24Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Recorded Build and Test approval. Acknowledged Operations as placeholder (no deploy/monitoring artifacts). Closed Phase 1 hard stop; waiting for explicit request before U2."
+**Context**: Phase 1 complete; Operations placeholder documented at aidlc-docs/operations/operations-placeholder.md
+
+---
+
+## U2 Construction Started — Functional Design Planning
+**Timestamp**: 2026-08-11T06:35:30Z
+**User Input**: "continue with U2."
+**AI Response**: "Started U2 Canvas Engine. Loaded unit/stories/app-design context. Created u2-canvas-engine-functional-design-plan.md with clarifying questions. Awaiting answers before generating Functional Design artifacts."
+**Context**: CONSTRUCTION U2 — Functional Design plan awaiting user answers
+
+### Context loaded
+- unit-of-work.md (U2), unit-of-work-story-map.md, stories US-2/US-3, components/methods, requirements FR-02/04/05, U1 canvas host + domain models
+
+---
+
+## U2 Functional Design — Answers Received / Artifacts Generated
+**Timestamp**: 2026-08-11T06:38:52Z
+**User Input**: "answered"
+**AI Response**: "All Q1–Q10 answered A with no ambiguity. Generated U2 functional-design artifacts (domain entities, business rules, business logic model, frontend components). Presented Functional Design Complete for approval."
+**Context**: U2 Functional Design awaiting approval before NFR Requirements
+
+### Locked answers
+Q1–Q10 all A (pan Space/middle; zoom 0.25–2.0 cursor-anchored; node drag; Shift multi-select; marquee on empty left-drag; straight edges; minimap; seed viewport; full cards; BR zoom controls)
+
+---
+
+## U2 Functional Design — Approved
+**Timestamp**: 2026-08-11T06:40:42Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded U2 Functional Design approval. Started NFR Requirements; created u2-canvas-engine-nfr-requirements-plan.md with clarifying questions. Awaiting answers before generating NFR artifacts."
+**Context**: U2 NFR Requirements — plan awaiting user answers
+
+---
+
+## U2 NFR Requirements — Clarifications Needed
+**Timestamp**: 2026-08-11T06:43:35Z
+**User Input**: "answered"
+**AI Response**: "Received answers Q1=A, Q2=BA (ambiguous), Q3=B, Q4=A, Q5=A, Q6=B (no library named), Q7=B. Created u2-canvas-engine-nfr-requirements-clarifications.md for C1–C2. Holding NFR artifact generation until clarified."
+**Context**: U2 NFR Requirements — blocked on ambiguous Q2/Q6
+
+---
+
+## U2 NFR Requirements — C2 Still Blocked
+**Timestamp**: 2026-08-11T06:44:50Z
+**User Input**: "answered"
+**AI Response**: "C1 locked as B (≤100 nodes). C2 answered B again with no package name. Created u2-canvas-engine-nfr-requirements-clarifications-c2b.md. Holding NFR artifacts until A (none) or named package."
+**Context**: U2 NFR Requirements — blocked on unnamed library choice
+
+---
+
+## U2 NFR Requirements — Artifacts Generated
+**Timestamp**: 2026-08-11T06:45:45Z
+**User Input**: "answered"
+**AI Response**: "C2b locked as A (no new library). Generated nfr-requirements.md and tech-stack-decisions.md. Presented NFR Requirements Complete for approval."
+**Context**: U2 NFR Requirements awaiting approval before NFR Design
+
+### Final locked answers
+Q1=A, C1=B (≤100), Q3=B, Q4=A, Q5=A, C2b=A (no lib), Q7=B
+
+---
+
+## U2 NFR Requirements — Approved
+**Timestamp**: 2026-08-11T06:47:01Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U2 NFR Requirements approval. Started NFR Design; created u2-canvas-engine-nfr-design-plan.md with clarifying questions. Awaiting answers before generating NFR Design artifacts."
+**Context**: U2 NFR Design — plan awaiting user answers
+
+---
+
+## U2 NFR Design — Clarification Needed (Q4)
+**Timestamp**: 2026-08-11T06:50:58Z
+**User Input**: "answered"
+**AI Response**: "Received Q1=A, Q2=A, Q3=B, Q4=B (sanitizer lib — conflicts with no-new-lib), Q5=B, Q6=B. Created u2-canvas-engine-nfr-design-clarifications.md. Holding NFR Design artifacts until resolved."
+**Context**: U2 NFR Design — blocked on Q4 / library conflict
+
+---
+
+## U2 NFR Design — Artifacts Generated
+**Timestamp**: 2026-08-11T06:52:26Z
+**User Input**: "answered"
+**AI Response**: "C1 locked as A (hygiene only). Generated nfr-design-patterns.md and logical-components.md. Presented NFR Design Complete for approval."
+**Context**: U2 NFR Design awaiting approval before Infrastructure Design skip / Code Generation
+
+### Final locked answers
+Q1=A, Q2=A, Q3=B, C1=A, Q5=B (CanvasPerformanceScheduler), Q6=B
+
+---
+
+## U2 NFR Design — Approved; Infrastructure SKIP; Code Gen Plan Ready
+**Timestamp**: 2026-08-11T06:54:04Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded U2 NFR Design approval. Skipped Infrastructure Design (frontend-only; SKIP.md written). Created u2-canvas-engine-code-generation-plan.md (13 steps). Awaiting plan approval before Part 2 generation."
+**Context**: U2 Code Generation Part 1 — plan awaiting approval
+
+### Approval prompt
+Approve the U2 code generation plan or request changes.
+
+---
+
+## U2 Code Generation — Plan Approved / Part 2 Complete
+**Timestamp**: 2026-08-11T06:57:51Z
+**User Input**: "Approve this plan"
+**AI Response**: "Executed U2 code generation: ViewportMath+PBT, stores/facade, rAF scheduler, canvas viewport/graph/nodes/minimap/zoom; 10 tests pass; build OK. Presented Code Generation Complete for approval."
+**Context**: U2 Code Generation awaiting code approval before Build and Test
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U2.
+
+---
+
+## U2 Code Generation — Changes Requested (Round 1)
+**Timestamp**: 2026-08-11T07:03:30Z
+**User Input**: "Request Changes"
+**AI Response**: "Created u2-canvas-engine-code-change-requests-r1.md. Awaiting detailed answers before editing code."
+**Context**: Code Generation — change request gate for U2
+
+---
+
+## U2 Code Generation — Clarifications Needed (Round 1)
+**Timestamp**: 2026-08-11T07:04:40Z
+**User Input**: "answered"
+**AI Response**: "Q1=A, Q2 vague (exact workflowbuilder.io), Q3 blank, Q4=B. Created u2-canvas-engine-code-change-requests-r1-clarifications.md. Holding code edits until concrete pan/zoom/grid diffs and scope are answered."
+**Context**: U2 change request blocked on ambiguous Q2 / missing Q3
+
+---
+
+## U2 Code Generation — Round 1 Changes Applied
+**Timestamp**: 2026-08-11T07:06:53Z
+**User Input**: "answered"
+**AI Response**: "Applied reference-like pan/gestures: left-drag empty pans; Shift+drag marquee; grab cursors; smoother wheel zoom; dotted grid polish. Docs updated. Tests 10 pass; build OK. Re-presented Code Generation Complete."
+**Context**: U2 Code Generation — round 1 implemented, awaiting re-approval
+
+### Clarification answers
+- C1 E (pan + gestures look/feel)
+- C2 B (behavior + grid look)
+- C3 B (U2 polish; gesture model aligned to workflowbuilder.io / React Flow docs)
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U2.
+
+---
+
+## U2 Code Generation — Changes Requested (Round 2)
+**Timestamp**: 2026-08-11T07:09:35Z
+**User Input**: "Request Changes"
+**AI Response**: "Created u2-canvas-engine-code-change-requests-r2.md. Awaiting detailed answers before editing code."
+**Context**: Code Generation — second change request gate for U2
+
+---
+
+## U2 Code Generation — Clarifications Needed (Round 2)
+**Timestamp**: 2026-08-11T07:12:20Z
+**User Input**: "answered"
+**AI Response**: "Q1=B (nodes) conflicts with Q2 (connectors look). Created u2-canvas-engine-code-change-requests-r2-clarifications.md. Holding code edits."
+**Context**: U2 change request blocked on Q1/Q2 mismatch
+
+---
+
+## U2 Code Generation — Round 2 Changes Applied
+**Timestamp**: 2026-08-11T07:15:18Z
+**User Input**: "answered"
+**AI Response**: "Edges now attach to left/right ports with endpoint dots; nodes show visual in/out handles (no edge create). Docs updated. 10 tests pass; build OK. Re-presented Code Generation Complete."
+**Context**: U2 Code Generation — round 2 implemented, awaiting re-approval
+
+### Clarification answers
+- C1 A (edges only), C2 A (ports + dots), C3 B (visible handles preview, no create)
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U2.
+
+---
+
+## U2 Code Generation — Changes Requested (Round 3)
+**Timestamp**: 2026-08-11T07:15:50Z
+**User Input**: "Request Changes"
+**AI Response**: "Created u2-canvas-engine-code-change-requests-r3.md. Awaiting detailed answers before editing code."
+**Context**: Code Generation — third change request gate for U2
+
+---
+
+## U2 Code Generation — Clarifications Needed (Round 3)
+**Timestamp**: 2026-08-11T07:17:20Z
+**User Input**: "answered"
+**AI Response**: "Q1=C, Q2 vague style + Condition/router question, Q3=A, Q4=B. Created u2-canvas-engine-code-change-requests-r3-clarifications.md. Holding code edits."
+**Context**: U2 change request blocked on vague connector style / Condition meaning
+
+---
+
+## U2 Code Generation — Round 3 Changes Applied
+**Timestamp**: 2026-08-11T07:24:27Z
+**User Input**: "answered"
+**AI Response**: "Applied horizontal bezier edges between ports; kept single Condition handle (C1=B); C3 clarified prior question meant Condition. Docs updated. 11 tests pass; build OK. Re-presented Code Generation Complete."
+**Context**: U2 Code Generation — round 3 implemented, awaiting re-approval
+
+### Clarification answers
+- C1 B (single handle), C2 B (bezier), C3 A (Condition topic; multi-handle not selected)
+
+### Approval prompt
+Request Changes or Continue to Next Stage (Build and Test) for U2.
+
+---
+
+## U2 Code Generation — Approved → Build and Test
+**Timestamp**: 2026-08-11T07:27:11Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U2 Code Generation approval. Updated build-and-test instructions for U1+U2; verified npm test (11) and npm run build. Presented Build and Test Complete."
+**Context**: Build and Test (U1+U2) awaiting approval
+
+### Approval prompt
+Request Changes or Approve & Continue (Operations placeholder); U3 not started until explicitly requested.
+
+---
+
+## Build and Test — Approved → Operations Placeholder (U1+U2)
+**Timestamp**: 2026-08-11T07:28:37Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Recorded Build and Test approval for U1+U2. Re-acknowledged Operations as placeholder. Closed gate before U3; waiting for explicit request to start Node Palette."
+**Context**: U1+U2 complete; Operations placeholder at aidlc-docs/operations/operations-placeholder.md
+
+---
+
+## U3 Construction Started — Functional Design Planning
+**Timestamp**: 2026-08-11T07:29:46Z
+**User Input**: "continue with U3."
+**AI Response**: "Started U3 Node Palette. Loaded unit/stories/app-design context. Created u3-node-palette-functional-design-plan.md with clarifying questions. Awaiting answers before generating Functional Design artifacts."
+**Context**: CONSTRUCTION U3 — Functional Design plan awaiting user answers
+
+### Context loaded
+- unit-of-work.md (U3), US-4.1–4.2, palette components/methods, left-sidebar catalog preview, U1/U2 deps
+
+---
+
+## U3 Functional Design — Artifacts Generated
+**Timestamp**: 2026-08-11T07:31:44Z
+**User Input**: "answered"
+**AI Response**: "All Q1–Q7 answered clearly. Generated U3 functional-design artifacts. Presented Functional Design Complete for approval."
+**Context**: U3 Functional Design awaiting approval before NFR Requirements
+
+### Locked answers
+Q1=B, Q2=B, Q3=A, Q4=A, Q5=A, Q6=B (click-to-add), Q7=A
+
+---
+
+## U3 Functional Design — Approved
+**Timestamp**: 2026-08-11T07:33:30Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded U3 Functional Design approval. Started NFR Requirements; created u3-node-palette-nfr-requirements-plan.md. Awaiting answers."
+**Context**: U3 NFR Requirements — plan awaiting user answers
+
+---
+
+## U3 NFR Requirements — Artifacts Generated
+**Timestamp**: 2026-08-11T08:22:27Z
+**User Input**: "answered"
+**AI Response**: "Generated nfr-requirements.md and tech-stack-decisions.md (CDK ^20, 150ms debounce, createNode PBT, no extra libs). Presented NFR Requirements Complete for approval."
+**Context**: U3 NFR Requirements awaiting approval before NFR Design
+
+### Locked answers
+Q1=A, Q2=B, Q3=A, Q4=A, Q5=A, Q6=A
+
+---
+
+## U3 NFR Requirements — Approved
+**Timestamp**: 2026-08-11T08:23:30Z
+**User Input**: " Continue to Next Stage "
+**AI Response**: "Recorded U3 NFR Requirements approval. Started NFR Design; created u3-node-palette-nfr-design-plan.md. Awaiting answers."
+**Context**: U3 NFR Design — plan awaiting user answers
+
+---
+
+## U3 NFR Design — Artifacts Generated
+**Timestamp**: 2026-08-11T08:25:05Z
+**User Input**: "answered"
+**AI Response**: "Generated nfr-design-patterns.md and logical-components.md. Presented NFR Design Complete for approval."
+**Context**: U3 NFR Design awaiting approval before Infrastructure Design skip / Code Generation
+
+### Locked answers
+Q1=A, Q2=B, Q3=B, Q4=A, Q5=A
+
+---
+
+## U3 NFR Design — Approved; Infrastructure SKIP; Code Gen Plan Ready
+**Timestamp**: 2026-08-11T08:26:30Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U3 NFR Design approval. Skipped Infrastructure Design (SKIP.md). Created u3-node-palette-code-generation-plan.md (12 steps). Awaiting plan approval before Part 2."
+**Context**: U3 Code Generation Part 1 — plan awaiting approval
+
+### Approval prompt
+Approve the U3 code generation plan or request changes.
+
+---
+
+## U3 Code Generation — Plan Approved; Part 2 Complete
+**Timestamp**: 2026-08-11T08:42:49Z
+**User Input**: "Approve this plan"
+**AI Response**: "Executed approved U3 code generation plan (CDK ^20.2.14, catalog/factory, GraphStore.addNode, WorkflowFacade.createNode, categorized searchable palette with CDK drag + click-to-add, tests/docs). npm test 17 passed; npm run build success. Presented Code Generation Complete."
+**Context**: U3 Code Generation Part 2 complete — awaiting Request Changes vs Continue to Build and Test
+
+### Implementation notes
+- CDK installed at ^20.2.14 (no @angular/cdk@20.3 on registry)
+- DnD: cdkDrag from palette; create on drag-end hit-test over canvas viewport id
+- PBT: createNode type ∈ catalog + id pattern
+
+---
+
+## U3 Code Generation — Request Changes
+**Timestamp**: 2026-08-11T08:51:07Z
+**User Input**: "Request Changes"
+**AI Response**: "Logged change request. Created U3 code change-request clarification questions for user answers."
+**Context**: U3 Code Generation — change request round 1 clarifying questions
+
+---
+
+## U3 Code Change Requests R1 — Answers Received; Clarifications Needed
+**Timestamp**: 2026-08-11T08:53:47Z
+**User Input**: "answered"
+**AI Response**: "Recorded Q1=X (click boxes/connectors → open Properties), Q3=N/A, Q4=A. Flagged scope conflict with U3-only. Created u3-node-palette-code-change-requests-r1-clarifications.md (C1–C4)."
+**Context**: U3 change request round 1 — awaiting clarification answers before implementing
+
+### Raw answers
+- Q1: X( on cliking on boxes or connectors should open propertiles)
+- Q2: mentioned in Q1
+- Q3: N/A
+- Q4: A
+
+---
+
+## U3 Change Request Clarifications — Parked; U3 Approved; Build and Test Updated
+**Timestamp**: 2026-08-11T08:58:00Z
+**User Input**: "answered"
+**AI Response**: "Locked C1=A, C2=C, C3=A, C4=A. Per C2=C: did not implement Properties-on-click (deferred to U5); treated U3 code as approved. Updated Build and Test docs for U1–U3; verified npm test 17 pass + npm run build success. Awaiting Build and Test → Operations approval."
+**Context**: Build and Test complete for U1–U3 — awaiting user confirmation before Operations
+
+### Clarification answers
+- C1: A (expand-only meaning — not implemented now)
+- C2: C (park Properties-on-click for U5; approve U3 as-is → Build and Test)
+- C3: A
+- C4: A (no open Properties on create)
+
+---
+
+## Build and Test Approved → Operations Placeholder (U1–U3)
+**Timestamp**: 2026-08-11T09:04:38Z
+**User Input**: "ues"
+**AI Response**: "Interpreted as yes. Recorded Build and Test approval. Updated operations-placeholder.md for U1–U3 closed; hard stop before U4 Connections until explicitly requested."
+**Context**: Operations placeholder acknowledged; construction slice U3 closed
+
+---
+
+## U4 Started — Functional Design Plan Ready
+**Timestamp**: 2026-08-11T09:06:18Z
+**User Input**: "start U4"
+**AI Response**: "Started U4 Connections & Edge Reshape. Created u4-connections-functional-design-plan.md with clarifying questions Q1–Q8. Awaiting answers before generating functional design artifacts."
+**Context**: U4 Functional Design — plan awaiting user answers
+
+### Unit scope
+- Stories: US-5.1, US-5.2, US-5.3
+- Responsibility: Handles; draw edges; direction-only validation; waypoint drag with grid snap
+
+---
+
+## U4 Functional Design — Artifacts Generated
+**Timestamp**: 2026-08-11T09:10:40Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=A, Q2=A, Q3=B, Q4=B, Q5=B, Q6=A, Q7=B, Q8=B. Generated U4 functional-design artifacts (business-logic-model, business-rules, domain-entities, frontend-components). Resolved Delete priority: focused waypoint vs selected edge. Presented Functional Design Complete for approval."
+**Context**: U4 Functional Design awaiting approval before NFR Requirements
+
+### Locked answers
+Q1=A, Q2=A, Q3=B, Q4=B, Q5=B, Q6=A, Q7=B, Q8=B
+
+---
+
+## U4 Functional Design — Approved; NFR Requirements Plan Ready
+**Timestamp**: 2026-08-11T09:14:05Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U4 Functional Design approval. Created u4-connections-nfr-requirements-plan.md with questions Q1–Q6. Awaiting answers."
+**Context**: U4 NFR Requirements — plan awaiting user answers
+
+---
+
+## U4 NFR Requirements — Artifacts Generated
+**Timestamp**: 2026-08-11T09:16:04Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=B, Q2=A, Q3=A, Q4=A, Q5=A, Q6=A. Generated nfr-requirements.md and tech-stack-decisions.md. Presented NFR Requirements Complete for approval."
+**Context**: U4 NFR Requirements awaiting approval before NFR Design
+
+### Locked answers
+Q1=B, Q2=A, Q3=A, Q4=A, Q5=A, Q6=A
+
+---
+
+## U4 NFR Requirements — Approved; NFR Design Plan Ready
+**Timestamp**: 2026-08-11T09:17:01Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded U4 NFR Requirements approval. Created u4-connections-nfr-design-plan.md with questions Q1–Q5. Awaiting answers."
+**Context**: U4 NFR Design — plan awaiting user answers
+
+---
+
+## U4 NFR Design — Artifacts Generated
+**Timestamp**: 2026-08-11T09:19:03Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=A, Q2=A, Q3=A, Q4=A, Q5=A. Generated nfr-design-patterns.md and logical-components.md. Presented NFR Design Complete for approval."
+**Context**: U4 NFR Design awaiting approval before Infrastructure Design skip / Code Generation
+
+### Locked answers
+Q1=A, Q2=A, Q3=A, Q4=A, Q5=A
+
+---
+
+## U4 NFR Design — Approved; Infrastructure SKIP; Code Gen Plan Ready
+**Timestamp**: 2026-08-11T09:20:19Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded U4 NFR Design approval. Skipped Infrastructure Design (SKIP.md). Created u4-connections-code-generation-plan.md (11 steps). Awaiting plan approval before Part 2."
+**Context**: U4 Code Generation Part 1 — plan awaiting approval
+
+### Approval prompt
+Approve the U4 code generation plan or request changes.
+
+---
+
+## U4 Code Generation — Plan Approved; Part 2 Started
+**Timestamp**: 2026-08-11T09:22:00Z
+**User Input**: "Approve this plan"
+**AI Response**: "Recorded plan approval. Started Part 2 generation for U4 Connections (domain, store/facade, UI, tests, docs)."
+**Context**: U4 Code Generation Part 2 in progress
+
+---
+
+## U4 Code Generation — Part 2 Complete
+**Timestamp**: 2026-08-11T09:27:00Z
+**User Input**: "Approve this plan"
+**AI Response**: "Executed U4 Part 2: connection.math, edge waypoints, createEdge/delete/waypoint APIs, interactive handles, draft preview, multi-waypoint reshape, Escape/Delete. npm test 24 passed; npm run build success. Presented Code Generation Complete."
+**Context**: U4 Code Generation Part 2 complete — awaiting Request Changes vs Continue to Build and Test
+
+---
+
+## U4 Code Generation — Approved; Build and Test Updated (U1–U4)
+**Timestamp**: 2026-08-11T09:33:36Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded U4 Code Generation approval. Updated Build and Test docs for U1–U4; verified npm test 24 pass + npm run build success. Awaiting Build and Test → Operations approval."
+**Context**: Build and Test complete for U1–U4 — awaiting user confirmation before Operations
+
+---
+
+## Build and Test Approved → Operations Placeholder (U1–U4)
+**Timestamp**: 2026-08-11T09:39:34Z
+**User Input**: " proceed to Operations stage"
+**AI Response**: "Recorded Build and Test approval. Updated operations-placeholder.md for U1–U4 closed; hard stop before U5 Properties until explicitly requested."
+**Context**: Operations placeholder acknowledged; construction slice U4 closed
+
+---
+
+## U5 Started — Functional Design Plan Ready (Field-List Gate)
+**Timestamp**: 2026-08-11T09:40:12Z
+**User Input**: "start U5 "
+**AI Response**: "Started U5 Schema-Driven Properties Panel. Created u5-properties-functional-design-plan.md with Q1–Q7 including mandatory field-list gate (Q3). Awaiting answers before generating functional design artifacts."
+**Context**: U5 Functional Design — plan awaiting user answers
+
+### Unit scope
+- Stories: US-6.1 (+ US-6.2 readiness)
+- Gate: Confirm exact property fields per node type before inventing
+
+---
+
+## U5 Functional Design — Clarifications R1 Required
+**Timestamp**: 2026-08-11T09:51:41Z
+**User Input**: "answered"
+**AI Response**: "Reviewed Part A answers. Q1=A, Q2=B, Q3=X (example descriptor only), Q4=B, Q5=B, Q6=A, Q7=A. Blocking: field-list gate unresolved; Q2 JSON Schema conflicts with Q3 XPMS-style example. Created u5-properties-functional-design-clarifications-r1.md (C1–C6). Did not generate functional design artifacts."
+**Context**: U5 Functional Design — awaiting clarifications
+
+---
+
+## U5 Functional Design Artifacts Generated
+**Timestamp**: 2026-08-11T09:55:58Z
+**User Input**: "answered"
+**AI Response**: "Clarifications R1 accepted: C1=B XPMS descriptors, C2=C General+one boolean mock per type, C3=C config_path under node.data, C4=B Save/discard, C5=B most-recent click, C6=A disable invalid Save. Generated functional-design artifacts under aidlc-docs/construction/u5-properties/functional-design/. Awaiting Request Changes or Continue to NFR Requirements."
+**Context**: U5 Functional Design complete — approval gate
+
+### Locked field gate
+- General: label, subtitle, status
+- Configuration (all types): Ignore Keys in Paragraph → config.data.ignore_keys_in_paragraph (boolean)
+
+---
+
+## U5 Functional Design Approved — NFR Requirements Started
+**Timestamp**: 2026-08-11T09:56:37Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Functional Design approval. Started U5 NFR Requirements. Created u5-properties-nfr-requirements-plan.md with Q1–Q6. Awaiting answers before generating NFR artifacts."
+**Context**: U5 NFR Requirements — plan awaiting user answers
+
+---
+
+## U5 NFR Requirements Artifacts Generated
+**Timestamp**: 2026-08-11T09:59:10Z
+**User Input**: "answered"
+**AI Response**: "Accepted NFR plan answers Q1=A, Q2=A, Q3=B, Q4=A, Q5=A, Q6=A. Generated nfr-requirements.md and tech-stack-decisions.md under u5-properties/nfr-requirements/. Awaiting Request Changes or Continue to NFR Design."
+**Context**: U5 NFR Requirements complete — approval gate
+
+### Extension compliance (intent)
+- Resiliency: fail-soft Save; DR N/A
+- PBT Partial: path round-trip + registry one-boolean invariant
+- Security Baseline: skipped (disabled)
+
+---
+
+## U5 NFR Requirements Approved — NFR Design Started
+**Timestamp**: 2026-08-11T10:02:08Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded NFR Requirements approval. Started U5 NFR Design. Created u5-properties-nfr-design-plan.md with Q1–Q5 (performance, resilience, scalability/registry, logical components, security). Awaiting answers before generating NFR design artifacts."
+**Context**: U5 NFR Design — plan awaiting user answers
+
+---
+
+## U5 NFR Design Artifacts Generated
+**Timestamp**: 2026-08-11T10:07:05Z
+**User Input**: "answered"
+**AI Response**: "Accepted NFR Design answers Q1=B dual-write propertiesDraft, Q2=A patchNode fail-soft, Q3=A static schema module, Q4=A RightSidebar in place, Q5=A text-only. Generated nfr-design-patterns.md and logical-components.md. Infrastructure Design aligned to SKIP. Awaiting Request Changes or Continue to Infrastructure Design."
+**Context**: U5 NFR Design complete — approval gate
+
+---
+
+## U5 NFR Design Approved — Infrastructure Design SKIPPED
+**Timestamp**: 2026-08-11T10:08:04Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded NFR Design approval. Infrastructure Design SKIPPED for U5 (frontend-only SPA; all infra categories N/A). Wrote infrastructure-design/SKIP.md. Awaiting Request Changes or Continue to Code Generation."
+**Context**: U5 Infrastructure Design skip — approval gate before Code Generation
+
+---
+
+## U5 Infrastructure SKIP Approved — Code Generation Part 1 Plan Ready
+**Timestamp**: 2026-08-11T10:12:45Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded Infrastructure Design skip approval. Created u5-properties-code-generation-plan.md (11 steps: domain schema/path helpers, store/facade draft+patchNode, PBT tests, RightSidebar reactive forms, docs, verify). Awaiting explicit plan approval before Part 2 generation."
+**Context**: U5 Code Generation Part 1 — awaiting plan approval
+**Approval prompt**: Please approve the code generation plan at aidlc-docs/construction/plans/u5-properties-code-generation-plan.md (or request changes).
+
+---
+
+## U5 Code Generation Part 2 Complete
+**Timestamp**: 2026-08-11T10:19:42Z
+**User Input**: "Approve this plan"
+**AI Response**: "Executed U5 code generation plan Steps 1–11. Implemented XPMS schema, config-path helpers, patchNode, dual-write propertiesDraft, reactive RightSidebar Save form, focus wiring. npm test 31 passed; npm run build success. Awaiting Request Changes or Continue to Build and Test."
+**Context**: U5 Code Generation complete — approval gate
+
+---
+
+## U5 Code Generation — Change Requests R1 Opened
+**Timestamp**: 2026-08-11T10:20:13Z
+**User Input**: "Request Changes"
+**AI Response**: "Opened u5-properties-code-change-requests-r1.md (Q1–Q4). Awaiting specific change details before modifying code."
+**Context**: U5 Code Generation — change request round 1
+
+---
+
+## U5 Change Requests R1 — Clarifications Required
+**Timestamp**: 2026-08-11T10:28:07Z
+**User Input**: "answered"
+**AI Response**: "Parsed R1 answers: Q1 mouseout-collapse Properties; Q2 enso-suite task/list into Nodes Library; Q3=C; Q4=B. Blocking: Q2 is backend+U3 palette (conflicts no-backend and U5 scope); Q3 severity mismatch. Created u5-properties-code-change-requests-r1-clarifications.md (C1–C5). No code changes yet."
+**Context**: U5 Code Generation change requests — awaiting clarifications
+
+---
+
+## U5 Change Requests R1 Implemented (Enso Palette)
+**Timestamp**: 2026-08-11T10:36:06Z
+**User Input**: "answered"
+**AI Response**: "Clarifications accepted: C1=B enso palette only, C2=B backend override, C3=A left sidebar. Implemented EnsoTaskCatalogService + mapper, proxy, createNodeFromPaletteItem. Live API needs Bearer token (enso currentUser or environment). Without token falls back to static catalog. Properties mouseout deferred (not in C1). npm test 33 passed; build OK. Awaiting re-review."
+**Context**: U5 Code Generation change request R1 complete — approval gate
+
+---
+
+## U5 Code Generation — Change Requests R2 Opened
+**Timestamp**: 2026-08-11T10:48:19Z
+**User Input**: "Request Changes "
+**AI Response**: "Opened u5-properties-code-change-requests-r2.md (Q1–Q4). Awaiting specific change details before modifying code."
+**Context**: U5 Code Generation — change request round 2
+
+---
+
+## U5 Change Requests R2 — Clarifications Required
+**Timestamp**: 2026-08-11T10:52:56Z
+**User Input**: "answered"
+**AI Response**: "Parsed R2: Q1=B Properties; Q2 entire config + static logical blocks + connection config on click; Q3=C; Q4=B. Blocking: config source unclear; static block list incomplete; edge props override needed; severity mismatch. Created u5-properties-code-change-requests-r2-clarifications.md (C1–C5). No code changes yet."
+**Context**: U5 Code Generation change R2 — awaiting clarifications
+
+---
+
+## U5 Change Requests R2 Implemented
+**Timestamp**: 2026-08-11T10:59:24Z
+**User Input**: "answered"
+**AI Response**: "Clarifications C1=A dynamic ensoTask fields, C2=A static+enso palette, C3=A/C4=B edge props id/source/target+label, C5=A design lock change. Implemented merge catalog, enso-task-form flatten, edge label model/patchEdge, Properties node/edge modes. npm test 36 passed; build OK. Awaiting re-review."
+**Context**: U5 Code Generation change R2 complete — approval gate
+
+---
+
+## U5 Code Generation Approved — Build and Test Updated (U1–U5)
+**Timestamp**: 2026-08-11T11:04:03Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Recorded Code Generation approval. Updated build-and-test instructions for U1–U5 (36 tests pass; build ~435 kB main). Operations remains placeholder. Asked: Build and test instructions complete. Ready to proceed to Operations stage?"
+**Context**: Build and Test complete — awaiting proceed to Operations
+**Approval prompt**: Build and test instructions complete. Ready to proceed to Operations stage?
+
+---
+
+## Build and Test Approved — Operations Placeholder (U1–U5 Hard Stop)
+**Timestamp**: 2026-08-11T11:08:37Z
+**User Input**: " Ready to proceed"
+**AI Response**: "Recorded Build and Test approval. Operations remains placeholder for U1–U5. Hard stop before U6 — will not start Smart Routing & Auto-Layout until user explicitly requests start U6."
+**Context**: OPERATIONS placeholder — construction pause after U5
+
+---
+
+## U6 Started — Functional Design Plan Ready (Routing/Layout Gates)
+**Timestamp**: 2026-08-12T03:23:09Z
+**User Input**: "start U6 "
+**AI Response**: "Started U6 Smart Routing & Auto-Layout. Created u6-routing-layout-functional-design-plan.md with Q1–Q7 including mandatory gates: routing complexity (Q1) and hand-rolled vs layout lib (Q4). Awaiting answers before generating functional design artifacts / expanding US-E7/US-E8."
+**Context**: U6 Functional Design — plan awaiting user answers
+
+### Unit scope
+- Stories: US-E7, US-E8 (epic detail after gates)
+- FR-06 Smart Edge Routing; FR-07 Auto-Layout
+
+---
+
+## U6 Functional Design — Clarifications R1 Required
+**Timestamp**: 2026-08-12T03:27:12Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=B, Q2=A, Q3=A, Q4=A, Q6=A, Q7=A. Q5 empty. Resolved Q1/Q2: medium routing runs only on explicit Route + after layout. Created clarifications R1 for layout options (C1–C3). Did not generate FD artifacts yet."
+**Context**: U6 Functional Design — awaiting clarifications
+
+---
+
+## U6 Functional Design — Clarifications R1 Answered; Artifacts Generated
+**Timestamp**: 2026-08-12T03:30:13Z
+**User Input**: "answered"
+**AI Response**: "Accepted C1=A (V+H+Layered), C2=B (Layered L→R BFS; V/H axis pack), C3=A (layout auto-runs Route). Generated functional-design artifacts; expanded US-E7/US-E7.1/US-E8/US-E8.1; updated plan checkboxes and aidlc-state. Awaiting Request Changes or Continue to NFR Requirements."
+**Context**: U6 Functional Design complete — awaiting approval
+
+### Locked clarifications R1
+- C1=A, C2=B, C3=A
+
+### Artifacts
+- aidlc-docs/construction/u6-routing-layout/functional-design/
+
+---
+
+## U6 Functional Design Approved — NFR Requirements Plan
+**Timestamp**: 2026-08-12T03:30:49Z
+**User Input**: " Continue to Next Stage "
+**AI Response**: "Recorded Functional Design approval. Created u6-routing-layout-nfr-requirements-plan.md (Q1–Q7: performance, main-thread strategy, a11y, PBT, libs, fail-soft, viewport). Awaiting answers before generating NFR artifacts."
+**Context**: U6 NFR Requirements — plan awaiting user answers
+
+---
+
+## U6 NFR Requirements — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T03:33:36Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=A, Q3=A, Q4=A, Q5=A, Q6=B, Q7=B. Generated nfr-requirements.md and tech-stack-decisions.md. Awaiting Request Changes or Continue to NFR Design."
+**Context**: U6 NFR Requirements complete — awaiting approval
+
+### Locked NFR answers
+- Qualitative perf; sync one-shot; baseline a11y; layout PBT; no new libs; fallback status string; fit-to-content after layout
+
+---
+
+## U6 NFR Requirements Approved — NFR Design Plan
+**Timestamp**: 2026-08-12T03:34:42Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded NFR Requirements approval. Created u6-routing-layout-nfr-design-plan.md (Q1–Q7: status signal, batch mutate, grid defaults, UI home, fit helper, security, infra SKIP). Awaiting answers before generating NFR Design artifacts."
+**Context**: U6 NFR Design — plan awaiting user answers
+
+---
+
+## U6 NFR Design — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T03:36:47Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=A, Q3=B, Q4=A, Q5=A, Q6=B, Q7=A. Generated nfr-design-patterns.md and logical-components.md. Infrastructure Design planned SKIP. Awaiting Request Changes or Continue to Next Stage."
+**Context**: U6 NFR Design complete — awaiting approval
+
+### Locked NFR Design answers
+- canvasStatus; batch commit; env grid flags; ZoomControls; fitToContent helper; static SVG OK; Infra SKIP
+
+---
+
+## U6 NFR Design Approved — Infrastructure SKIP; Code Generation Plan Ready
+**Timestamp**: 2026-08-12T03:38:28Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded NFR Design approval. Wrote infrastructure-design/SKIP.md (Q7=A). Created u6-routing-layout-code-generation-plan.md (Steps 1–11). Awaiting plan approval before Part 2 generation."
+**Context**: U6 Code Generation Part 1 — awaiting plan approval
+**Approval prompt**: Approve u6-routing-layout-code-generation-plan.md to execute Part 2 generation (Steps 1–11)
+
+---
+
+## U6 Code Generation Plan Approved — Part 2 Started
+**Timestamp**: 2026-08-12T03:40:37Z
+**User Input**: "Approve the plan"
+**AI Response**: "Recorded plan approval. Started Part 2 generation for u6-routing-layout (Steps 1–11)."
+**Context**: U6 Code Generation Part 2 in progress
+
+---
+
+## U6 Code Generation Part 2 Complete
+**Timestamp**: 2026-08-12T03:45:30Z
+**User Input**: "Approve the plan"
+**AI Response**: "Executed Steps 1–11: layout.math, edge-routing, fitToContent, env/store/facade, ZoomControls Layout/Route, canvasStatus, tests (48 pass), build (~445 kB). Summaries + API/deploy SKIP written. Awaiting Request Changes or Continue to Build and Test."
+**Context**: U6 Code Generation complete — awaiting stage approval
+
+---
+
+## U6 Code Generation Approved — Build and Test Updated (U1–U6)
+**Timestamp**: 2026-08-12T06:13:44Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Code Generation approval. Updated build-and-test instructions for U1–U6 (48 tests pass; build ~445 kB main). Asked: Build and test instructions complete. Ready to proceed to Operations stage?"
+**Context**: Build and Test complete — awaiting proceed to Operations
+**Approval prompt**: Build and test instructions complete. Ready to proceed to Operations stage?
+
+### Build Status
+Success — dist/workflow-builder/
+
+### Test Status
+Pass — 48/48 unit tests
+
+### Files Generated / Updated
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- build-and-test-summary.md
+
+---
+
+## Build and Test Approved — Operations Placeholder (U1–U6 Hard Stop)
+**Timestamp**: 2026-08-12T06:15:18Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Recorded Build and Test approval. Operations remains placeholder for U1–U6. Hard stop before U7 — will not start Serialization / Auto-Save / History until user explicitly requests start U7."
+**Context**: OPERATIONS placeholder — construction pause after U6
+
+---
+
+## U7 Started — Functional Design Plan Ready
+**Timestamp**: 2026-08-12T06:17:51Z
+**User Input**: "start U7"
+**AI Response**: "Started U7 Serialization, Autosave, History, Clipboard. Created u7-serialization-history-functional-design-plan.md with Q1–Q12 (export/import UX, autosave, history model, copy/paste, shortcuts, schema version, non-goals). Awaiting answers before generating functional design artifacts."
+**Context**: U7 Functional Design — plan awaiting user answers
+
+### Unit scope
+- Stories: US-9.1–US-9.5
+- FR-10 Serialization; FR-11 Auto-save; FR-12 Undo/Redo/Copy/Paste
+- PBT: serialize ↔ deserialize round-trip
+
+---
+
+## U7 Functional Design — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T06:22:24Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=C, Q3=A, Q4=C, Q5=B, Q6=A, Q7=A, Q8=B, Q9=A, Q10=B, Q11=A, Q12=A. Generated functional-design artifacts. Awaiting Request Changes or Continue to NFR Requirements."
+**Context**: U7 Functional Design complete — awaiting approval
+
+---
+
+## U7 Functional Design Approved — NFR Requirements Plan
+**Timestamp**: 2026-08-12T06:23:40Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Functional Design approval. Created u7-serialization-history-nfr-requirements-plan.md (Q1–Q7: performance, clone strategy, a11y, PBT, libs, fail-soft, filename). Awaiting answers before generating NFR artifacts."
+**Context**: U7 NFR Requirements — plan awaiting user answers
+
+---
+
+## U7 NFR Requirements — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T06:26:30Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=A, Q3=A, Q4=A, Q5=A, Q6=B, Q7=A. Generated nfr-requirements.md and tech-stack-decisions.md. Awaiting Request Changes or Continue to NFR Design."
+**Context**: U7 NFR Requirements complete — awaiting approval
+
+---
+
+## U7 NFR Requirements Approved — NFR Design Plan
+**Timestamp**: 2026-08-12T06:27:10Z
+**User Input**: " Continue to Next Stage "
+**AI Response**: "Recorded NFR Requirements approval. Created u7-serialization-history-nfr-design-plan.md (Q1–Q7: HistoryService placement, mutation hooks, autosave impl, Import UI, serialize module, JSON hygiene, infra SKIP). Awaiting answers before generating NFR Design artifacts."
+**Context**: U7 NFR Design — plan awaiting user answers
+
+---
+
+## U7 NFR Design — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T07:09:50Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=B, Q3=A, Q4=B, Q5=B, Q6=B, Q7=A. Generated nfr-design-patterns.md and logical-components.md (HistoryService + GraphStore interceptor; SerializationService; ImportWorkflowDialog; RxJS autosave; allowlist import; Infra SKIP). Awaiting Request Changes or Continue to Next Stage."
+**Context**: U7 NFR Design complete — awaiting approval
+
+---
+
+## U7 NFR Design Approved — Infrastructure SKIP; Code Generation Plan Ready
+**Timestamp**: 2026-08-12T07:11:30Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded NFR Design approval. Wrote infrastructure-design/SKIP.md (Q7=A). Created u7-serialization-history-code-generation-plan.md (Steps 1–11). Awaiting plan approval before Part 2 generation."
+**Context**: U7 Code Generation Part 1 — awaiting plan approval
+**Approval prompt**: Approve u7-serialization-history-code-generation-plan.md to execute Part 2 generation (Steps 1–11)
+
+---
+
+## U7 Code Generation Plan Approved — Part 2 Started
+**Timestamp**: 2026-08-12T07:12:30Z
+**User Input**: "Approve the plan"
+**AI Response**: "Recorded plan approval. Started Part 2 generation for u7-serialization-history (Steps 1–11)."
+**Context**: U7 Code Generation Part 2 in progress
+
+---
+
+## U7 Code Generation Part 2 Complete
+**Timestamp**: 2026-08-12T07:17:32Z
+**User Input**: "Approve the plan"
+**AI Response**: "Executed Steps 1–11: serialize, History/AutoSave/Serialization/Clipboard, GraphStore interceptor, TopBar Import/Export/Undo/Redo, shortcuts, tests (56 pass), build (~461 kB). Awaiting Request Changes or Continue to Build and Test."
+**Context**: U7 Code Generation complete — awaiting stage approval
+
+---
+
+## U7 Code Generation Approved — Build and Test Updated (U1–U7)
+**Timestamp**: 2026-08-12T07:23:23Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Code Generation approval. Updated build-and-test instructions for U1–U7 (56 tests pass; build ~461 kB main). Asked: Build and test instructions complete. Ready to proceed to Operations stage?"
+**Context**: Build and Test complete — awaiting proceed to Operations
+**Approval prompt**: Build and test instructions complete. Ready to proceed to Operations stage?
+
+### Build Status
+Success — dist/workflow-builder/
+
+### Test Status
+Pass — 56/56 unit tests
+
+### Files Updated
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- build-and-test-summary.md
+
+---
+
+## Build and Test Approved — Operations Placeholder (U1–U7 Hard Stop)
+**Timestamp**: 2026-08-12T07:28:30Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Recorded Build and Test approval. Operations remains placeholder for U1–U7. Hard stop before U8 — will not start Simulated Run & View Mode until user explicitly requests start U8."
+**Context**: OPERATIONS placeholder — construction pause after U7
+
+---
+
+## U8 Started — Functional Design Plan Ready
+**Timestamp**: 2026-08-12T07:54:26Z
+**User Input**: "start U8"
+**AI Response**: "Started U8 Simulated Run & View Mode. Created u8-run-view-mode-functional-design-plan.md with Q1–Q9 (walk order, timing, status reset, Run in view mode, cancel/restart, toggle UX, lock surface, empty graph, non-goals). Awaiting answers before generating functional design artifacts."
+**Context**: U8 Functional Design — plan awaiting user answers
+
+### Unit scope
+- Stories: US-10.1, US-VM.1–3, US-6.2
+- FR-15 Simulated Run; FR-13 View Mode
+
+---
+
+## U8 Functional Design — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T07:58:40Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=A, Q3=A, Q4=A, Q5=B, Q6=A, Q7=A, Q8=A, Q9=A. Generated functional-design artifacts. Awaiting Request Changes or Continue to NFR Requirements."
+**Context**: U8 Functional Design complete — awaiting approval
+
+---
+
+## U8 Functional Design Approved — NFR Requirements Plan
+**Timestamp**: 2026-08-12T08:00:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Functional Design approval. Created u8-run-view-mode-nfr-requirements-plan.md (Q1–Q7: performance, timers, a11y, PBT, libs, fail-soft, reduced-motion). Awaiting answers before generating NFR artifacts."
+**Context**: U8 NFR Requirements — plan awaiting user answers
+
+---
+
+## U8 NFR Requirements — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T08:01:56Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=B, Q3=B, Q4=A, Q5=A, Q6=A, Q7=A. Generated nfr-requirements.md and tech-stack-decisions.md. Awaiting Request Changes or Continue to NFR Design."
+**Context**: U8 NFR Requirements complete — awaiting approval
+
+---
+
+## U8 NFR Requirements Approved — NFR Design Plan
+**Timestamp**: 2026-08-12T08:05:06Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded NFR Requirements approval. Created u8-run-view-mode-nfr-design-plan.md (Q1–Q8: RunSimulationService, delay/reduced-motion, Stop takeUntil, runActive placement, skipHistory API, aria-live home, security hygiene, Infrastructure SKIP). Awaiting answers before generating NFR Design artifacts."
+**Context**: U8 NFR Design — plan awaiting user answers
+
+---
+
+## U8 NFR Design — Answers Accepted; Artifacts Generated
+**Timestamp**: 2026-08-12T08:08:16Z
+**User Input**: "answered"
+**AI Response**: "Accepted Q1=A, Q2=B, Q3=A, Q4=A, Q5=A, Q6=A, Q7=B, Q8=A. Generated nfr-design-patterns.md and logical-components.md. Awaiting Request Changes or Continue to Next Stage (Infrastructure SKIP → Code Generation plan)."
+**Context**: U8 NFR Design complete — awaiting approval
+
+---
+
+## U8 NFR Design Approved — Infrastructure SKIP; Code Generation Plan
+**Timestamp**: 2026-08-12T08:08:45Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded NFR Design approval. Wrote infrastructure-design/SKIP.md (Q8=A). Created u8-run-view-mode-code-generation-plan.md (Steps 1–11: run-order, RunSimulationService, facade/view locks, PBT, TopBar Run/Stop/Reset/view toggle, docs, verify). Awaiting plan approval before Part 2 generation."
+**Context**: U8 Code Generation Part 1 — awaiting plan approval
+
+---
+
+## Approval Prompt — U8 Code Generation Plan
+**Timestamp**: 2026-08-12T08:08:45Z
+**Prompt**: "Approve u8-run-view-mode-code-generation-plan.md to execute Part 2, or Request Changes."
+**Context**: Logged before asking user for plan approval
+
+---
+
+## U8 Code Generation Plan Approved — Part 2 Start
+**Timestamp**: 2026-08-12T08:09:30Z
+**User Input**: "Approve"
+**AI Response**: "Recorded plan approval. Starting Part 2 generation for u8-run-view-mode (Steps 1–11)."
+**Context**: U8 Code Generation Part 2 in progress
+
+---
+
+## U8 Code Generation Part 2 Complete
+**Timestamp**: 2026-08-12T08:14:36Z
+**User Input**: "Approve"
+**AI Response**: "Executed Steps 1–11: run-order + RunSimulationService + stores/facade + TopBar Run/Stop/Reset/view toggle + tests (66) + build (~468 kB main). Summaries and SKIP docs written. Awaiting Request Changes or Continue to Build and Test."
+**Context**: U8 Code Generation complete — awaiting stage approval
+
+---
+
+## U8 Code Generation Approved — Build and Test
+**Timestamp**: 2026-08-12T09:38:48Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Recorded Code Generation approval. Regenerated build-and-test instructions for U1–U8 (66 tests; ~468 kB main). Awaiting Approve & Continue to Operations or Request Changes."
+**Context**: Build and Test complete — awaiting approval
+
+---
+
+## Build and Test Stage
+**Timestamp**: 2026-08-12T09:38:48Z
+**Build Status**: Success
+**Test Status**: Pass (66 unit tests)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- build-and-test-summary.md
+
+---
+
+## Build and Test Approved — Operations Placeholder
+**Timestamp**: 2026-08-12T09:40:05Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Recorded Build and Test approval. Updated operations-placeholder.md for U1–U8 closed. AI-DLC construction workflow complete; Operations remains a placeholder (no deploy/monitor artifacts)."
+**Context**: OPERATIONS placeholder acknowledged — planned units U1–U8 complete
+
+---
+
+## More Changes R3 — Clarification Answers Received
+**Timestamp**: 2026-08-12T10:39:45Z
+**User Input**: "answered"
+**AI Response**: "Parsed r3 answers (Q1=A, Q2=C, Q3=A, Q4=A) + freeform: label initials, 4-side connectors, layout spacing, icons, distinct logic nodes. Direct-implemented; wrote more-changes-r3-change-requests.md."
+**Context**: Post-U8 UX polish round 3 — implementing freeform list
+
+---
+
+## More Changes R3 — Implemented
+**Timestamp**: 2026-08-12T10:40:15Z
+**User Input**: "(continuation after answered)"
+**AI Response**: "Shipped label initials, 4-side ports + facing edge routing, larger layout gaps, per-type SVG icons (canvas + library), distinct Condition/Decision chrome. Tests: 72 passed."
+**Context**: Round 3 UX polish complete
+
+---
+
+## More Changes R3 — Request Changes
+**Timestamp**: 2026-08-12T10:43:00Z
+**User Input**: "Request changes"
+**AI Response**: "Opened more-changes-r4-clarification-questions.md for what to fix after R3. Awaiting answers + freeform."
+**Context**: R3 change request — clarification questions issued
+
+---
+
+## More Changes R4 — Clarification Answers Received
+**Timestamp**: 2026-08-12T10:46:00Z
+**User Input**: "answered"
+**AI Response**: "Parsed R4 (Q1=A,B,D Q2=A Q3=A): remove node icons (text only); invalidate out→out draft; persist port sides so top stays top. Implemented; 75 tests passed."
+**Context**: Round 4 UX fixes complete
+
+---
+
+## More Changes R4 — Request Changes
+**Timestamp**: 2026-08-12T10:52:00Z
+**User Input**: "Request changes"
+**AI Response**: "Opened more-changes-r5-clarification-questions.md for post-R4 fixes. Awaiting answers + freeform."
+**Context**: R4 change request — clarification questions issued
+
+---
+
+## More Changes R5 — Clarification Answers Received
+**Timestamp**: 2026-08-12T10:53:00Z
+**User Input**: "answered "
+**AI Response**: "Parsed R5 (Q1=B Q2=A Q3=A): connectors not connecting properly — aligned with workflowbuilder.io style (larger hits, drop-on-node snap to compatible ports, draft snaps to target). 76 tests passed."
+**Context**: Round 5 connector UX fixes complete
+
+---
+
+## More Changes R5 — Request Changes
+**Timestamp**: 2026-08-12T10:58:00Z
+**User Input**: "Request changes "
+**AI Response**: "Opened more-changes-r6-clarification-questions.md for post-R5 fixes. Awaiting answers + freeform."
+**Context**: R5 change request — clarification questions issued
+
+---
+
+## More Changes R6 — Clarification Answers Received
+**Timestamp**: 2026-08-12T11:00:00Z
+**User Input**: "amswered "
+**AI Response**: "Parsed R6 (Q1=A Q2=A Q3=A): top→left/top/bottom failed due to in/out port gate. Removed role gating — any handle to any handle; sides still persist."
+**Context**: Round 6 connector fix complete
+
+---
+
+## More Changes R6 — Request Changes
+**Timestamp**: 2026-08-12T11:01:30Z
+**User Input**: "Request changes "
+**AI Response**: "Opened more-changes-r7-clarification-questions.md for post-R6 fixes. Awaiting answers + freeform."
+**Context**: R6 change request — clarification questions issued
+
+---
+
+## More Changes R7 — Clarification Answers Received
+**Timestamp**: 2026-08-12T11:03:00Z
+**User Input**: "answered "
+**AI Response**: "Parsed R7 (Q1=A Q2=A Q3=A): right=output; left/top/bottom=input; block out→out; allow right→inputs (+ reverse drag). 78 tests passed."
+**Context**: Round 7 port role model complete
+
+---
+
+## More Changes R7 — Request Changes
+**Timestamp**: 2026-08-12T11:07:30Z
+**User Input**: "Request changes "
+**AI Response**: "Opened more-changes-r8-clarification-questions.md for post-R7 fixes. Awaiting answers + freeform."
+**Context**: R7 change request — clarification questions issued
+
+---
+
+## More Changes R8 — Clarification Answers Received
+**Timestamp**: 2026-08-12T11:09:00Z
+**User Input**: "answered "
+**AI Response**: "Parsed R8 (Q1=A Q2=A Q3=A): left/top/bottom↔left/top/bottom allowed; never connect to right; lock port sides so edges follow while dragging nodes. 79 tests passed."
+**Context**: Round 8 connection rules complete
+
+---
