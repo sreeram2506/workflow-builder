@@ -25,7 +25,7 @@ G) Something else not covered above
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -39,7 +39,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -53,7 +53,7 @@ C) You will order them in freeform (1 = first)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -61,5 +61,5 @@ X) Other (please describe after [Answer]: tag below)
 Describe the changes you want (bullets; be concrete — what you see vs what you want):
 
 ```text
-
+1.no connectors not connecting properly to reference check workflobuilder.io
 ```

@@ -25,7 +25,7 @@ C) **Full U5** — schema-driven editable properties (defer; do not implement in
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -34,13 +34,13 @@ X) Other (please describe after [Answer]: tag below)
 
 A) Treat this as **allowed small U3+ shell polish**: selection → open/bind Properties as in C1 — still no edge drawing, no Templates, no schema editor
 
-B) **Keep Q4 = A** — do **not** implement Properties-on-click now; instead list a different U3-only change after [Answer]:
+B) **Keep Q4 = A** — do **not** implement Properties-on-click now; instead list a different U3-only change after [Answer]:ok
 
 C) Park Properties-on-click for **U5**; approve U3 code as-is and continue to Build and Test
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -55,7 +55,7 @@ C) Only when selecting exactly **one** node (ignore multi-select / edges for ope
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -68,6 +68,6 @@ B) Yes — createNode should also expand/bind Properties like selection
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---

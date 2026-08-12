@@ -23,7 +23,7 @@ F) Something else
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -37,7 +37,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -51,7 +51,7 @@ C) You will order them in freeform (1 = first)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -60,5 +60,5 @@ Describe the changes you want (bullets; what you see vs what you want).
 If comparing to workflowbuilder.io again, say what differs:
 
 ```text
-
+1.still if im dragging connector from top node to another node input which means(left/top/bottom) its not connecting 
 ```

@@ -23,14 +23,14 @@ F) Multiple areas (list details in Q2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:X ( when i mouseout property panel should collapse)
 
 ---
 
 ## Question 2
 **Exact changes** — Be specific (bullets OK). Reference UI parts, files, or expected behavior vs current.
 
-[Answer]:
+[Answer]:X ( check in enso-suite use this api http://enso-suite-be.red6.discovery.xpms.ai/api/canvas/task/list payload : {"data":{"user_category":["Domain Extraction","Domain Object Postprocessing","Custom","Feedback","Document Extraction","ML Operations","Monitoring","Document Preprocessing","Benchmarking","Data Manipulation","Function","Content Management","GenAI","Execution"]},"solution_id":"sol30","user_id":"2","agent_id":"74f8d571-205e-4f0a-9624-d703bd70fdb2"} to get all left side crsoos check responser render those on nodes library)
 
 ---
 
@@ -45,7 +45,7 @@ C) Bug fix only (broken vs intended locked design)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -58,7 +58,7 @@ B) Also refresh related U5 docs if behavior locks change
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 

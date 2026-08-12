@@ -23,7 +23,7 @@ E) **Multiple** — list concrete bullets after [Answer]: (e.g. “grid dots too
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: E ( 1. pan 2.gestures look and feel )
 
 ---
 
@@ -38,7 +38,7 @@ C) I will attach/describe exact differences in C1 / chat — implement only thos
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -51,6 +51,6 @@ B) Allow small U2+ behavior if needed (describe in C1) — I will confirm before
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---

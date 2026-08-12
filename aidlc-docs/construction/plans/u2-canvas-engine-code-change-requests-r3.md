@@ -21,14 +21,14 @@ E) Multiple areas (list in Q2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: C
 
 ---
 
 ## Question 2
 **Exact changes** — Concrete bullets (what’s wrong → what it should do). Avoid “match exactly” alone.
 
-[Answer]: 
+[Answer]: ( match connector styles with workflobuilder.io and where is my router condition connector logical block inside skills)
 
 ---
 
@@ -41,7 +41,7 @@ B) Allow small U2+ behavior if needed (describe in Q2) — I will confirm before
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -54,6 +54,6 @@ B) Fix code + update aidlc-docs summaries
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---

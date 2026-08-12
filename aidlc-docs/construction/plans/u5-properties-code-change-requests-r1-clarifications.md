@@ -31,7 +31,7 @@ D) **Neither** — describe a different change after `[Answer]:`
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -45,7 +45,7 @@ C) **Proxy / mock** — add a local mock JSON shaped like the API response; no l
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -57,7 +57,7 @@ B) **Park** palette API work until a dedicated unit / explicit U3 follow-up; onl
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -71,7 +71,7 @@ C) Collapse on mouseout **and** keep current chip click to re-open
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -83,7 +83,7 @@ B) Keep Q3=C only for true bugs; Q2 is a **scope override** if approved in C2
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 

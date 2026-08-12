@@ -23,7 +23,7 @@ F) Something else
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -37,7 +37,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -51,7 +51,7 @@ C) You will order them in freeform (1 = first)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -59,5 +59,6 @@ X) Other (please describe after [Answer]: tag below)
 Describe the changes you want (bullets; what you see vs what you want):
 
 ```text
-
+1.top/left/bottom are input and right side is output it should not connect to outout direclty 
+2.output (right ) should not connect with output output can be connect with top/left/bottom
 ```

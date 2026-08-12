@@ -23,14 +23,14 @@ E) Multiple areas (list in Q2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
 ## Question 2
 **Exact changes** — Be specific (bullets OK). What is wrong vs expected?
 
-[Answer]:
+[Answer]:we have to show enitre configuration in properties panel and we have to have some static skills logical blocks like condition routeer and for connections also when we user clck on it we have to show the some config 
 
 ---
 
@@ -45,7 +45,7 @@ C) Bug fix only (broken vs intended)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -58,7 +58,7 @@ B) Also refresh related docs if locks change
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 

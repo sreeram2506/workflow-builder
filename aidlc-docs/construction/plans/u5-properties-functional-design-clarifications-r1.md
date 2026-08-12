@@ -34,7 +34,7 @@ C) **Hybrid** — store configs as XPMS-style descriptors in a registry; render 
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -52,7 +52,7 @@ D) You will paste a **full per-type field list** after `[Answer]:` (required if 
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -66,7 +66,7 @@ C) XPMS `config_path` is authoritative (e.g. `config.data.*` nested under `node.
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -80,7 +80,7 @@ C) **Save** applies; switching selection with dirty form **auto-saves** first
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -92,7 +92,7 @@ B) Most recently clicked / added to selection
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -104,7 +104,7 @@ B) Allow Save of partial/invalid values (coerce or store as-is)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 

@@ -17,7 +17,7 @@ D) Mix (list under Other)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -39,7 +39,7 @@ F) Run simulation / view mode
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:C
 
 ---
 
@@ -53,7 +53,7 @@ C) I’ll share screenshots / Figma next — wait before coding
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -67,7 +67,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -75,5 +75,9 @@ X) Other (please describe after [Answer]: tag below)
 List the changes you want (bullets):
 
 ```text
-
+1.in nodes i dont like Tr ,Ac, Co, Dy,En like this as profile icon why dont we start them with thier name as an example Complete is CO , Enrich Pyalod is EP , Webhook Trigger as WT like that 
+2. and for node i do see two dots it should be like that wherever i connect them on lift top , bottom it should be able to connect 
+3.in horizontal and vertical and layered modes the view not looking good becuase of connectors not fully visible 
+4. nodes are missing icons i guess
+5. for logic blocks the condition/router they are same as the other nodes for that atleast we have some unquie structore not same as other nodes like big svgs instead of rectangle like that
 ```

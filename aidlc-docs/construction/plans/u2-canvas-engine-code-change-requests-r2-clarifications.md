@@ -18,7 +18,7 @@ C) **Both** nodes and connectors (list both in C2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -35,7 +35,7 @@ D) Use a simple **bezier/curve** between ports (still no waypoints / smart routi
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -48,6 +48,6 @@ B) Allow tiny U4 preview (e.g. visible handles) but still **no** new edge creati
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---

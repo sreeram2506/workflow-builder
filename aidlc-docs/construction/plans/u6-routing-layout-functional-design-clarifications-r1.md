@@ -27,7 +27,7 @@ B) Vertical + Horizontal only (drop layered for v1)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -39,7 +39,7 @@ B) Same as A but always **left→right layered** as the “Layered” button; Ve
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -51,7 +51,7 @@ B) **No** — layout only moves nodes; user must click Route edges separately
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 

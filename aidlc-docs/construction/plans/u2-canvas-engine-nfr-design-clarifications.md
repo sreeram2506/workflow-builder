@@ -17,6 +17,6 @@ C) Use Angular’s built-in `DomSanitizer` **only if needed**, still **no new pa
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---

@@ -19,7 +19,7 @@ C) Add a small **Yes/No** (or True/False) label near each Condition output handl
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -34,7 +34,7 @@ C) Simple **orthogonal** (elbow) path without collision avoidance
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -47,6 +47,6 @@ B) Something else — describe after [Answer]: (file/UI name)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---

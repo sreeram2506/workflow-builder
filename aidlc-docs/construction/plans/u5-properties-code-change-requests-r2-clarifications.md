@@ -30,7 +30,7 @@ C) Keep General fields + expand Configuration beyond the one boolean mock using 
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -44,7 +44,7 @@ C) No static blocks — enso tasks only (reject that part of Q2)
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -56,7 +56,7 @@ B) **No** — edges stay without Properties; only nodes
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 
@@ -70,7 +70,7 @@ C) You will paste the exact edge field list after `[Answer]:`
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:B
 
 ---
 
@@ -82,7 +82,7 @@ B) Keep calling it a bug fix but only implement the **smallest** slice you confi
 
 X) Other (please describe after `[Answer]:` tag below)
 
-[Answer]:
+[Answer]:A
 
 ---
 

@@ -21,14 +21,14 @@ E) Multiple areas (list in Q2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
 ## Question 2
 **Exact changes** — Concrete bullets only (what is wrong + what it should do). Avoid “match exactly” alone.
 
-[Answer]: 
+[Answer]: ( connectors is not looking goot the starting and ending ones)
 
 ---
 
@@ -41,7 +41,7 @@ B) Allow small U2+ behavior if needed (describe in Q2) — I will confirm before
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -54,6 +54,6 @@ B) Fix code + update aidlc-docs summaries
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---

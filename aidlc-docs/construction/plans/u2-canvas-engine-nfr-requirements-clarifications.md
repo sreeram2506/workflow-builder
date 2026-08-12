@@ -17,7 +17,7 @@ C) No numeric ceiling — only seed size matters for U2
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---
 
@@ -30,6 +30,6 @@ B) Add this specific library (name it after [Answer]: and why) — I will not in
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ---

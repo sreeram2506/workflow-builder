@@ -21,14 +21,14 @@ E) Multiple areas (list details in Q2)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:X( on cliking on boxes or connectors should open propertiles)
 
 ---
 
 ## Question 2
 **Exact changes** — Be specific (bullets OK). Reference UI parts, reference site (workflowbuilder.io), or files if you can.
 
-[Answer]:
+[Answer]:mentioned in Q1
 
 ---
 
@@ -43,7 +43,7 @@ C) No preference — pick the approach that matches reference UX best
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:N/A
 
 ---
 
@@ -56,6 +56,6 @@ B) Allow small U3+ behavior if needed (describe in Q2) — I will confirm before
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]:
+[Answer]:A
 
 ---

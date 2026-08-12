@@ -23,7 +23,7 @@ F) Something else not in the R3 list
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A,B,D
 
 ---
 
@@ -37,7 +37,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -51,7 +51,7 @@ C) You will order them in freeform (1 = first)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -59,5 +59,7 @@ X) Other (please describe after [Answer]: tag below)
 Describe the changes you want (bullets; be concrete — what you see vs what you want):
 
 ```text
-
+1.icons not lookig good remove icons in nodes add text only 
+2. connectos let say if im mapping to out to out it showing green not matching but showing green which shouldnt be the case
+3.lets sayfor one node im dragging from top it should connect with top only its changing to right after connecting 
 ```
