@@ -1,6 +1,5 @@
+import { nodeSizeForType } from './node-visuals';
 import {
-  NODE_CARD_HEIGHT,
-  NODE_CARD_WIDTH,
   facingPorts,
   portOnSide,
   smoothEdgePath,
@@ -83,21 +82,32 @@ export function resolveConnection(
   return null;
 }
 
-export function pointNearNode(world: Point, position: Point, pad = NODE_HIT_PADDING): boolean {
+export function pointNearNode(
+  world: Point,
+  position: Point,
+  width: number,
+  height: number,
+  pad = NODE_HIT_PADDING,
+): boolean {
   return (
     world.x >= position.x - pad &&
-    world.x <= position.x + NODE_CARD_WIDTH + pad &&
+    world.x <= position.x + width + pad &&
     world.y >= position.y - pad &&
-    world.y <= position.y + NODE_CARD_HEIGHT + pad
+    world.y <= position.y + height + pad
   );
 }
 
 /** Nearest port on a node to a world point. */
-export function nearestPortSide(world: Point, position: Point): PortSide {
+export function nearestPortSide(
+  world: Point,
+  position: Point,
+  width: number,
+  height: number,
+): PortSide {
   let best: PortSide = 'left';
   let bestDist = Infinity;
   for (const side of PORT_SIDES) {
-    const port = portOnSide(position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, side);
+    const port = portOnSide(position, width, height, side);
     const dist = Math.hypot(world.x - port.x, world.y - port.y);
     if (dist < bestDist) {
       bestDist = dist;
@@ -220,9 +230,11 @@ export function edgeRenderPoints(
     return null;
   }
   const locked = lockEdgePortSides(edge, nodes);
+  const sw = nodeSizeForType(s.type);
+  const tw = nodeSizeForType(t.type);
   return {
-    start: portOnSide(s.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, locked.sourceSide!),
-    end: portOnSide(t.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, locked.targetSide!),
+    start: portOnSide(s.position, sw.width, sw.height, locked.sourceSide!),
+    end: portOnSide(t.position, tw.width, tw.height, locked.targetSide!),
     waypoints: edge.waypoints.map((p) => ({ ...p })),
   };
 }
@@ -243,18 +255,20 @@ export function lockEdgePortSides(
   if (!s || !t) {
     return edge;
   }
-  const ports = facingPorts(s.position, t.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT);
+  const sw = nodeSizeForType(s.type);
+  const tw = nodeSizeForType(t.type);
+  const ports = facingPorts(s.position, t.position, sw.width, sw.height);
   const sourceSide = edge.sourceSide ?? ports.sourceSide;
   const sm = {
-    x: s.position.x + NODE_CARD_WIDTH / 2,
-    y: s.position.y + NODE_CARD_HEIGHT / 2,
+    x: s.position.x + sw.width / 2,
+    y: s.position.y + sw.height / 2,
   };
   let targetSide = edge.targetSide;
   if (!targetSide || !isInputSide(targetSide)) {
     let best: PortSide = 'left';
     let bestDist = Infinity;
     for (const side of INPUT_SIDES) {
-      const p = portOnSide(t.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, side);
+      const p = portOnSide(t.position, tw.width, tw.height, side);
       const d = Math.hypot(sm.x - p.x, sm.y - p.y);
       if (d < bestDist) {
         bestDist = d;
@@ -276,8 +290,9 @@ export function findTargetHandleAt(
     if (excludeNodeId && n.id === excludeNodeId) {
       continue;
     }
+    const { width, height } = nodeSizeForType(n.type);
     for (const side of PORT_SIDES) {
-      const port = portOnSide(n.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, side);
+      const port = portOnSide(n.position, width, height, side);
       const dist = Math.hypot(world.x - port.x, world.y - port.y);
       if (dist <= HANDLE_HIT_RADIUS && (!best || dist < best.dist)) {
         best = { hit: { id: n.id, side }, dist };
@@ -308,11 +323,12 @@ export function findConnectionTargetAt(
     if (excludeNodeId && n.id === excludeNodeId) {
       continue;
     }
-    if (!pointNearNode(world, n.position)) {
+    const { width, height } = nodeSizeForType(n.type);
+    if (!pointNearNode(world, n.position, width, height)) {
       continue;
     }
     for (const side of INPUT_SIDES) {
-      const port = portOnSide(n.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, side);
+      const port = portOnSide(n.position, width, height, side);
       const dist = Math.hypot(world.x - port.x, world.y - port.y);
       if (!best || dist < best.dist) {
         best = { hit: { id: n.id, side }, dist };

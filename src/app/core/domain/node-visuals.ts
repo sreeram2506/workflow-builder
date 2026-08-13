@@ -1,4 +1,5 @@
 import type { NodeStatus, NodeType } from './workflow.models';
+import { LOGIC_NODE_SIZE, NODE_CARD_HEIGHT, NODE_CARD_WIDTH } from './viewport.math';
 
 /** CSS custom property names (or fallback colors) for category accents. */
 export function accentTokenForType(type: NodeType): string {
@@ -9,6 +10,7 @@ export function accentTokenForType(type: NodeType): string {
       return 'var(--wb-node-action)';
     case 'Condition':
     case 'Decision':
+    case 'Repeater':
       return 'var(--wb-node-condition)';
     case 'Delay':
       return 'var(--wb-node-delay)';
@@ -56,6 +58,8 @@ export function iconGlyphForType(type: NodeType): string {
       return 'Co';
     case 'Decision':
       return 'De';
+    case 'Repeater':
+      return 'Re';
     case 'Delay':
       return 'Dy';
     case 'Notification':
@@ -70,7 +74,35 @@ export function iconGlyphForType(type: NodeType): string {
 }
 
 export function isLogicNodeType(type: NodeType): boolean {
-  return type === 'Condition' || type === 'Decision';
+  return type === 'Condition' || type === 'Decision' || type === 'Repeater';
+}
+
+/** Canvas uses dedicated SVG shapes (not rectangle cards) for these types. */
+export function isShapedNodeType(type: NodeType): boolean {
+  return isLogicNodeType(type);
+}
+
+export type LogicShapeKind = 'rhombus' | 'router' | 'repeater';
+
+export function logicShapeKind(type: NodeType): LogicShapeKind | null {
+  switch (type) {
+    case 'Condition':
+      return 'rhombus';
+    case 'Decision':
+      return 'router';
+    case 'Repeater':
+      return 'repeater';
+    default:
+      return null;
+  }
+}
+
+/** Card / shape size for layout, ports, and hit-testing. */
+export function nodeSizeForType(type: NodeType): { width: number; height: number } {
+  if (isShapedNodeType(type)) {
+    return { width: LOGIC_NODE_SIZE, height: LOGIC_NODE_SIZE };
+  }
+  return { width: NODE_CARD_WIDTH, height: NODE_CARD_HEIGHT };
 }
 
 /** Simple inline SVG path (viewBox 0 0 24 24) per node type. */
@@ -81,8 +113,13 @@ export function iconPathForType(type: NodeType): string {
     case 'Action':
       return 'M12 2a2 2 0 0 1 2 2v2h4a2 2 0 0 1 2 2v4h-2V8h-4v12h4v-2h2v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4h2v2h4V8H6v2H4V8a2 2 0 0 1 2-2h4V4a2 2 0 0 1 2-2z';
     case 'Condition':
+      // Three-way branch: longer stems, up / left / right
+      return 'M12 18V3m0 0l-2.4 2.8M12 3l2.4 2.8M12 10H3m0 0l2.6-2.2M3 10l2.6 2.2M12 10h9m0 0l-2.6-2.2M21 10l-2.6 2.2';
     case 'Decision':
-      return 'M12 2l10 10-10 10L2 12 12 2zm0 4.8L6.8 12 12 17.2 17.2 12 12 6.8z';
+      return 'M4 12h8l6-6M12 12l6 6M18 6l-2.8.3M18 6l.3 2.8M18 18l-2.8-.3M18 18l.3-2.8';
+    case 'Repeater':
+      // Dual CW sync arrows with horizontal tips (matches canvas Repeater glyph)
+      return 'M5 15.5a7 7 0 0 1 11-4.2M14.2 9.5l4.2 1.8-4.2 1.8M19 8.5a7 7 0 0 1-11 4.2M9.8 14.5l-4.2-1.8 4.2-1.8';
     case 'Delay':
       return 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5.2l3.5 2.1-1 1.6L11 13V7h2z';
     case 'Notification':

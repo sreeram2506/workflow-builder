@@ -21,8 +21,8 @@ describe('App', () => {
 
   it('initializes and renders seeded canvas nodes', () => {
     expect(facade.workflowName()).toBe('Sample Automation');
-    expect(facade.nodeCount()).toBe(5);
-    expect(facade.edgeCount()).toBe(4);
+    expect(facade.nodeCount()).toBe(7);
+    expect(facade.edgeCount()).toBe(6);
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Drafts /');
     expect(text).toContain('Sample Automation');
@@ -32,7 +32,7 @@ describe('App', () => {
     expect(text).toContain('Search nodes');
     // Catalog items (click-to-add targets)
     expect(text).toContain('Initiate workflows');
-    expect(text).toContain('AI Agent');
+    expect(text).toContain('Blank Agent');
     expect(text).not.toContain('Canvas engine in Phase 2');
   });
 

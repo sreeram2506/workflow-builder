@@ -22,9 +22,16 @@ export interface PaletteCategory {
 
 export const PALETTE_CATEGORIES: readonly PaletteCategory[] = [
   { id: 'flow', label: 'Flow' },
-  { id: 'logic', label: 'Logic' },
   { id: 'integration', label: 'Integration' },
   { id: 'ai', label: 'AI' },
+] as const;
+
+/** Shown in the featured shapes / Blank Agent strip (not in category lists). */
+export const FEATURED_PALETTE_TYPES: readonly NodeType[] = [
+  'Condition',
+  'Decision',
+  'Repeater',
+  'AIAgent',
 ] as const;
 
 export const PALETTE_ITEMS: readonly PaletteItem[] = [
@@ -66,8 +73,15 @@ export const PALETTE_ITEMS: readonly PaletteItem[] = [
   {
     key: 'Decision',
     type: 'Decision',
-    label: 'Router / Decision',
+    label: 'Router',
     description: 'Route the workflow',
+    categoryId: 'logic',
+  },
+  {
+    key: 'Repeater',
+    type: 'Repeater',
+    label: 'Repeater',
+    description: 'Repeat a section of the workflow',
     categoryId: 'logic',
   },
   {
@@ -80,7 +94,7 @@ export const PALETTE_ITEMS: readonly PaletteItem[] = [
   {
     key: 'AIAgent',
     type: 'AIAgent',
-    label: 'AI Agent',
+    label: 'Blank Agent',
     description: 'Run an AI-assisted step',
     categoryId: 'ai',
   },

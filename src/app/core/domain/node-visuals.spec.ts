@@ -9,15 +9,25 @@ describe('node-visuals', () => {
     expect(initialsFromLabel('  ')).toBe('?');
   });
 
-  it('isLogicNodeType marks Condition and Decision', () => {
+  it('isLogicNodeType marks Condition, Decision (Router), and Repeater', () => {
     expect(isLogicNodeType('Condition')).toBe(true);
     expect(isLogicNodeType('Decision')).toBe(true);
+    expect(isLogicNodeType('Repeater')).toBe(true);
     expect(isLogicNodeType('Action')).toBe(false);
   });
 
   it('iconPathForType returns non-empty paths', () => {
-    for (const t of ['Trigger', 'Action', 'Condition', 'Decision', 'Delay', 'End'] as const) {
+    for (const t of [
+      'Trigger',
+      'Action',
+      'Condition',
+      'Decision',
+      'Repeater',
+      'Delay',
+      'End',
+    ] as const) {
       expect(iconPathForType(t).length).toBeGreaterThan(10);
     }
   });
 });
+

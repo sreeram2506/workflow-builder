@@ -61,6 +61,7 @@ describe('workflow.serialize', () => {
         'Delay',
         'End',
         'Decision',
+        'Repeater',
         'Notification',
         'AIAgent',
       ),

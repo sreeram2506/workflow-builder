@@ -5,6 +5,7 @@ export type NodeType =
   | 'Delay'
   | 'End'
   | 'Decision'
+  | 'Repeater'
   | 'Notification'
   | 'AIAgent';
 
@@ -23,6 +24,7 @@ export const ALLOWED_NODE_TYPES: readonly NodeType[] = [
   'Delay',
   'End',
   'Decision',
+  'Repeater',
   'Notification',
   'AIAgent',
 ] as const;

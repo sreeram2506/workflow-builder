@@ -29,7 +29,16 @@
 
 ## Current Status
 - **Workflow**: Complete for planned units U1–U8
-- **Post-ops polish**: More Changes R23 — awaiting clarification answers
-- **Next**: Answer `aidlc-docs/inception/plans/more-changes-r23-clarification-questions.md`
+- **Post-ops polish**: More Changes R50 — Blank Agent under shapes row; Logic section removed
+- **Next**: Request Changes or Done after hard-refresh verify
+
+
+
+
+
+
+
+
+
 - **App verify**: `npm start` / `npm test` / `npm run build`
 - **Ops doc**: `aidlc-docs/operations/operations-placeholder.md`

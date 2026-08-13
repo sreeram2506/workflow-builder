@@ -4,8 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime } from 'rxjs';
 import { EnsoTaskCatalogService } from '../../core/data/enso-task-catalog.service';
-import { iconPathForType } from '../../core/domain/node-visuals';
 import {
+  accentTokenForType,
+  iconPathForType,
+  logicShapeKind,
+} from '../../core/domain/node-visuals';
+import type { NodeType } from '../../core/domain/workflow.models';
+import {
+  FEATURED_PALETTE_TYPES,
   PALETTE_CATEGORIES,
   PALETTE_ITEMS,
   filterPaletteItems,
@@ -62,6 +68,129 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
             }
             @if (catalogLoading()) {
               <p class="catalog-banner" role="status">Loading tasks…</p>
+            }
+
+            <div class="logic-shapes-row" role="list" aria-label="Logic shapes">
+              @for (item of logicShapeItems(); track item.key) {
+                <button
+                  type="button"
+                  class="logic-shape-btn"
+                  role="listitem"
+                  cdkDrag
+                  [cdkDragData]="item.key"
+                  (cdkDragStarted)="onDragStarted()"
+                  (cdkDragEnded)="onDragEnded($event, item)"
+                  (click)="onItemActivate(item, $event)"
+                  [attr.aria-label]="'Add ' + item.label + ' node'"
+                  [style.--accent]="accentFor(item.type)"
+                  [title]="item.label"
+                >
+                  @if (shapeKind(item.type); as kind) {
+                    <svg class="shape-preview" viewBox="0 0 100 100" width="40" height="40">
+                      @switch (kind) {
+                        @case ('rhombus') {
+                          <polygon
+                            class="preview-fill"
+                            points="50,6 94,50 50,94 6,50"
+                            stroke-linejoin="round"
+                          />
+                          <g
+                            class="preview-glyph"
+                            transform="translate(50 50)"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M0 10 L0 -17" />
+                            <path d="M0 -17 l-3.6 4.2 M0 -17 l3.6 4.2" />
+                            <path d="M0 0 L-17 0" />
+                            <path d="M-17 0 l4.2 -3.2 M-17 0 l4.2 3.2" />
+                            <path d="M0 0 L17 0" />
+                            <path d="M17 0 l-4.2 -3.2 M17 0 l-4.2 3.2" />
+                          </g>
+                        }
+                        @case ('router') {
+                          <polygon
+                            class="preview-fill"
+                            points="18,8 82,8 96,50 82,92 18,92 4,50"
+                            stroke-linejoin="round"
+                          />
+                          <g
+                            class="preview-glyph"
+                            transform="translate(50 50) scale(1.05)"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M-12 0 H2" />
+                            <path d="M2 0 L14 -12" />
+                            <path d="M2 0 L14 12" />
+                            <path d="M14 -12 l-4.2 0.5 M14 -12 l0.3 4.2" />
+                            <path d="M14 12 l-4.2 -0.5 M14 12 l0.3 -4.2" />
+                          </g>
+                        }
+                        @case ('repeater') {
+                          <rect
+                            class="preview-fill"
+                            x="4"
+                            y="4"
+                            width="92"
+                            height="92"
+                            rx="20"
+                            ry="20"
+                          />
+                          <g
+                            class="preview-glyph"
+                            transform="translate(50 50) scale(1.05)"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
+                            <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
+                            <g transform="rotate(180)">
+                              <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
+                              <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
+                            </g>
+                          </g>
+                        }
+                      }
+                    </svg>
+                  }
+                  <span class="logic-shape-label">{{ item.label }}</span>
+                </button>
+              }
+            </div>
+
+            @if (blankAgentItem(); as agent) {
+              <div
+                class="blank-agent-card"
+                role="listitem"
+                tabindex="0"
+                cdkDrag
+                [cdkDragData]="agent.key"
+                (cdkDragStarted)="onDragStarted()"
+                (cdkDragEnded)="onDragEnded($event, agent)"
+                (click)="onItemActivate(agent, $event)"
+                (keydown)="onItemKeydown(agent, $event)"
+                [attr.aria-label]="'Add ' + agent.label + ' node'"
+              >
+                <div class="node-icon" data-icon="AIAgent" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path [attr.d]="iconPath(agent.type)" />
+                  </svg>
+                </div>
+                <div class="node-text">
+                  <div class="node-title">{{ agent.label }}</div>
+                  <div class="node-desc">{{ agent.description }}</div>
+                </div>
+              </div>
             }
 
             <div class="search-row">
@@ -247,6 +376,71 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       flex-direction: column;
       padding: 1.25rem 1rem 0;
       box-sizing: border-box;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+    .logic-shapes-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.4rem;
+      margin: 0 0 0.75rem;
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .logic-shape-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0.4rem 0.2rem 0.35rem;
+      border: 1px solid var(--wb-border);
+      border-radius: 10px;
+      background: var(--wb-bg-elevated);
+      color: var(--accent, var(--wb-accent));
+      cursor: grab;
+      box-sizing: border-box;
+    }
+    .logic-shape-btn:hover {
+      border-color: var(--wb-accent);
+    }
+    .logic-shape-btn:focus-visible {
+      outline: 2px solid var(--wb-accent);
+      outline-offset: 2px;
+    }
+    .logic-shape-label {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--wb-text);
+      line-height: 1.2;
+    }
+    .blank-agent-card {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+      padding: 0.65rem 0.7rem;
+      margin: 0 0 0.75rem;
+      border: 1px solid var(--wb-border);
+      border-radius: 10px;
+      background: var(--wb-bg-elevated);
+      flex-shrink: 0;
+      cursor: grab;
+      outline: none;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .blank-agent-card:focus-visible {
+      border-color: var(--wb-accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--wb-accent) 35%, transparent);
     }
     .catalog-banner {
       margin: 0 0 0.5rem;
@@ -272,8 +466,17 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
     }
     .library-list {
-      flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0.25rem 0 0.5rem;
-      display: flex; flex-direction: column; gap: 0.35rem;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 0.25rem 0 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .category-toggle {
       display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0.35rem 0.15rem;
@@ -285,9 +488,19 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
     .cat-count { margin-left: auto; opacity: 0.7; font-weight: 600; }
     .category-items { display: flex; flex-direction: column; gap: 0.55rem; padding-bottom: 0.35rem; }
     .node-card {
-      display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.65rem 0.7rem;
-      border: 1px solid var(--wb-border); border-radius: 10px; background: var(--wb-bg-elevated);
-      flex-shrink: 0; cursor: grab; outline: none;
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+      padding: 0.65rem 0.7rem;
+      border: 1px solid var(--wb-border);
+      border-radius: 10px;
+      background: var(--wb-bg-elevated);
+      flex-shrink: 0;
+      cursor: grab;
+      outline: none;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .node-card:focus-visible {
       border-color: var(--wb-accent);
@@ -297,8 +510,38 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       width: 36px; height: 36px; border-radius: 8px; background: var(--wb-icon-well);
       color: var(--wb-accent); display: grid; place-items: center; flex-shrink: 0;
     }
-    .node-title { font-weight: 700; font-size: 0.92rem; line-height: 1.2; }
-    .node-desc { margin-top: 0.15rem; font-size: 0.78rem; color: var(--wb-text-muted); line-height: 1.35; }
+    .shape-preview {
+      display: block;
+      overflow: visible;
+      flex-shrink: 0;
+    }
+    .preview-fill {
+      fill: var(--wb-bg-elevated);
+      stroke: var(--wb-border);
+      stroke-width: 4;
+    }
+    .preview-glyph {
+      color: var(--accent, var(--wb-accent));
+    }
+    .node-text { min-width: 0; flex: 1 1 auto; }
+    .node-title {
+      font-weight: 700;
+      font-size: 0.92rem;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .node-desc {
+      margin-top: 0.15rem;
+      font-size: 0.78rem;
+      color: var(--wb-text-muted);
+      line-height: 1.35;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
     .empty-hint { margin: 0.75rem 0.25rem; font-size: 0.82rem; color: var(--wb-text-muted); }
     .library-footer {
       padding: 1.25rem 1rem 0;
@@ -350,7 +593,7 @@ export class LeftSidebarComponent {
       .subscribe((result) => {
         this.catalogLoading.set(false);
         this.catalogError.set(result.error);
-        this.categories.set(result.categories);
+        this.categories.set(result.categories.filter((c) => c.id !== 'logic'));
         this.allItems.set(result.items);
         this.filteredItems.set(filterPaletteItems(result.items, this.debouncedQuery()));
         const collapsed: Record<string, boolean> = {};
@@ -372,11 +615,35 @@ export class LeftSidebarComponent {
   }
 
   itemsForCategory(id: PaletteCategoryId): PaletteItem[] {
-    return this.filteredItems().filter((i) => i.categoryId === id);
+    const featured = new Set<string>(FEATURED_PALETTE_TYPES);
+    return this.filteredItems().filter(
+      (i) => i.categoryId === id && !featured.has(i.type) && i.categoryId !== 'logic',
+    );
   }
 
   iconPath(type: PaletteItem['type']): string {
     return iconPathForType(type);
+  }
+
+  shapeKind(type: NodeType) {
+    return logicShapeKind(type);
+  }
+
+  accentFor(type: NodeType): string {
+    return accentTokenForType(type);
+  }
+
+  /** Condition / Router / Repeater — featured row above search. */
+  logicShapeItems(): PaletteItem[] {
+    const order: NodeType[] = ['Condition', 'Decision', 'Repeater'];
+    return order
+      .map((t) => this.filteredItems().find((i) => i.type === t))
+      .filter((i): i is PaletteItem => !!i);
+  }
+
+  /** Blank Agent — directly under the logic shapes row. */
+  blankAgentItem(): PaletteItem | undefined {
+    return this.filteredItems().find((i) => i.type === 'AIAgent');
   }
 
   isCollapsed(id: PaletteCategoryId): boolean {

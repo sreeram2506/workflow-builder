@@ -6,6 +6,8 @@ export const ZOOM_STEP = 0.1;
 
 export const NODE_CARD_WIDTH = 220;
 export const NODE_CARD_HEIGHT = 72;
+/** Square bounding box for Condition / Router / Repeater SVG shapes. */
+export const LOGIC_NODE_SIZE = 96;
 
 export interface Point {
   x: number;

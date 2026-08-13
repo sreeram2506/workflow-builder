@@ -26,7 +26,7 @@ F) Something else
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: can you change router , condition , repeater to updated workflow svgs instead of rectangle shape cards which looks good with our project
 
 ---
 
@@ -40,7 +40,7 @@ C) Full AI-DLC stages
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 
@@ -54,7 +54,7 @@ C) You will order them in freeform (1 = first)
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ---
 

@@ -66,6 +66,7 @@ export const NODE_TYPE_SCHEMAS: Readonly<Record<NodeType, NodeTypeSchema>> = {
   Delay: schemaFor('Delay'),
   End: schemaFor('End'),
   Decision: schemaFor('Decision'),
+  Repeater: schemaFor('Repeater'),
   Notification: schemaFor('Notification'),
   AIAgent: schemaFor('AIAgent'),
 };

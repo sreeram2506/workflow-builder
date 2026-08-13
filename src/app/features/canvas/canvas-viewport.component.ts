@@ -13,9 +13,8 @@ import {
   resolveConnection,
   validateConnection,
 } from '../../core/domain/connection.math';
+import { nodeSizeForType } from '../../core/domain/node-visuals';
 import {
-  NODE_CARD_HEIGHT,
-  NODE_CARD_WIDTH,
   nodeBounds,
   normalizeRect,
   portOnSide,
@@ -423,7 +422,8 @@ export class CanvasViewportComponent implements AfterViewInit {
           if (hover && valid) {
             const tgt = this.facade.nodes().find((n) => n.id === hover.id);
             if (tgt) {
-              pointerWorld = portOnSide(tgt.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, hover.side);
+              const size = nodeSizeForType(tgt.type);
+              pointerWorld = portOnSide(tgt.position, size.width, size.height, hover.side);
             }
           }
           this.connectionDraft.set({
@@ -533,9 +533,10 @@ export class CanvasViewportComponent implements AfterViewInit {
         const box = this.marquee()!;
         const hits = this.facade
           .nodes()
-          .filter((n) =>
-            rectsIntersect(box, nodeBounds(n.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT)),
-          )
+          .filter((n) => {
+            const size = nodeSizeForType(n.type);
+            return rectsIntersect(box, nodeBounds(n.position, size.width, size.height));
+          })
           .map((n) => n.id);
         const set = new Set(this.facade.selection().nodeIds);
         for (const id of hits) {

@@ -1,10 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
-import {
-  NODE_CARD_HEIGHT,
-  NODE_CARD_WIDTH,
-  type Rect,
-} from '../../core/domain/viewport.math';
+import { nodeSizeForType } from '../../core/domain/node-visuals';
+import { type Rect } from '../../core/domain/viewport.math';
 
 @Component({
   selector: 'wb-minimap',
@@ -26,8 +23,8 @@ import {
             class="node"
             [attr.x]="n.position.x"
             [attr.y]="n.position.y"
-            [attr.width]="cardW"
-            [attr.height]="cardH"
+            [attr.width]="sizeFor(n.type).width"
+            [attr.height]="sizeFor(n.type).height"
           />
         }
         <rect
@@ -75,10 +72,11 @@ export class MinimapComponent {
   readonly viewWidth = input(800);
   readonly viewHeight = input(600);
 
-  readonly cardW = NODE_CARD_WIDTH;
-  readonly cardH = NODE_CARD_HEIGHT;
-
   private dragging = false;
+
+  sizeFor(type: Parameters<typeof nodeSizeForType>[0]): { width: number; height: number } {
+    return nodeSizeForType(type);
+  }
 
   readonly contentBounds = computed((): Rect => {
     const nodes = this.facade.nodes();
@@ -90,10 +88,11 @@ export class MinimapComponent {
     let maxX = -Infinity;
     let maxY = -Infinity;
     for (const n of nodes) {
+      const size = nodeSizeForType(n.type);
       minX = Math.min(minX, n.position.x);
       minY = Math.min(minY, n.position.y);
-      maxX = Math.max(maxX, n.position.x + NODE_CARD_WIDTH);
-      maxY = Math.max(maxY, n.position.y + NODE_CARD_HEIGHT);
+      maxX = Math.max(maxX, n.position.x + size.width);
+      maxY = Math.max(maxY, n.position.y + size.height);
     }
     const pad = 40;
     return {

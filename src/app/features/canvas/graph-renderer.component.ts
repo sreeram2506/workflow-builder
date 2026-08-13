@@ -3,10 +3,9 @@ import {
   edgePathThroughWaypoints,
   edgeRenderPoints,
 } from '../../core/domain/connection.math';
+import { nodeSizeForType } from '../../core/domain/node-visuals';
 import type { WorkflowEdge, WorkflowNode } from '../../core/domain/workflow.models';
 import {
-  NODE_CARD_HEIGHT,
-  NODE_CARD_WIDTH,
   portOnSide,
   smoothEdgePath,
   type Point,
@@ -187,7 +186,8 @@ export class GraphRendererComponent {
     if (!src) {
       return null;
     }
-    const a = portOnSide(src.position, NODE_CARD_WIDTH, NODE_CARD_HEIGHT, d.sourceSide);
+    const size = nodeSizeForType(src.type);
+    const a = portOnSide(src.position, size.width, size.height, d.sourceSide);
     return smoothEdgePath(a, d.pointerWorld);
   });
 
