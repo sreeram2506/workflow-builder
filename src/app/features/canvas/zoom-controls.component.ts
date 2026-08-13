@@ -17,10 +17,20 @@ import type { LayoutMode } from '../../core/domain/layout.math';
           aria-label="Undo"
           title="Undo"
         >
-          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-            <path
-              d="M224,128a96,96,0,0,1-94.71,96H128a8,8,0,0,1,0-16h1.21A80,80,0,1,0,66.34,66.34a8,8,0,0,1-11.31-11.32A96,96,0,0,1,224,128Zm-32.49-47.51a8,8,0,0,0-11.32,0L160,93.66V72a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8h40a8,8,0,0,0,0-16H171.31l20.2-20.19A8,8,0,0,0,191.51,80.49Z"
-            />
+          <!-- Curved U-turn undo (reference screenshot) -->
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 8h11a5 5 0 1 1 0 10H9" />
+            <path d="M7 4 3 8l4 4" />
           </svg>
         </button>
         <button
@@ -31,10 +41,20 @@ import type { LayoutMode } from '../../core/domain/layout.math';
           aria-label="Redo"
           title="Redo"
         >
-          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-            <path
-              d="M32,128a96,96,0,0,0,94.71,96H128a8,8,0,0,0,0-16h-1.21A80,80,0,1,1,189.66,66.34a8,8,0,0,0,11.31-11.32A96,96,0,0,0,32,128Zm32.49-47.51a8,8,0,0,1,11.32,0L96,93.66V72a8,8,0,0,1,16,0v40a8,8,0,0,1-8,8H64a8,8,0,0,1,0-16H84.69L64.49,83.81A8,8,0,0,1,64.49,80.49Z"
-            />
+          <!-- Curved U-turn redo (mirror of undo) -->
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M21 8H10a5 5 0 1 0 0 10h4" />
+            <path d="M17 4l4 4-4 4" />
           </svg>
         </button>
       </div>

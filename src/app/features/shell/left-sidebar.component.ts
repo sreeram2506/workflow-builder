@@ -25,227 +25,231 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
   standalone: true,
   imports: [FormsModule, CdkDropList, CdkDrag],
   template: `
-    <div class="nodes-library-root" [class.is-collapsed]="collapsed()">
-      <button
-        type="button"
-        class="library-chip"
-        (click)="collapsedChange.emit(false)"
-        aria-label="Open Nodes Library"
-        [attr.tabindex]="collapsed() ? 0 : -1"
-        [attr.aria-hidden]="!collapsed()"
-      >
-        <span class="chip-label">Nodes Library</span>
-      </button>
-
-      <aside class="library-panel" aria-label="Nodes Library" [attr.aria-hidden]="collapsed()">
+    <div class="nodes-library-root" [class.is-collapsed]="collapsed()" data-testid="nodes-library-root">
+      <aside class="library-panel" aria-label="Nodes Library">
         <header class="library-header">
           <h2>Nodes Library</h2>
           <button
             type="button"
-            class="icon-btn"
-            (click)="collapsedChange.emit(true)"
-            aria-label="Collapse Nodes Library"
-            title="Collapse"
-            [attr.tabindex]="collapsed() ? -1 : 0"
+            class="icon-btn header-toggle"
+            (click)="collapsedChange.emit(!collapsed())"
+            [attr.aria-expanded]="!collapsed()"
+            [attr.aria-label]="collapsed() ? 'Expand Nodes Library' : 'Collapse Nodes Library'"
+            title="Toggle Nodes Library"
+            data-testid="nodes-library-chip"
           >
-            ×
+            <svg class="chip-icon" viewBox="3 4 18 16" aria-hidden="true" focusable="false">
+              <rect
+                x="3.5"
+                y="4.5"
+                width="17"
+                height="15"
+                rx="2.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path fill="none" stroke="currentColor" stroke-width="1.5" d="M9.5 4.5V19.5" />
+            </svg>
           </button>
         </header>
 
-        @if (catalogError()) {
-          <p class="catalog-banner" role="status">{{ catalogError() }}</p>
-        }
-        @if (catalogLoading()) {
-          <p class="catalog-banner" role="status">Loading tasks…</p>
-        }
+        @if (!collapsed()) {
+          <hr class="panel-rule" />
+          <div class="library-body">
+            @if (catalogError()) {
+              <p class="catalog-banner" role="status">{{ catalogError() }}</p>
+            }
+            @if (catalogLoading()) {
+              <p class="catalog-banner" role="status">Loading tasks…</p>
+            }
 
-        <div class="search-row">
-          <label class="sr-only" for="palette-search">Search nodes</label>
-          <input
-            id="palette-search"
-            type="search"
-            class="search-input"
-            placeholder="Search nodes…"
-            [ngModel]="searchInput()"
-            (ngModelChange)="onSearchInput($event)"
-            autocomplete="off"
-          />
-          @if (searchInput()) {
-            <button type="button" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">
-              Clear
-            </button>
-          }
-        </div>
+            <div class="search-row">
+              <label class="sr-only" for="palette-search">Search nodes</label>
+              <input
+                id="palette-search"
+                type="search"
+                class="search-input"
+                placeholder="Search nodes…"
+                [ngModel]="searchInput()"
+                (ngModelChange)="onSearchInput($event)"
+                autocomplete="off"
+              />
+              @if (searchInput()) {
+                <button type="button" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">
+                  Clear
+                </button>
+              }
+            </div>
 
-        <div
-          class="library-list"
-          role="list"
-          cdkDropList
-          [id]="paletteListId"
-          [cdkDropListData]="dragProxy"
-          [cdkDropListSortingDisabled]="true"
-          [cdkDropListEnterPredicate]="rejectEnter"
-        >
-          @for (cat of categories(); track cat.id) {
-            @if (itemsForCategory(cat.id); as catItems) {
-              @if (catItems.length > 0) {
-                <section class="category">
-                  <button
-                    type="button"
-                    class="category-toggle"
-                    [attr.aria-expanded]="!isCollapsed(cat.id)"
-                    (click)="toggleCategory(cat.id)"
-                  >
-                    <span class="chevron" [class.collapsed]="isCollapsed(cat.id)" aria-hidden="true">▾</span>
-                    {{ cat.label }}
-                    <span class="cat-count">{{ catItems.length }}</span>
-                  </button>
-                  @if (!isCollapsed(cat.id)) {
-                    <div class="category-items">
-                      @for (item of catItems; track item.key) {
-                        <div
-                          class="node-card"
-                          role="listitem"
-                          tabindex="0"
-                          cdkDrag
-                          [cdkDragData]="item.key"
-                          (cdkDragStarted)="onDragStarted()"
-                          (cdkDragEnded)="onDragEnded($event, item)"
-                          (click)="onItemActivate(item, $event)"
-                          (keydown)="onItemKeydown(item, $event)"
-                          [attr.aria-label]="'Add ' + item.label + ' node'"
-                        >
-                          <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                              <path [attr.d]="iconPath(item.type)" />
-                            </svg>
-                          </div>
-                          <div class="node-text">
-                            <div class="node-title">{{ item.label }}</div>
-                            <div class="node-desc">{{ item.description }}</div>
-                          </div>
+            <div
+              class="library-list"
+              role="list"
+              cdkDropList
+              [id]="paletteListId"
+              [cdkDropListData]="dragProxy"
+              [cdkDropListSortingDisabled]="true"
+              [cdkDropListEnterPredicate]="rejectEnter"
+            >
+              @for (cat of categories(); track cat.id) {
+                @if (itemsForCategory(cat.id); as catItems) {
+                  @if (catItems.length > 0) {
+                    <section class="category">
+                      <button
+                        type="button"
+                        class="category-toggle"
+                        [attr.aria-expanded]="!isCollapsed(cat.id)"
+                        (click)="toggleCategory(cat.id)"
+                      >
+                        <span class="chevron" [class.collapsed]="isCollapsed(cat.id)" aria-hidden="true">▾</span>
+                        {{ cat.label }}
+                        <span class="cat-count">{{ catItems.length }}</span>
+                      </button>
+                      @if (!isCollapsed(cat.id)) {
+                        <div class="category-items">
+                          @for (item of catItems; track item.key) {
+                            <div
+                              class="node-card"
+                              role="listitem"
+                              tabindex="0"
+                              cdkDrag
+                              [cdkDragData]="item.key"
+                              (cdkDragStarted)="onDragStarted()"
+                              (cdkDragEnded)="onDragEnded($event, item)"
+                              (click)="onItemActivate(item, $event)"
+                              (keydown)="onItemKeydown(item, $event)"
+                              [attr.aria-label]="'Add ' + item.label + ' node'"
+                            >
+                              <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                  <path [attr.d]="iconPath(item.type)" />
+                                </svg>
+                              </div>
+                              <div class="node-text">
+                                <div class="node-title">{{ item.label }}</div>
+                                <div class="node-desc">{{ item.description }}</div>
+                              </div>
+                            </div>
+                          }
                         </div>
                       }
-                    </div>
+                    </section>
                   }
-                </section>
+                }
               }
-            }
-          }
-          @if (filteredItems().length === 0 && !catalogLoading()) {
-            <p class="empty-hint">No nodes match “{{ debouncedQuery() }}”.</p>
-          }
-        </div>
-
-        <footer class="library-footer">
-          <button
-            type="button"
-            class="templates-btn"
-            disabled
-            title="Coming in later phase"
-            aria-label="Templates (coming later)"
-          >
-            Templates
-          </button>
-        </footer>
+              @if (filteredItems().length === 0 && !catalogLoading()) {
+                <p class="empty-hint">No nodes match “{{ debouncedQuery() }}”.</p>
+              }
+            </div>
+          </div>
+          <hr class="panel-rule" />
+          <footer class="library-footer">
+            <button
+              type="button"
+              class="templates-btn"
+              disabled
+              title="Coming in later phase"
+              aria-label="Templates (coming later)"
+            >
+              Templates
+            </button>
+          </footer>
+        }
       </aside>
     </div>
   `,
   styles: `
+    /* Match app.workflowbuilder.io sidebar: collapsed = min-content/auto; expanded = 100%/fixed width */
     .nodes-library-root {
-      --wb-lib-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --wb-lib-duration: 280ms;
       position: absolute;
       top: 88px;
       left: 16px;
       bottom: 16px;
       z-index: 5;
+      width: auto;
+      pointer-events: none;
+    }
+    .nodes-library-root:not(.is-collapsed) {
       width: 280px;
       max-width: min(300px, calc(100% - 32px));
-      pointer-events: none;
     }
     .nodes-library-root.is-collapsed {
-      width: max-content;
-    }
-    .library-chip {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.55rem 0.9rem;
-      border: 1px solid var(--wb-border);
-      border-radius: 10px;
-      background: var(--wb-bg-elevated);
-      color: var(--wb-text);
-      box-shadow: var(--wb-shadow-soft);
-      cursor: pointer;
-      font-weight: 600;
-      pointer-events: all;
-      opacity: 0;
-      transform: translateX(-8px);
-      transition:
-        opacity 160ms ease,
-        transform var(--wb-lib-duration) var(--wb-lib-ease);
-      z-index: 1;
-    }
-    .nodes-library-root.is-collapsed .library-chip {
-      opacity: 1;
-      transform: translateX(0);
-      transition-delay: 90ms;
-    }
-    .nodes-library-root:not(.is-collapsed) .library-chip {
-      pointer-events: none;
-      transition-delay: 0ms;
+      bottom: auto;
     }
     .library-panel {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 280px;
-      max-width: 100%;
       display: flex;
       flex-direction: column;
+      align-items: stretch;
+      height: min-content;
+      width: auto;
+      box-sizing: border-box;
       background: var(--wb-bg-elevated);
       border: 1px solid var(--wb-border);
       border-radius: 12px;
       box-shadow: var(--wb-shadow-soft);
       overflow: hidden;
       pointer-events: all;
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-      transition:
-        transform var(--wb-lib-duration) var(--wb-lib-ease),
-        opacity 180ms ease;
-      will-change: transform;
+      padding: 0.75rem 0;
     }
-    .nodes-library-root.is-collapsed .library-panel {
-      transform: translate3d(calc(-100% - 20px), 0, 0);
-      opacity: 0;
-      pointer-events: none;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .library-chip,
-      .library-panel {
-        transition: none;
-      }
+    .nodes-library-root:not(.is-collapsed) .library-panel {
+      height: 100%;
+      width: 100%;
     }
     .library-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.85rem 0.9rem 0.65rem;
+      gap: 0.75rem;
+      padding: 0 1rem;
+      flex-shrink: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .panel-rule {
+      margin: 1.25rem 0 0;
+      border: none;
+      border-top: 1px solid var(--wb-border);
+      width: 100%;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .chip-icon {
+      width: 14px;
+      height: 14px;
+      display: block;
+      color: var(--wb-text);
+    }
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--wb-text);
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      padding: 0;
       flex-shrink: 0;
     }
-    h2 { margin: 0; font-size: 1rem; font-weight: 700; }
-    .icon-btn {
-      width: 28px; height: 28px; border: 1px solid var(--wb-border);
-      border-radius: 6px; background: transparent; color: var(--wb-text); cursor: pointer;
+    .icon-btn.header-toggle:hover {
+      border-color: var(--wb-border);
+    }
+    .library-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem 1rem 0;
+      box-sizing: border-box;
     }
     .catalog-banner {
-      margin: 0 0.75rem 0.5rem;
+      margin: 0 0 0.5rem;
       padding: 0.45rem 0.55rem;
       border-radius: 8px;
       border: 1px solid var(--wb-border);
@@ -254,7 +258,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       font-size: 0.72rem;
       line-height: 1.35;
     }
-    .search-row { display: flex; gap: 0.4rem; padding: 0 0.75rem 0.65rem; flex-shrink: 0; }
+    .search-row { display: flex; gap: 0.4rem; padding: 0 0 0.65rem; flex-shrink: 0; }
     .search-input {
       flex: 1; min-width: 0; padding: 0.45rem 0.6rem; border: 1px solid var(--wb-border);
       border-radius: 8px; background: var(--wb-bg-canvas); color: var(--wb-text); font-size: 0.85rem;
@@ -268,7 +272,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
     }
     .library-list {
-      flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0.25rem 0.75rem 0.5rem;
+      flex: 1 1 auto; min-height: 0; overflow: auto; padding: 0.25rem 0 0.5rem;
       display: flex; flex-direction: column; gap: 0.35rem;
     }
     .category-toggle {
@@ -296,7 +300,11 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
     .node-title { font-weight: 700; font-size: 0.92rem; line-height: 1.2; }
     .node-desc { margin-top: 0.15rem; font-size: 0.78rem; color: var(--wb-text-muted); line-height: 1.35; }
     .empty-hint { margin: 0.75rem 0.25rem; font-size: 0.82rem; color: var(--wb-text-muted); }
-    .library-footer { padding: 0.65rem 0.75rem 0.85rem; flex-shrink: 0; border-top: 1px solid var(--wb-border); }
+    .library-footer {
+      padding: 1.25rem 1rem 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
     .templates-btn {
       width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--wb-border); border-radius: 10px;
       background: var(--wb-bg-elevated); color: var(--wb-text-muted); font-weight: 600; cursor: not-allowed;

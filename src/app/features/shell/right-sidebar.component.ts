@@ -42,67 +42,47 @@ type PanelMode = 'empty' | 'node' | 'edge';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="properties-root" [class.is-collapsed]="collapsed()">
-      <button
-        type="button"
-        class="properties-chip"
-        (click)="collapsedChange.emit(false)"
-        aria-label="Open Properties"
-        [attr.tabindex]="collapsed() ? 0 : -1"
-        [attr.aria-hidden]="!collapsed()"
-      >
-        <span>Properties</span>
-        <span class="chip-icon" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1.5" y="1.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.4" />
-            <path d="M5.5 2v12" stroke="currentColor" stroke-width="1.4" />
-          </svg>
-        </span>
-      </button>
-
-      <aside
-        class="properties-panel"
-        aria-label="Properties"
-        [attr.aria-hidden]="collapsed()"
-      >
-          <header class="properties-header">
-            <div>
-              <h2>Properties</h2>
+    <div class="properties-root" [class.is-collapsed]="collapsed()" data-testid="properties-root">
+      <aside class="properties-panel" aria-label="Properties">
+        <header class="properties-header">
+          <button
+            type="button"
+            class="icon-btn header-toggle"
+            (click)="collapsedChange.emit(!collapsed())"
+            [attr.aria-expanded]="!collapsed()"
+            [attr.aria-label]="collapsed() ? 'Expand Properties' : 'Collapse Properties'"
+            title="Toggle Properties"
+          >
+            <svg class="chip-icon" viewBox="1 1 14 14" fill="none" aria-hidden="true">
+              <rect x="1.5" y="1.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.4" />
+              <path d="M10.5 2v12" stroke="currentColor" stroke-width="1.4" />
+            </svg>
+          </button>
+          <div class="header-title">
+            <h2>Properties</h2>
+            @if (!collapsed()) {
               <p class="subtitle">{{ headerSubtitle }}</p>
-            </div>
-            <div class="header-actions">
-              @if (mode !== 'empty' && facade.editorMode() === 'edit') {
-                <button
-                  type="button"
-                  class="icon-btn danger"
-                  (click)="onDelete()"
-                  aria-label="Delete selected"
-                  title="Delete"
-                  [attr.tabindex]="collapsed() ? -1 : 0"
-                >
-                  <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-                    <path
-                      d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"
-                    />
-                  </svg>
-                </button>
-              }
-              <button
-                type="button"
-                class="icon-btn"
-                (click)="collapsedChange.emit(true)"
-                aria-label="Collapse Properties"
-                title="Collapse"
-                [attr.tabindex]="collapsed() ? -1 : 0"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="1.5" y="1.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.4" />
-                  <path d="M5.5 2v12" stroke="currentColor" stroke-width="1.4" />
-                </svg>
-              </button>
-            </div>
-          </header>
+            }
+          </div>
+          @if (!collapsed() && mode !== 'empty' && facade.editorMode() === 'edit') {
+            <button
+              type="button"
+              class="icon-btn danger"
+              (click)="onDelete()"
+              aria-label="Delete selected"
+              title="Delete"
+            >
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"
+                />
+              </svg>
+            </button>
+          }
+        </header>
 
+        @if (!collapsed()) {
+          <hr class="panel-rule" />
           <div class="properties-body">
             @if (mode === 'empty' || !form) {
               <p class="empty">Select a node or connection to edit properties.</p>
@@ -208,116 +188,92 @@ type PanelMode = 'empty' | 'node' | 'edge';
               </form>
             }
           </div>
+        }
       </aside>
     </div>
   `,
   styles: `
+    /* Match app.workflowbuilder.io sidebar: collapsed = min-content/auto; expanded = 100%/fixed width */
     .properties-root {
-      --wb-props-ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --wb-props-duration: 280ms;
       position: absolute;
       top: 88px;
       right: 16px;
       bottom: 16px;
       z-index: 5;
+      width: auto;
+      pointer-events: none;
+    }
+    .properties-root:not(.is-collapsed) {
       width: 300px;
       max-width: min(320px, calc(100% - 32px));
-      pointer-events: none;
     }
     .properties-root.is-collapsed {
-      width: max-content;
+      bottom: auto;
     }
-    .properties-chip {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.55rem 0.75rem;
-      border: 1px solid var(--wb-border);
-      border-radius: 10px;
-      background: var(--wb-bg-elevated);
-      color: var(--wb-text);
-      box-shadow: var(--wb-shadow-soft);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.92rem;
-      pointer-events: all;
-      opacity: 0;
-      transform: translateX(8px);
-      transition:
-        opacity 160ms ease,
-        transform var(--wb-props-duration) var(--wb-props-ease);
-      z-index: 1;
-    }
-    .properties-root.is-collapsed .properties-chip {
-      opacity: 1;
-      transform: translateX(0);
-      transition-delay: 90ms;
-    }
-    .properties-root:not(.is-collapsed) .properties-chip {
-      pointer-events: none;
-      transition-delay: 0ms;
-    }
-    .chip-icon { display: grid; place-items: center; opacity: 0.85; }
     .properties-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 300px;
-      max-width: 100%;
       display: flex;
       flex-direction: column;
+      align-items: stretch;
+      height: min-content;
+      width: auto;
+      box-sizing: border-box;
       background: var(--wb-bg-elevated);
       border: 1px solid var(--wb-border);
       border-radius: 12px;
       box-shadow: var(--wb-shadow-soft);
       overflow: hidden;
       pointer-events: all;
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-      transition:
-        transform var(--wb-props-duration) var(--wb-props-ease),
-        opacity 180ms ease;
-      will-change: transform;
+      padding: 0.75rem 0;
     }
-    .properties-root.is-collapsed .properties-panel {
-      transform: translate3d(calc(100% + 20px), 0, 0);
-      opacity: 0;
-      pointer-events: none;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .properties-chip,
-      .properties-panel {
-        transition: none;
-      }
+    .properties-root:not(.is-collapsed) .properties-panel {
+      height: 100%;
+      width: 100%;
     }
     .properties-header {
       display: flex;
       justify-content: space-between;
-      gap: 0.75rem;
-      align-items: flex-start;
-      padding: 0.85rem 0.9rem 0.7rem;
-      border-bottom: 1px solid var(--wb-border);
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0 1rem;
       flex-shrink: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .properties-header > div:first-child {
+    .panel-rule {
+      margin: 1.25rem 0 0;
+      border: none;
+      border-top: 1px solid var(--wb-border);
+      width: 100%;
+    }
+    .header-title {
       flex: 1;
       min-width: 0;
     }
-    .header-actions {
-      display: inline-flex;
-      gap: 0.35rem;
-      flex-shrink: 0;
+    .properties-root.is-collapsed .header-title {
+      flex: 0 0 auto;
     }
-    h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .chip-icon {
+      width: 14px;
+      height: 14px;
+      display: block;
+      color: var(--wb-text);
+    }
     .subtitle { margin: 0.2rem 0 0; font-size: 0.75rem; color: var(--wb-text-muted); }
     .icon-btn {
-      width: 28px; height: 28px; display: grid; place-items: center;
-      border: 1px solid var(--wb-border); border-radius: 6px;
+      width: 24px; height: 24px; display: grid; place-items: center;
+      border: 1px solid transparent; border-radius: 6px;
       background: transparent; color: var(--wb-text); cursor: pointer; flex-shrink: 0;
+      padding: 0;
+    }
+    .icon-btn.header-toggle:hover {
+      border-color: var(--wb-border);
     }
     .icon-btn.danger {
       color: var(--wb-danger);
@@ -328,7 +284,8 @@ type PanelMode = 'empty' | 'node' | 'edge';
     }
     .properties-body {
       flex: 1 1 auto; min-height: 0; overflow: auto;
-      padding: 0.75rem 0.9rem 1rem; display: flex; flex-direction: column; gap: 1rem;
+      padding: 1.25rem 1rem 1rem; display: flex; flex-direction: column; gap: 1rem;
+      box-sizing: border-box;
     }
     .empty { margin: 0; font-size: 0.85rem; color: var(--wb-text-muted); line-height: 1.4; }
     .section h3 {

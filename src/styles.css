@@ -13,6 +13,9 @@ body {
 body {
   font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
   background: var(--wb-bg-app);
+  transition:
+    background-color 320ms ease,
+    color 320ms ease;
   color: var(--wb-text);
 }
 

@@ -29,5 +29,7 @@
 
 ## Current Status
 - **Workflow**: Complete for planned units U1–U8
-- **App verify**: `npm start` / `npm test` (66) / `npm run build`
+- **Post-ops polish**: More Changes R23 — awaiting clarification answers
+- **Next**: Answer `aidlc-docs/inception/plans/more-changes-r23-clarification-questions.md`
+- **App verify**: `npm start` / `npm test` / `npm run build`
 - **Ops doc**: `aidlc-docs/operations/operations-placeholder.md`

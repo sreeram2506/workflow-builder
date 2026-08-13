@@ -1,11 +1,12 @@
 import { Component, HostListener, inject, signal, viewChild } from '@angular/core';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { ImportWorkflowDialogComponent } from './import-workflow-dialog.component';
+import { ThemeToggleComponent } from '../theme/theme-toggle.component';
 
 @Component({
   selector: 'wb-top-bar',
   standalone: true,
-  imports: [ImportWorkflowDialogComponent],
+  imports: [ImportWorkflowDialogComponent, ThemeToggleComponent],
   template: `
     <header class="top-bar" role="banner">
       <div class="toolbar">
@@ -39,7 +40,12 @@ import { ImportWorkflowDialogComponent } from './import-workflow-dialog.componen
             title="Export JSON"
             aria-label="Export JSON"
           >
-            Export
+            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+              <path
+                d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM88.69,104.69,120,73.37V176a8,8,0,0,0,16,0V73.37l31.31,31.32a8,8,0,0,0,11.32-11.32l-45-45a8,8,0,0,0-11.32,0l-45,45a8,8,0,0,0,11.32,11.32Z"
+              />
+            </svg>
+            <span>Export</span>
           </button>
           <button
             type="button"
@@ -49,7 +55,12 @@ import { ImportWorkflowDialogComponent } from './import-workflow-dialog.componen
             title="Import JSON"
             aria-label="Import JSON"
           >
-            Import
+            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+              <path
+                d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L95.66,98.34a8,8,0,0,0-11.32,11.32Z"
+              />
+            </svg>
+            <span>Import</span>
           </button>
           @if (facade.runActive()) {
             <button
@@ -102,27 +113,7 @@ import { ImportWorkflowDialogComponent } from './import-workflow-dialog.componen
       </div>
 
       <div class="controls">
-        <button
-          type="button"
-          class="icon-btn"
-          (click)="facade.toggleTheme()"
-          [attr.aria-label]="facade.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
-          [title]="facade.theme() === 'dark' ? 'Light mode' : 'Dark mode'"
-        >
-          @if (facade.theme() === 'dark') {
-            <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-              <path
-                d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66a8,8,0,0,0,11.32-11.32l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM40,120H16a8,8,0,0,0,0,16H40a8,8,0,0,0,0-16Zm88,88a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"
-              />
-            </svg>
-          } @else {
-            <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-              <path
-                d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.09,104.09,0,0,0,114.8,114.8A8,8,0,0,0,233.54,142.23ZM144.15,40.43A88.08,88.08,0,0,0,40.43,144.15,104.11,104.11,0,0,1,144.15,40.43Z"
-              />
-            </svg>
-          }
-        </button>
+        <wb-theme-toggle />
 
         <button
           type="button"
@@ -293,6 +284,10 @@ import { ImportWorkflowDialogComponent } from './import-workflow-dialog.componen
 
     .icon-btn.text-btn {
       width: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0 0.55rem;
     }
 
     .icon-btn:disabled {
