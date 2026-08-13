@@ -29,7 +29,7 @@
 
 ## Current Status
 - **Workflow**: Complete for planned units U1–U8
-- **Post-ops polish**: More Changes R50 — Blank Agent under shapes row; Logic section removed
+- **Post-ops polish**: More Changes R51 — palette drag no longer empties featured library slots
 - **Next**: Request Changes or Done after hard-refresh verify
 
 

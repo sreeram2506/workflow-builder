@@ -79,6 +79,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
               <p class="catalog-banner" role="status">Loading tasks…</p>
             }
 
+            <div class="featured-strip">
             <div class="logic-shapes-row" role="list" aria-label="Logic shapes">
               @for (item of logicShapeItems(); track item.key) {
                 <button
@@ -201,6 +202,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
                 </div>
               </div>
             }
+            </div>
 
             <div class="search-row">
               <label class="sr-only" for="palette-search">Search nodes</label>
@@ -425,6 +427,24 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       overflow-x: hidden;
       overflow-y: hidden;
     }
+    .featured-strip {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    /* Keep library slots occupied while dragging (copy onto canvas, never remove). */
+    .featured-strip .cdk-drag-placeholder,
+    .library-list .cdk-drag-placeholder {
+      opacity: 1;
+      background: transparent;
+      border: 1px dashed var(--wb-border);
+      box-sizing: border-box;
+    }
+    .featured-strip .cdk-drag-animating,
+    .library-list .cdk-drag-animating {
+      transition: none !important;
+    }
     .logic-shapes-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -615,6 +635,7 @@ export class LeftSidebarComponent {
 
   readonly paletteListId = PALETTE_DROP_LIST_ID;
   readonly canvasListId = CANVAS_DROP_LIST_ID;
+  /** Stable empty array so CDK never mutates the real catalog during drag. */
   readonly dragProxy: string[] = [];
   readonly rejectEnter = (): boolean => false;
 
@@ -711,17 +732,17 @@ export class LeftSidebarComponent {
     return accentTokenForType(type);
   }
 
-  /** Condition / Router / Repeater — featured row above search. */
+  /** Condition / Router / Repeater — featured row above search (always from full catalog). */
   logicShapeItems(): PaletteItem[] {
     const order: NodeType[] = ['Condition', 'Decision', 'Repeater'];
     return order
-      .map((t) => this.filteredItems().find((i) => i.type === t))
+      .map((t) => this.allItems().find((i) => i.type === t))
       .filter((i): i is PaletteItem => !!i);
   }
 
-  /** Blank Agent — directly under the logic shapes row. */
+  /** Blank Agent — directly under the logic shapes row (always from full catalog). */
   blankAgentItem(): PaletteItem | undefined {
-    return this.filteredItems().find((i) => i.type === 'AIAgent');
+    return this.allItems().find((i) => i.type === 'AIAgent');
   }
 
   isCollapsed(id: PaletteCategoryId): boolean {
@@ -765,8 +786,15 @@ export class LeftSidebarComponent {
     } catch (err) {
       this.facade.setCanvasError(err instanceof Error ? err.message : 'Drag create error');
     } finally {
+      // Palette is copy-on-create — always restore the source slot after drag.
+      event.source.reset();
+      const el = event.source.element.nativeElement as HTMLElement;
+      el.style.transform = '';
+      el.classList.remove('cdk-drag-dragging');
       queueMicrotask(() => {
         this.dragActive = false;
+        event.source.reset();
+        el.style.transform = '';
       });
     }
   }

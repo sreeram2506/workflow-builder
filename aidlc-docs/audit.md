@@ -2363,3 +2363,19 @@ Pass — 56/56 unit tests
 **Context**: Post-ops polish — sidebar resize complete; awaiting Request Changes or Continue
 
 ---
+
+## More Changes R51 — Request Changes (clarification opened)
+**Timestamp**: 2026-08-13T11:30:31Z
+**User Input**: "Request Changes"
+**AI Response**: "Opened more-changes-r51-clarification-questions.md for post-R50 feedback."
+**Context**: User chose Request Changes after R50 Blank Agent + Logic section removed
+
+---
+
+## More Changes R51 — Answers + implement
+**Timestamp**: 2026-08-13T11:36:37Z
+**User Input**: "answered"
+**AI Response**: "Q1=C Nodes Library; Q2/Q3=A. Drag-to-canvas left featured slots empty (Router gap in screenshot). Reset CDK drag source + clear transform; featured strip reads allItems()."
+**Context**: R51 direct implement — keep Condition/Router/Repeater/Blank Agent in library after drag
+
+---
