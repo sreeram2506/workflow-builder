@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  HostListener,
   effect,
   inject,
   input,
@@ -28,6 +29,10 @@ import {
   controlKeyForPath,
   type XpmsFieldDescriptor,
 } from '../../core/domain/properties.schema';
+import {
+  SIDEBAR_WIDTH_RIGHT_DEFAULT,
+  clampSidebarWidth,
+} from '../../core/domain/sidebar-width';
 import type {
   NodeStatus,
   WorkflowEdge,
@@ -42,7 +47,22 @@ type PanelMode = 'empty' | 'node' | 'edge';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="properties-root" [class.is-collapsed]="collapsed()" data-testid="properties-root">
+    <div
+      class="properties-root"
+      [class.is-collapsed]="collapsed()"
+      [style.width.px]="collapsed() ? null : panelWidth()"
+      data-testid="properties-root"
+    >
+      @if (!collapsed()) {
+        <div
+          class="resize-grip"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize Properties"
+          title="Drag to resize"
+          (pointerdown)="onResizeStart($event)"
+        ></div>
+      }
       <aside class="properties-panel" aria-label="Properties">
         <header class="properties-header">
           <button
@@ -204,11 +224,37 @@ type PanelMode = 'empty' | 'node' | 'edge';
       pointer-events: none;
     }
     .properties-root:not(.is-collapsed) {
-      width: 300px;
-      max-width: min(320px, calc(100% - 32px));
+      /* width from [style.width.px] / panelWidth */
+      max-width: none;
     }
     .properties-root.is-collapsed {
       bottom: auto;
+    }
+    .resize-grip {
+      position: absolute;
+      top: 0;
+      left: -4px;
+      bottom: 0;
+      width: 8px;
+      cursor: col-resize;
+      pointer-events: all;
+      z-index: 6;
+    }
+    .resize-grip::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      right: 3px;
+      width: 2px;
+      border-radius: 1px;
+      background: color-mix(in srgb, var(--wb-border) 80%, transparent);
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+    .resize-grip:hover::after {
+      opacity: 1;
+      background: var(--wb-accent);
     }
     .properties-panel {
       display: flex;
@@ -315,6 +361,8 @@ type PanelMode = 'empty' | 'node' | 'edge';
 export class RightSidebarComponent {
   readonly collapsed = input(false);
   readonly collapsedChange = output<boolean>();
+  readonly panelWidth = input(SIDEBAR_WIDTH_RIGHT_DEFAULT);
+  readonly panelWidthChange = output<number>();
 
   readonly facade = inject(WorkflowFacade);
   private readonly fb = inject(FormBuilder);
@@ -334,6 +382,37 @@ export class RightSidebarComponent {
   private boundMode: 'edit' | 'view' | null = null;
   private suppressDraftWrite = false;
   private formSubs = new Subscription();
+
+  private resizing = false;
+  private resizeStartX = 0;
+  private resizeStartWidth = SIDEBAR_WIDTH_RIGHT_DEFAULT;
+
+  @HostListener('document:pointermove', ['$event'])
+  onDocPointerMove(event: PointerEvent): void {
+    if (!this.resizing) {
+      return;
+    }
+    const dx = event.clientX - this.resizeStartX;
+    this.panelWidthChange.emit(
+      clampSidebarWidth(this.resizeStartWidth - dx, window.innerWidth),
+    );
+  }
+
+  @HostListener('document:pointerup')
+  onDocPointerUp(): void {
+    this.resizing = false;
+  }
+
+  onResizeStart(event: PointerEvent): void {
+    if (this.collapsed()) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.resizing = true;
+    this.resizeStartX = event.clientX;
+    this.resizeStartWidth = this.panelWidth();
+  }
 
   constructor() {
     this.destroyRef.onDestroy(() => this.formSubs.unsubscribe());

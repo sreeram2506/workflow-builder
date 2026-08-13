@@ -1,4 +1,9 @@
 import { Injectable, signal } from '@angular/core';
+import {
+  SIDEBAR_WIDTH_LEFT_DEFAULT,
+  SIDEBAR_WIDTH_RIGHT_DEFAULT,
+  clampSidebarWidth,
+} from '../domain/sidebar-width';
 import type {
   EditorMode,
   SelectionState,
@@ -13,6 +18,10 @@ export class UiStore {
   readonly editorMode = signal<EditorMode>('edit');
   readonly leftSidebarCollapsed = signal(false);
   readonly rightSidebarCollapsed = signal(true);
+  /** Expanded Nodes Library width (px), session-only. */
+  readonly nodesLibraryWidth = signal(SIDEBAR_WIDTH_LEFT_DEFAULT);
+  /** Expanded Properties width (px), session-only. */
+  readonly propertiesWidth = signal(SIDEBAR_WIDTH_RIGHT_DEFAULT);
   readonly selection = signal<SelectionState>({ nodeIds: [], edgeIds: [] });
   /** Most recently clicked selected node (Properties target). */
   readonly selectionFocusNodeId = signal<string | null>(null);
@@ -37,6 +46,8 @@ export class UiStore {
     this.editorMode.set('edit');
     this.leftSidebarCollapsed.set(false);
     this.rightSidebarCollapsed.set(true);
+    this.nodesLibraryWidth.set(SIDEBAR_WIDTH_LEFT_DEFAULT);
+    this.propertiesWidth.set(SIDEBAR_WIDTH_RIGHT_DEFAULT);
     this.selection.set({ nodeIds: [], edgeIds: [] });
     this.selectionFocusNodeId.set(null);
     this.selectionFocusEdgeId.set(null);
@@ -60,6 +71,16 @@ export class UiStore {
 
   setRightCollapsed(collapsed: boolean): void {
     this.rightSidebarCollapsed.set(collapsed);
+  }
+
+  setNodesLibraryWidth(width: number): void {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    this.nodesLibraryWidth.set(clampSidebarWidth(width, vw));
+  }
+
+  setPropertiesWidth(width: number): void {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    this.propertiesWidth.set(clampSidebarWidth(width, vw));
   }
 
   setBootstrapError(message: string | null): void {

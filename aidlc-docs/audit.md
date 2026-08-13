@@ -2340,5 +2340,26 @@ Pass — 56/56 unit tests
 **User Input**: "answered"
 **AI Response**: "Q1: add Blank Agent below Condition/Router/Repeater and remove Logic section; Q2/Q3=A. Featured Blank Agent card; dropped logic category; renamed AI Agent → Blank Agent."
 **Context**: R50 direct implement — library featured Blank Agent + no Logic section
+## More Changes R23 — Request Changes (reminder)
+**Timestamp**: 2026-08-13T10:45:00Z
+**User Input**: "Request changes "
+**AI Response**: "R23 clarification file already open and unanswered. Pointed user to more-changes-r23-clarification-questions.md (did not open a duplicate round)."
+**Context**: Awaiting R23 answers + freeform
+
+---
+
+## More Changes — Sidebar resize answers (via R11 file)
+**Timestamp**: 2026-08-13T10:47:00Z
+**User Input**: "answered"
+**AI Response**: "Parsed answers from more-changes-r11-clarification-questions.md (Q1=E Q2=B Q3=A): Nodes Library + Properties should be drag-resizable. Wrote lightweight plan more-changes-sidebar-resize-plan.md — awaiting Approve or Request Changes."
+**Context**: Lightweight plan gate (Q2=B) — do not implement until approved
+
+---
+
+## More Changes — Sidebar resize approved & implemented
+**Timestamp**: 2026-08-13T10:51:56Z
+**User Input**: "Approve "
+**AI Response**: "Implemented drag-resize for Nodes Library (right-edge grip) and Properties (left-edge grip); UiStore session widths clamped 240–480; restored left sidebar catalog constructor; npm test 81/81 green."
+**Context**: Post-ops polish — sidebar resize complete; awaiting Request Changes or Continue
 
 ---

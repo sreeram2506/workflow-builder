@@ -40,5 +40,7 @@
 
 
 
+- **Post-ops polish**: Sidebar resize **implemented** (`more-changes-sidebar-resize-plan.md`)
+- **Note**: R23 clarification file still unanswered if you meant that round instead
 - **App verify**: `npm start` / `npm test` / `npm run build`
 - **Ops doc**: `aidlc-docs/operations/operations-placeholder.md`

@@ -78,6 +78,8 @@ export class WorkflowFacade {
   readonly editorMode = this.ui.editorMode;
   readonly leftSidebarCollapsed = this.ui.leftSidebarCollapsed;
   readonly rightSidebarCollapsed = this.ui.rightSidebarCollapsed;
+  readonly nodesLibraryWidth = this.ui.nodesLibraryWidth;
+  readonly propertiesWidth = this.ui.propertiesWidth;
   readonly bootstrapError = this.ui.bootstrapError;
   readonly canvasError = this.ui.canvasError;
   readonly canvasStatus = this.ui.canvasStatus;
@@ -122,6 +124,14 @@ export class WorkflowFacade {
 
   setRightCollapsed(collapsed: boolean): void {
     this.ui.setRightCollapsed(collapsed);
+  }
+
+  setNodesLibraryWidth(width: number): void {
+    this.ui.setNodesLibraryWidth(width);
+  }
+
+  setPropertiesWidth(width: number): void {
+    this.ui.setPropertiesWidth(width);
   }
 
   setBootstrapError(message: string | null): void {

@@ -21,11 +21,15 @@ import { CanvasHostComponent } from '../canvas/canvas-host.component';
         </div>
         <wb-left-sidebar
           [collapsed]="facade.leftSidebarCollapsed()"
+          [panelWidth]="facade.nodesLibraryWidth()"
           (collapsedChange)="facade.setLeftCollapsed($event)"
+          (panelWidthChange)="facade.setNodesLibraryWidth($event)"
         />
         <wb-right-sidebar
           [collapsed]="facade.rightSidebarCollapsed()"
+          [panelWidth]="facade.propertiesWidth()"
           (collapsedChange)="facade.setRightCollapsed($event)"
+          (panelWidthChange)="facade.setPropertiesWidth($event)"
         />
       </div>
     </div>

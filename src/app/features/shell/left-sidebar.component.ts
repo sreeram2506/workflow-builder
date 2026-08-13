@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragEnd, CdkDropList } from '@angular/cdk/drag-drop';
-import { Component, DestroyRef, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime } from 'rxjs';
@@ -10,8 +10,12 @@ import {
   logicShapeKind,
 } from '../../core/domain/node-visuals';
 import type { NodeType } from '../../core/domain/workflow.models';
+import { FEATURED_PALETTE_TYPES } from '../../core/domain/palette.catalog';
 import {
-  FEATURED_PALETTE_TYPES,
+  SIDEBAR_WIDTH_LEFT_DEFAULT,
+  clampSidebarWidth,
+} from '../../core/domain/sidebar-width';
+import {
   PALETTE_CATEGORIES,
   PALETTE_ITEMS,
   filterPaletteItems,
@@ -31,7 +35,12 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
   standalone: true,
   imports: [FormsModule, CdkDropList, CdkDrag],
   template: `
-    <div class="nodes-library-root" [class.is-collapsed]="collapsed()" data-testid="nodes-library-root">
+    <div
+      class="nodes-library-root"
+      [class.is-collapsed]="collapsed()"
+      [style.width.px]="collapsed() ? null : panelWidth()"
+      data-testid="nodes-library-root"
+    >
       <aside class="library-panel" aria-label="Nodes Library">
         <header class="library-header">
           <h2>Nodes Library</h2>
@@ -285,6 +294,16 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
           </footer>
         }
       </aside>
+      @if (!collapsed()) {
+        <div
+          class="resize-grip"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize Nodes Library"
+          title="Drag to resize"
+          (pointerdown)="onResizeStart($event)"
+        ></div>
+      }
     </div>
   `,
   styles: `
@@ -299,11 +318,38 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       pointer-events: none;
     }
     .nodes-library-root:not(.is-collapsed) {
-      width: 280px;
-      max-width: min(300px, calc(100% - 32px));
+      /* width from [style.width.px] / panelWidth */
+      max-width: none;
     }
     .nodes-library-root.is-collapsed {
       bottom: auto;
+    }
+    .resize-grip {
+      position: absolute;
+      top: 0;
+      right: -4px;
+      bottom: 0;
+      width: 8px;
+      cursor: col-resize;
+      pointer-events: all;
+      z-index: 6;
+    }
+    .resize-grip::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      left: 3px;
+      width: 2px;
+      border-radius: 1px;
+      background: color-mix(in srgb, var(--wb-border) 80%, transparent);
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+    .resize-grip:hover::after,
+    .nodes-library-root.is-resizing .resize-grip::after {
+      opacity: 1;
+      background: var(--wb-accent);
     }
     .library-panel {
       display: flex;
@@ -564,6 +610,8 @@ export class LeftSidebarComponent {
 
   readonly collapsed = input(false);
   readonly collapsedChange = output<boolean>();
+  readonly panelWidth = input(SIDEBAR_WIDTH_LEFT_DEFAULT);
+  readonly panelWidthChange = output<number>();
 
   readonly paletteListId = PALETTE_DROP_LIST_ID;
   readonly canvasListId = CANVAS_DROP_LIST_ID;
@@ -580,6 +628,36 @@ export class LeftSidebarComponent {
   readonly collapsedCategories = signal<Record<string, boolean>>({});
 
   private dragActive = false;
+  private resizing = false;
+  private resizeStartX = 0;
+  private resizeStartWidth = SIDEBAR_WIDTH_LEFT_DEFAULT;
+
+  @HostListener('document:pointermove', ['$event'])
+  onDocPointerMove(event: PointerEvent): void {
+    if (!this.resizing) {
+      return;
+    }
+    const dx = event.clientX - this.resizeStartX;
+    this.panelWidthChange.emit(
+      clampSidebarWidth(this.resizeStartWidth + dx, window.innerWidth),
+    );
+  }
+
+  @HostListener('document:pointerup')
+  onDocPointerUp(): void {
+    this.resizing = false;
+  }
+
+  onResizeStart(event: PointerEvent): void {
+    if (this.collapsed()) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.resizing = true;
+    this.resizeStartX = event.clientX;
+    this.resizeStartWidth = this.panelWidth();
+  }
 
   constructor() {
     this.search$.pipe(debounceTime(150), takeUntilDestroyed(this.destroyRef)).subscribe((q) => {
