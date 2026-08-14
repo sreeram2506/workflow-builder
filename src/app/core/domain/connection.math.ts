@@ -117,6 +117,63 @@ export function nearestPortSide(
   return best;
 }
 
+/**
+ * Pick an input port by angle from node center (fixes Condition diamond flanks
+ * where Euclidean distance prefers left/right over top/bottom).
+ */
+export function nearestInputSideByAngle(
+  world: Point,
+  position: Point,
+  width: number,
+  height: number,
+): PortSide {
+  const cx = position.x + width / 2;
+  const cy = position.y + height / 2;
+  const dx = world.x - cx;
+  const dy = world.y - cy;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  let best: PortSide = 'left';
+  let bestScore = -Infinity;
+  for (const side of INPUT_SIDES) {
+    // Outward unit vector · direction-to-pointer
+    const score = side === 'left' ? -ux : side === 'top' ? -uy : uy;
+    if (score > bestScore) {
+      bestScore = score;
+      best = side;
+    }
+  }
+  return best;
+}
+
+/** Match Condition rhombus SVG tips (`points="50,6 …"` → ~6% inset). */
+export const RHOMBUS_PORT_INSET = 0.06;
+
+export function portOnSideForNode(
+  type: WorkflowNode['type'],
+  position: Point,
+  width: number,
+  height: number,
+  side: PortSide,
+): Point {
+  if (type === 'Condition') {
+    const ix = width * RHOMBUS_PORT_INSET;
+    const iy = height * RHOMBUS_PORT_INSET;
+    switch (side) {
+      case 'left':
+        return { x: position.x + ix, y: position.y + height / 2 };
+      case 'right':
+        return { x: position.x + width - ix, y: position.y + height / 2 };
+      case 'top':
+        return { x: position.x + width / 2, y: position.y + iy };
+      case 'bottom':
+        return { x: position.x + width / 2, y: position.y + height - iy };
+    }
+  }
+  return portOnSide(position, width, height, side);
+}
+
 export function snapToGrid(point: Point, grid = WAYPOINT_GRID): Point {
   return {
     x: Object.is(Math.round(point.x / grid) * grid, -0) ? 0 : Math.round(point.x / grid) * grid,
@@ -173,6 +230,7 @@ export function createWorkflowEdge(
       source: resolved.sourceId,
       target: resolved.targetId,
       label: '',
+      condition: '',
       waypoints: [],
       sourceSide: resolved.sourceSide,
       targetSide: resolved.targetSide,
@@ -187,6 +245,7 @@ export function createWorkflowEdge(
     source: sourceId,
     target: targetId,
     label: '',
+    condition: '',
     waypoints: [],
   };
   return lockEdgePortSides(draft, nodes);
@@ -233,8 +292,8 @@ export function edgeRenderPoints(
   const sw = nodeSizeForType(s.type);
   const tw = nodeSizeForType(t.type);
   return {
-    start: portOnSide(s.position, sw.width, sw.height, locked.sourceSide!),
-    end: portOnSide(t.position, tw.width, tw.height, locked.targetSide!),
+    start: portOnSideForNode(s.type, s.position, sw.width, sw.height, locked.sourceSide!),
+    end: portOnSideForNode(t.type, t.position, tw.width, tw.height, locked.targetSide!),
     waypoints: edge.waypoints.map((p) => ({ ...p })),
   };
 }
@@ -268,7 +327,7 @@ export function lockEdgePortSides(
     let best: PortSide = 'left';
     let bestDist = Infinity;
     for (const side of INPUT_SIDES) {
-      const p = portOnSide(t.position, tw.width, tw.height, side);
+      const p = portOnSideForNode(t.type, t.position, tw.width, tw.height, side);
       const d = Math.hypot(sm.x - p.x, sm.y - p.y);
       if (d < bestDist) {
         bestDist = d;
@@ -292,7 +351,7 @@ export function findTargetHandleAt(
     }
     const { width, height } = nodeSizeForType(n.type);
     for (const side of PORT_SIDES) {
-      const port = portOnSide(n.position, width, height, side);
+      const port = portOnSideForNode(n.type, n.position, width, height, side);
       const dist = Math.hypot(world.x - port.x, world.y - port.y);
       if (dist <= HANDLE_HIT_RADIUS && (!best || dist < best.dist)) {
         best = { hit: { id: n.id, side }, dist };
@@ -304,8 +363,8 @@ export function findTargetHandleAt(
 
 /**
  * Resolve a connection drop/hover target:
- * 1) exact handle hit, else
- * 2) drop on/near node body → snap to nearest **input** port (never right).
+ * 1) over/near node body → snap by **angle** to nearest input (diamond-safe)
+ * 2) else exact handle hit within radius
  */
 export function findConnectionTargetAt(
   world: Point,
@@ -313,12 +372,7 @@ export function findConnectionTargetAt(
   excludeNodeId: string | undefined,
   _sourceSide?: PortSide,
 ): HandleHit | null {
-  const handle = findTargetHandleAt(world, nodes, excludeNodeId);
-  if (handle) {
-    return handle;
-  }
-
-  let best: { hit: HandleHit; dist: number } | null = null;
+  let bestBody: { hit: HandleHit; dist: number } | null = null;
   for (const n of nodes) {
     if (excludeNodeId && n.id === excludeNodeId) {
       continue;
@@ -327,15 +381,23 @@ export function findConnectionTargetAt(
     if (!pointNearNode(world, n.position, width, height)) {
       continue;
     }
-    for (const side of INPUT_SIDES) {
-      const port = portOnSide(n.position, width, height, side);
-      const dist = Math.hypot(world.x - port.x, world.y - port.y);
-      if (!best || dist < best.dist) {
-        best = { hit: { id: n.id, side }, dist };
-      }
+    const side = nearestInputSideByAngle(world, n.position, width, height);
+    const port = portOnSideForNode(n.type, n.position, width, height, side);
+    const dist = Math.hypot(world.x - port.x, world.y - port.y);
+    if (!bestBody || dist < bestBody.dist) {
+      bestBody = { hit: { id: n.id, side }, dist };
     }
   }
-  return best?.hit ?? null;
+  if (bestBody) {
+    return bestBody.hit;
+  }
+
+  const handle = findTargetHandleAt(world, nodes, excludeNodeId);
+  if (handle && isInputSide(handle.side)) {
+    return handle;
+  }
+  // Raw handle on output (right): still return so resolveConnection can reject clearly
+  return handle;
 }
 
 /** Insert index for a new waypoint along the path (nearest segment midpoint heuristic). */

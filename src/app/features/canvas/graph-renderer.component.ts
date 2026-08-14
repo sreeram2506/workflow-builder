@@ -2,11 +2,11 @@ import { Component, computed, input, output } from '@angular/core';
 import {
   edgePathThroughWaypoints,
   edgeRenderPoints,
+  portOnSideForNode,
 } from '../../core/domain/connection.math';
 import { nodeSizeForType } from '../../core/domain/node-visuals';
 import type { WorkflowEdge, WorkflowNode } from '../../core/domain/workflow.models';
 import {
-  portOnSide,
   smoothEdgePath,
   type Point,
   type PortSide,
@@ -187,7 +187,7 @@ export class GraphRendererComponent {
       return null;
     }
     const size = nodeSizeForType(src.type);
-    const a = portOnSide(src.position, size.width, size.height, d.sourceSide);
+    const a = portOnSideForNode(src.type, src.position, size.width, size.height, d.sourceSide);
     return smoothEdgePath(a, d.pointerWorld);
   });
 

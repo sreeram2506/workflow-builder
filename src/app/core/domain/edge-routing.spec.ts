@@ -15,7 +15,7 @@ function node(id: string, x: number, y: number): WorkflowNode {
 }
 
 function edge(id: string, source: string, target: string): WorkflowEdge {
-  return { id, source, target, label: '', waypoints: [{ x: 1, y: 1 }] };
+  return { id, source, target, label: '', condition: '', waypoints: [{ x: 1, y: 1 }] };
 }
 
 describe('edge-routing', () => {

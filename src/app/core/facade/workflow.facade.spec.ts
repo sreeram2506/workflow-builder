@@ -56,6 +56,7 @@ describe('WorkflowFacade.createEdge', () => {
     const edge = facade.edges().find((e) => e.id === id)!;
     expect(edge.waypoints).toEqual([]);
     expect(edge.label).toBe('');
+    expect(edge.condition).toBe('');
   });
 
   it('rejects self-loop', () => {
@@ -72,6 +73,31 @@ describe('WorkflowFacade.createEdge', () => {
     expect(edge.waypoints[0]).toEqual({ x: 16, y: 32 });
     facade.removeWaypoint(edgeId, 0);
     expect(facade.edges().find((e) => e.id === edgeId)!.waypoints).toEqual([]);
+  });
+
+  it('labels Condition outs true then false and rejects a third', () => {
+    const condId = facade.createNode('Condition', { x: 10, y: 10 })!;
+    const a = facade.createNode('Action', { x: 200, y: 10 })!;
+    const b = facade.createNode('Action', { x: 200, y: 80 })!;
+    const c = facade.createNode('Action', { x: 200, y: 160 })!;
+    const first = facade.createEdge(condId, a);
+    const second = facade.createEdge(condId, b);
+    const third = facade.createEdge(condId, c);
+    expect(facade.edges().find((e) => e.id === first)?.label).toBe('true');
+    expect(facade.edges().find((e) => e.id === second)?.label).toBe('false');
+    expect(third).toBeNull();
+  });
+
+  it('creates Router edges with Blank Condition and empty condition', () => {
+    const id = facade.createEdge('n-router', 'n-end');
+    expect(id).toBeTruthy();
+    const edge = facade.edges().find((e) => e.id === id)!;
+    expect(edge.label).toBe('Blank Condition');
+    expect(edge.condition).toBe('');
+  });
+
+  it('rejects a third outgoing from the seeded Condition', () => {
+    expect(facade.createEdge('n-condition', 'n-action')).toBeNull();
   });
 });
 
@@ -117,6 +143,10 @@ describe('WorkflowFacade.patchNode', () => {
     expect(facade.selectionFocusNodeId()).toBeNull();
     expect(facade.patchEdge('e1', { label: 'Happy path' })).toBe(true);
     expect(facade.edges().find((e) => e.id === 'e1')!.label).toBe('Happy path');
+    expect(facade.patchEdge('e6', { label: 'High severity', condition: 'sev > 3' })).toBe(true);
+    const connector = facade.edges().find((e) => e.id === 'e6')!;
+    expect(connector.label).toBe('High severity');
+    expect(connector.condition).toBe('sev > 3');
   });
 });
 

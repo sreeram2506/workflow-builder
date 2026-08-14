@@ -9,6 +9,7 @@ import {
   edgeRenderPoints,
 } from '../domain/connection.math';
 import { routeAllEdges } from '../domain/edge-routing';
+import { nextConditionOutLabel } from '../domain/logic-node-rules';
 import { applyLayoutMode, type LayoutMode } from '../domain/layout.math';
 import { createWorkflowNode, createWorkflowNodeFromPaletteItem, newNodeId } from '../domain/node.factory';
 import type { PaletteItem } from '../domain/palette.catalog';
@@ -57,6 +58,7 @@ function cloneEdge(edge: WorkflowEdge): WorkflowEdge {
   return {
     ...edge,
     label: edge.label ?? '',
+    condition: edge.condition ?? '',
     waypoints: edge.waypoints.map((p) => ({ ...p })),
   };
 }
@@ -287,7 +289,7 @@ export class WorkflowFacade {
     }
   }
 
-  patchEdge(id: string, partial: Partial<Pick<WorkflowEdge, 'label'>>): boolean {
+  patchEdge(id: string, partial: Partial<Pick<WorkflowEdge, 'label' | 'condition'>>): boolean {
     try {
       if (this.ui.editorMode() === 'view') {
         return false;
@@ -392,6 +394,20 @@ export class WorkflowFacade {
       const edge = createWorkflowEdge(sourceId, targetId, nodes, sides);
       if (!edge) {
         return null;
+      }
+      const source = nodes.find((n) => n.id === edge.source);
+      if (source?.type === 'Condition') {
+        const existing = this.edges()
+          .filter((e) => e.source === edge.source)
+          .map((e) => e.label);
+        const next = nextConditionOutLabel(existing);
+        if (next === null) {
+          return null;
+        }
+        edge.label = next;
+      } else if (source?.type === 'Decision') {
+        edge.label = 'Blank Condition';
+        edge.condition = '';
       }
       this.graph.addEdge(edge);
       this.selectEdges([edge.id]);
@@ -657,7 +673,7 @@ export class WorkflowFacade {
         return 'Import disabled in view mode';
       }
       const parsed = this.serialization.parse(text);
-      if (!parsed.ok) {
+      if (parsed.ok === false) {
         this.setCanvasError(parsed.error);
         return parsed.error;
       }

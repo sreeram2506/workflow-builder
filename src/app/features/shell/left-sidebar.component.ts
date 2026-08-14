@@ -25,10 +25,14 @@ import {
 } from '../../core/domain/palette.catalog';
 import { screenToWorld } from '../../core/domain/viewport.math';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
-import { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
+import { CANVAS_DROP_LIST_ID, FEATURED_PALETTE_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
 
 /** Shared CDK drop-list ids for palette ↔ canvas connection. */
-export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
+export {
+  CANVAS_DROP_LIST_ID,
+  FEATURED_PALETTE_DROP_LIST_ID,
+  PALETTE_DROP_LIST_ID,
+} from './palette-dnd.ids';
 
 @Component({
   selector: 'wb-left-sidebar',
@@ -79,18 +83,26 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
               <p class="catalog-banner" role="status">Loading tasks…</p>
             }
 
-            <div class="featured-strip">
+            <div
+              class="featured-strip"
+              cdkDropList
+              [id]="featuredListId"
+              [cdkDropListData]="featuredDragProxy"
+              [cdkDropListSortingDisabled]="true"
+              [cdkDropListEnterPredicate]="rejectEnter"
+            >
             <div class="logic-shapes-row" role="list" aria-label="Logic shapes">
               @for (item of logicShapeItems(); track item.key) {
-                <button
-                  type="button"
+                <div
                   class="logic-shape-btn"
                   role="listitem"
+                  tabindex="0"
                   cdkDrag
                   [cdkDragData]="item.key"
                   (cdkDragStarted)="onDragStarted()"
                   (cdkDragEnded)="onDragEnded($event, item)"
                   (click)="onItemActivate(item, $event)"
+                  (keydown)="onItemKeydown(item, $event)"
                   [attr.aria-label]="'Add ' + item.label + ' node'"
                   [style.--accent]="accentFor(item.type)"
                   [title]="item.label"
@@ -136,11 +148,11 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
                             stroke-linecap="round"
                             stroke-linejoin="round"
                           >
-                            <path d="M-12 0 H2" />
-                            <path d="M2 0 L14 -12" />
-                            <path d="M2 0 L14 12" />
-                            <path d="M14 -12 l-4.2 0.5 M14 -12 l0.3 4.2" />
-                            <path d="M14 12 l-4.2 -0.5 M14 12 l0.3 -4.2" />
+                            <path d="M-13 0 H0" />
+                            <path d="M0 0 L12 -11" />
+                            <path d="M0 0 L12 11" />
+                            <path d="M12 -11 l-5.2 0.7 M12 -11 l-0.7 5.2" />
+                            <path d="M12 11 l-0.7 -5.2 M12 11 l-5.2 -0.7" />
                           </g>
                         }
                         @case ('repeater') {
@@ -162,11 +174,11 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
                             stroke-linecap="round"
                             stroke-linejoin="round"
                           >
-                            <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
-                            <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
+                            <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
+                            <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
                             <g transform="rotate(180)">
-                              <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
-                              <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
+                              <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
+                              <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
                             </g>
                           </g>
                         }
@@ -174,34 +186,9 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
                     </svg>
                   }
                   <span class="logic-shape-label">{{ item.label }}</span>
-                </button>
+                </div>
               }
             </div>
-
-            @if (blankAgentItem(); as agent) {
-              <div
-                class="blank-agent-card"
-                role="listitem"
-                tabindex="0"
-                cdkDrag
-                [cdkDragData]="agent.key"
-                (cdkDragStarted)="onDragStarted()"
-                (cdkDragEnded)="onDragEnded($event, agent)"
-                (click)="onItemActivate(agent, $event)"
-                (keydown)="onItemKeydown(agent, $event)"
-                [attr.aria-label]="'Add ' + agent.label + ' node'"
-              >
-                <div class="node-icon" data-icon="AIAgent" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path [attr.d]="iconPath(agent.type)" />
-                  </svg>
-                </div>
-                <div class="node-text">
-                  <div class="node-title">{{ agent.label }}</div>
-                  <div class="node-desc">{{ agent.description }}</div>
-                </div>
-              </div>
-            }
             </div>
 
             <div class="search-row">
@@ -266,8 +253,8 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
                                 </svg>
                               </div>
                               <div class="node-text">
-                                <div class="node-title">{{ item.label }}</div>
-                                <div class="node-desc">{{ item.description }}</div>
+                                <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                                <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
                               </div>
                             </div>
                           }
@@ -282,18 +269,6 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
               }
             </div>
           </div>
-          <hr class="panel-rule" />
-          <footer class="library-footer">
-            <button
-              type="button"
-              class="templates-btn"
-              disabled
-              title="Coming in later phase"
-              aria-label="Templates (coming later)"
-            >
-              Templates
-            </button>
-          </footer>
         }
       </aside>
       @if (!collapsed()) {
@@ -469,6 +444,13 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       color: var(--accent, var(--wb-accent));
       cursor: grab;
       box-sizing: border-box;
+      outline: none;
+      user-select: none;
+      touch-action: none;
+    }
+    .logic-shapes-row .cdk-drag-placeholder {
+      min-height: 4.25rem;
+      border-radius: 10px;
     }
     .logic-shape-btn:hover {
       border-color: var(--wb-accent);
@@ -486,27 +468,6 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       font-weight: 600;
       color: var(--wb-text);
       line-height: 1.2;
-    }
-    .blank-agent-card {
-      display: flex;
-      gap: 0.7rem;
-      align-items: flex-start;
-      padding: 0.65rem 0.7rem;
-      margin: 0 0 0.75rem;
-      border: 1px solid var(--wb-border);
-      border-radius: 10px;
-      background: var(--wb-bg-elevated);
-      flex-shrink: 0;
-      cursor: grab;
-      outline: none;
-      min-width: 0;
-      max-width: 100%;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .blank-agent-card:focus-visible {
-      border-color: var(--wb-accent);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--wb-accent) 35%, transparent);
     }
     .catalog-banner {
       margin: 0 0 0.5rem;
@@ -567,6 +528,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       min-width: 0;
       max-width: 100%;
       box-sizing: border-box;
+      overflow: hidden;
     }
     .node-card:focus-visible {
       border-color: var(--wb-accent);
@@ -589,7 +551,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
     .preview-glyph {
       color: var(--accent, var(--wb-accent));
     }
-    .node-text { min-width: 0; flex: 1 1 auto; }
+    .node-text { min-width: 0; flex: 1 1 auto; overflow: hidden; }
     .node-title {
       font-weight: 700;
       font-size: 0.92rem;
@@ -597,6 +559,7 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      max-width: 100%;
     }
     .node-desc {
       margin-top: 0.15rem;
@@ -607,17 +570,9 @@ export { CANVAS_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      word-break: break-word;
     }
     .empty-hint { margin: 0.75rem 0.25rem; font-size: 0.82rem; color: var(--wb-text-muted); }
-    .library-footer {
-      padding: 1.25rem 1rem 0;
-      flex-shrink: 0;
-      box-sizing: border-box;
-    }
-    .templates-btn {
-      width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--wb-border); border-radius: 10px;
-      background: var(--wb-bg-elevated); color: var(--wb-text-muted); font-weight: 600; cursor: not-allowed;
-    }
     .cdk-drag-preview { box-sizing: border-box; border-radius: 10px; box-shadow: var(--wb-shadow-soft); opacity: 0.92; }
     .cdk-drag-placeholder { opacity: 0.35; }
   `,
@@ -634,9 +589,11 @@ export class LeftSidebarComponent {
   readonly panelWidthChange = output<number>();
 
   readonly paletteListId = PALETTE_DROP_LIST_ID;
+  readonly featuredListId = FEATURED_PALETTE_DROP_LIST_ID;
   readonly canvasListId = CANVAS_DROP_LIST_ID;
-  /** Stable empty array so CDK never mutates the real catalog during drag. */
+  /** Stable empty arrays so CDK never mutates the real catalog during drag. */
   readonly dragProxy: string[] = [];
+  readonly featuredDragProxy: string[] = [];
   readonly rejectEnter = (): boolean => false;
 
   readonly searchInput = signal('');
@@ -738,11 +695,6 @@ export class LeftSidebarComponent {
     return order
       .map((t) => this.allItems().find((i) => i.type === t))
       .filter((i): i is PaletteItem => !!i);
-  }
-
-  /** Blank Agent — directly under the logic shapes row (always from full catalog). */
-  blankAgentItem(): PaletteItem | undefined {
-    return this.allItems().find((i) => i.type === 'AIAgent');
   }
 
   isCollapsed(id: PaletteCategoryId): boolean {

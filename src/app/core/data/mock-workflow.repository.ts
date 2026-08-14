@@ -34,7 +34,7 @@ export const SAMPLE_WORKFLOW: WorkflowDocument = {
       subtitle: 'Branch on rule',
       position: { x: 560, y: 90 },
       status: 'idle',
-      data: {},
+      data: { condition: 'payload.needsDelay === true' },
     },
     {
       id: 'n-router',
@@ -52,7 +52,13 @@ export const SAMPLE_WORKFLOW: WorkflowDocument = {
       subtitle: 'Repeat a section',
       position: { x: 560, y: 300 },
       status: 'idle',
-      data: {},
+      data: {
+        repeater: {
+          workflowId: 'wf-claims-intake',
+          versionId: 'v1',
+          is_paused: false,
+        },
+      },
     },
     {
       id: 'n-delay',
@@ -74,12 +80,19 @@ export const SAMPLE_WORKFLOW: WorkflowDocument = {
     },
   ],
   edges: [
-    { id: 'e1', source: 'n-trigger', target: 'n-action', label: '', waypoints: [] },
-    { id: 'e2', source: 'n-action', target: 'n-condition', label: '', waypoints: [] },
-    { id: 'e3', source: 'n-condition', target: 'n-delay', label: '', waypoints: [] },
-    { id: 'e4', source: 'n-condition', target: 'n-end', label: '', waypoints: [] },
-    { id: 'e5', source: 'n-condition', target: 'n-router', label: '', waypoints: [] },
-    { id: 'e6', source: 'n-router', target: 'n-repeater', label: '', waypoints: [] },
+    { id: 'e1', source: 'n-trigger', target: 'n-action', label: '', condition: '', waypoints: [] },
+    { id: 'e2', source: 'n-action', target: 'n-condition', label: '', condition: '', waypoints: [] },
+    { id: 'e3', source: 'n-condition', target: 'n-delay', label: 'true', condition: '', waypoints: [] },
+    { id: 'e4', source: 'n-condition', target: 'n-end', label: 'false', condition: '', waypoints: [] },
+    { id: 'e5', source: 'n-action', target: 'n-router', label: '', condition: '', waypoints: [] },
+    {
+      id: 'e6',
+      source: 'n-router',
+      target: 'n-repeater',
+      label: 'Blank Condition',
+      condition: '',
+      waypoints: [],
+    },
   ],
 };
 

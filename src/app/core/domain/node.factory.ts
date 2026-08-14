@@ -19,10 +19,19 @@ export function createWorkflowNode(type: NodeType, position: Point): WorkflowNod
     return null;
   }
   const item = findPaletteItem(type);
-  if (!item) {
-    return null;
+  if (item) {
+    return createWorkflowNodeFromPaletteItem(item, position);
   }
-  return createWorkflowNodeFromPaletteItem(item, position);
+  // Allowed types omitted from Nodes Library (e.g. AIAgent) still create via type.
+  return {
+    id: newNodeId(type),
+    type,
+    label: type === 'AIAgent' ? 'Blank Agent' : type,
+    subtitle: '',
+    position: { x: position.x, y: position.y },
+    status: 'idle',
+    data: {},
+  };
 }
 
 export function createWorkflowNodeFromPaletteItem(

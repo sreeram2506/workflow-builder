@@ -33,9 +33,9 @@ describe('run-order', () => {
     const d = doc(
       [node('t', 'Trigger'), node('a'), node('b'), node('e', 'End')],
       [
-        { id: 'e1', source: 't', target: 'a', label: '', waypoints: [] },
-        { id: 'e2', source: 'a', target: 'b', label: '', waypoints: [] },
-        { id: 'e3', source: 'b', target: 'e', label: '', waypoints: [] },
+        { id: 'e1', source: 't', target: 'a', label: '', condition: '', waypoints: [] },
+        { id: 'e2', source: 'a', target: 'b', label: '', condition: '', waypoints: [] },
+        { id: 'e3', source: 'b', target: 'e', label: '', condition: '', waypoints: [] },
       ],
     );
     expect(findRunSeeds(d)).toEqual(['t']);
@@ -45,7 +45,7 @@ describe('run-order', () => {
   it('includes indegree-0 non-Trigger seeds', () => {
     const d = doc(
       [node('root'), node('child')],
-      [{ id: 'e1', source: 'root', target: 'child', label: '', waypoints: [] }],
+      [{ id: 'e1', source: 'root', target: 'child', label: '', condition: '', waypoints: [] }],
     );
     expect(findRunSeeds(d)).toEqual(['root']);
     expect(computeRunOrder(d)).toEqual(['root', 'child']);
@@ -59,8 +59,8 @@ describe('run-order', () => {
     const d = doc(
       [node('a'), node('b')],
       [
-        { id: 'e1', source: 'a', target: 'b', label: '', waypoints: [] },
-        { id: 'e2', source: 'b', target: 'a', label: '', waypoints: [] },
+        { id: 'e1', source: 'a', target: 'b', label: '', condition: '', waypoints: [] },
+        { id: 'e2', source: 'b', target: 'a', label: '', condition: '', waypoints: [] },
       ],
     );
     expect(findRunSeeds(d)).toEqual([]);
@@ -89,7 +89,7 @@ describe('run-order', () => {
               continue;
             }
             seen.add(key);
-            edges.push({ id: key, source: s, target: t, label: '', waypoints: [] });
+            edges.push({ id: key, source: s, target: t, label: '', condition: '', waypoints: [] });
           }
           const d = doc(nodes, edges);
           const order = computeRunOrder(d);

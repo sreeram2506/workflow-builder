@@ -22,6 +22,36 @@ describe('workflow.serialize', () => {
     }
   });
 
+  it('defaults missing edge.condition to empty string', () => {
+    const json = serializeWorkflow(SAMPLE_WORKFLOW);
+    const stripped = JSON.parse(json) as { edges: Array<Record<string, unknown>> };
+    delete stripped.edges[0]!['condition'];
+    const parsed = parseWorkflowJson(JSON.stringify(stripped));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.document.edges[0]!.condition).toBe('');
+    }
+  });
+
+  it('round-trips condition expression, repeater data, and router edge condition', () => {
+    const json = serializeWorkflow(SAMPLE_WORKFLOW);
+    const parsed = parseWorkflowJson(json);
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      const condition = parsed.document.nodes.find((n) => n.id === 'n-condition');
+      const repeater = parsed.document.nodes.find((n) => n.id === 'n-repeater');
+      const routerEdge = parsed.document.edges.find((e) => e.id === 'e6');
+      expect(condition?.data['condition']).toBe('payload.needsDelay === true');
+      expect(repeater?.data['repeater']).toEqual({
+        workflowId: 'wf-claims-intake',
+        versionId: 'v1',
+        is_paused: false,
+      });
+      expect(routerEdge?.label).toBe('Blank Condition');
+      expect(routerEdge?.condition).toBe('');
+    }
+  });
+
   it('rejects invalid JSON and wrong schema', () => {
     expect(parseWorkflowJson('{').ok).toBe(false);
     expect(parseWorkflowJson(JSON.stringify({ schemaVersion: 99 })).ok).toBe(false);
@@ -101,6 +131,7 @@ describe('workflow.serialize', () => {
                   source: nodes[0]!.id,
                   target: nodes[1]!.id,
                   label: '',
+                  condition: '',
                   waypoints: [] as { x: number; y: number }[],
                 },
               ]

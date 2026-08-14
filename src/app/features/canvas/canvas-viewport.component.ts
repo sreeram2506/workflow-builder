@@ -10,6 +10,7 @@ import {
 import { CanvasPerformanceScheduler } from '../../core/canvas/canvas-performance.scheduler';
 import {
   findConnectionTargetAt,
+  portOnSideForNode,
   resolveConnection,
   validateConnection,
 } from '../../core/domain/connection.math';
@@ -17,7 +18,6 @@ import { nodeSizeForType } from '../../core/domain/node-visuals';
 import {
   nodeBounds,
   normalizeRect,
-  portOnSide,
   rectsIntersect,
   screenToWorld,
   viewportTransformCss,
@@ -100,7 +100,6 @@ type Gesture = 'idle' | 'pan' | 'marquee' | 'nodeDrag' | 'connect' | 'waypointDr
           (zoomOut)="onZoomOut()"
           (reset)="onZoomReset()"
           (applyLayout)="onApplyLayout($event)"
-          (routeEdges)="onRouteEdges()"
           (undo)="facade.undo()"
           (redo)="facade.redo()"
         />
@@ -423,7 +422,13 @@ export class CanvasViewportComponent implements AfterViewInit {
             const tgt = this.facade.nodes().find((n) => n.id === hover.id);
             if (tgt) {
               const size = nodeSizeForType(tgt.type);
-              pointerWorld = portOnSide(tgt.position, size.width, size.height, hover.side);
+              pointerWorld = portOnSideForNode(
+                tgt.type,
+                tgt.position,
+                size.width,
+                size.height,
+                hover.side,
+              );
             }
           }
           this.connectionDraft.set({
@@ -608,10 +613,6 @@ export class CanvasViewportComponent implements AfterViewInit {
     this.refreshViewSize();
     const { w, h } = this.viewSize();
     this.facade.applyLayout(mode, w, h);
-  }
-
-  onRouteEdges(): void {
-    this.facade.routeEdges();
   }
 
   private handleDelete(): void {

@@ -51,12 +51,22 @@ export interface WorkflowEdge {
   target: string;
   /** Display label shown in Properties (and later on canvas if desired). */
   label: string;
+  /** Connector expression when the source is a Router (`Decision`). Default `''`. */
+  condition: string;
   /** Ordered world-space reshape points between source and target ports. */
   waypoints: { x: number; y: number }[];
   /** Port side on the source node; when set, rendering prefers this over facingPorts. */
   sourceSide?: 'left' | 'right' | 'top' | 'bottom';
   /** Port side on the target node; when set, rendering prefers this over facingPorts. */
   targetSide?: 'left' | 'right' | 'top' | 'bottom';
+}
+
+export type EdgePatch = Partial<Pick<WorkflowEdge, 'label' | 'condition'>>;
+
+export interface RepeaterData {
+  workflowId: string;
+  versionId: string;
+  is_paused: boolean;
 }
 
 export interface WorkflowDocument {

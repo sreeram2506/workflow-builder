@@ -107,19 +107,20 @@ import type { PortSide } from '../../core/domain/viewport.math';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M-12 0 H2" />
-                <path d="M2 0 L14 -12" />
-                <path d="M2 0 L14 12" />
-                <path d="M14 -12 l-4.2 0.5 M14 -12 l0.3 4.2" />
-                <path d="M14 12 l-4.2 -0.5 M14 12 l0.3 -4.2" />
+                <!-- Stem + Y-fork; tip chevrons aligned to each branch (±45°) -->
+                <path d="M-13 0 H0" />
+                <path d="M0 0 L12 -11" />
+                <path d="M0 0 L12 11" />
+                <path d="M12 -11 l-5.2 0.7 M12 -11 l-0.7 5.2" />
+                <path d="M12 11 l-0.7 -5.2 M12 11 l-5.2 -0.7" />
               </g>
             }
             @case ('repeater') {
               <!-- Rounded square — flush to box so handles attach like Condition -->
               <rect class="shape-fill" x="4" y="4" width="92" height="92" rx="20" ry="20" />
               <!--
-                Sync arrows: stroke 2.4; tip chevrons seated on arc centerline
-                (apex slightly past arc end so tip sits mid-stroke).
+                Sync arrows: tip apex seated exactly on each arc end (Condition-style
+                right/left chevrons). Top tip → right; bottom → left via 180° rotate.
               -->
               <g
                 class="shape-glyph"
@@ -130,14 +131,11 @@ import type { PortSide } from '../../core/domain/viewport.math';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <g>
-                  <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
-                  <!-- Tip centered on arc end, pointing RIGHT -->
-                  <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
-                </g>
+                <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
+                <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
                 <g transform="rotate(180)">
-                  <path d="M-11.26 6.5A13 13 0 0 1 6.5 -11.26" stroke-linecap="butt" />
-                  <path d="M8.4 -11.0 l-4.2 -3.2 M8.4 -11.0 l-4.2 3.2" />
+                  <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
+                  <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
                 </g>
               </g>
             }
@@ -279,6 +277,21 @@ import type { PortSide } from '../../core/domain/viewport.math';
     .node-shape .handle-bottom {
       bottom: -5px;
       margin-left: -5px;
+    }
+    /* Condition diamond tips are inset ~6% — keep handles on the vertices */
+    .node-shape[data-shape='rhombus'] .handle-left {
+      left: calc(6% - 5px);
+    }
+    .node-shape[data-shape='rhombus'] .handle-right {
+      right: calc(6% - 5px);
+      left: auto;
+    }
+    .node-shape[data-shape='rhombus'] .handle-top {
+      top: calc(6% - 5px);
+    }
+    .node-shape[data-shape='rhombus'] .handle-bottom {
+      top: auto;
+      bottom: calc(6% - 5px);
     }
     .handle-output {
       background: var(--wb-accent);

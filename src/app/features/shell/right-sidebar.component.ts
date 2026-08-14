@@ -12,7 +12,9 @@ import {
   FormBuilder,
   ReactiveFormsModule,
   Validators,
+  type AbstractControl,
   type FormGroup,
+  type ValidatorFn,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { getAtPath, setAtPath } from '../../core/domain/config-path';
@@ -29,18 +31,37 @@ import {
   controlKeyForPath,
   type XpmsFieldDescriptor,
 } from '../../core/domain/properties.schema';
+import { REPEATER_MOCK_WORKFLOWS, versionsForWorkflow } from '../../core/domain/repeater-mock.catalog';
+import {
+  isRouterRepeaterLabelUnique,
+  readRepeaterData,
+} from '../../core/domain/logic-node-rules';
 import {
   SIDEBAR_WIDTH_RIGHT_DEFAULT,
   clampSidebarWidth,
 } from '../../core/domain/sidebar-width';
 import type {
   NodeStatus,
+  NodeType,
   WorkflowEdge,
   WorkflowNode,
 } from '../../core/domain/workflow.models';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 
 type PanelMode = 'empty' | 'node' | 'edge';
+type EdgeKind = 'connection' | 'connector' | 'condition-out';
+
+function requiredTrimmed(): ValidatorFn {
+  return (control: AbstractControl) =>
+    String(control.value ?? '').trim() === '' ? { required: true } : null;
+}
+
+function routerRepeaterUniqueValidator(facade: WorkflowFacade, excludeId: string): ValidatorFn {
+  return (control: AbstractControl) =>
+    isRouterRepeaterLabelUnique(String(control.value ?? ''), facade.nodes(), excludeId)
+      ? null
+      : { duplicateLabel: true };
+}
 
 @Component({
   selector: 'wb-right-sidebar',
@@ -109,7 +130,7 @@ type PanelMode = 'empty' | 'node' | 'edge';
             } @else if (mode === 'edge') {
               <form [formGroup]="form" (ngSubmit)="onSaveEdge()">
                 <section class="section">
-                  <h3>Connection</h3>
+                  <h3>{{ edgeKind === 'connector' ? 'Connector' : 'Connection' }}</h3>
                   <label class="field">
                     <span class="field-label">Id</span>
                     <input type="text" formControlName="id" readonly />
@@ -122,12 +143,44 @@ type PanelMode = 'empty' | 'node' | 'edge';
                     <span class="field-label">Target</span>
                     <input type="text" formControlName="target" readonly />
                   </label>
-                  <label class="field">
-                    <span class="field-label">Label</span>
-                    <input type="text" formControlName="label" />
-                  </label>
+                  @if (edgeKind === 'connector') {
+                    <label class="field">
+                      <span class="field-label">Name</span>
+                      <input type="text" formControlName="label" data-testid="properties-connector-name" />
+                      @if (form.controls['label'].invalid && form.controls['label'].touched) {
+                        <span class="field-error">Name is required</span>
+                      }
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Condition</span>
+                      <input
+                        type="text"
+                        formControlName="condition"
+                        placeholder="Enter Condition"
+                        data-testid="properties-connector-condition"
+                      />
+                      @if (form.controls['condition'].invalid && form.controls['condition'].touched) {
+                        <span class="field-error">Condition is required</span>
+                      }
+                    </label>
+                  } @else if (edgeKind === 'condition-out') {
+                    <label class="field">
+                      <span class="field-label">Label</span>
+                      <input
+                        type="text"
+                        formControlName="label"
+                        readonly
+                        data-testid="properties-condition-edge-label"
+                      />
+                    </label>
+                  } @else {
+                    <label class="field">
+                      <span class="field-label">Label</span>
+                      <input type="text" formControlName="label" />
+                    </label>
+                  }
                 </section>
-                @if (facade.editorMode() === 'edit') {
+                @if (facade.editorMode() === 'edit' && edgeKind !== 'condition-out') {
                   <footer class="properties-footer">
                     <button type="submit" class="save-btn" [disabled]="!canSave" aria-label="Save properties">
                       Save
@@ -142,7 +195,9 @@ type PanelMode = 'empty' | 'node' | 'edge';
                   <label class="field">
                     <span class="field-label">Label</span>
                     <input type="text" formControlName="label" />
-                    @if (form.controls['label'].invalid && form.controls['label'].touched) {
+                    @if (form.controls['label'].hasError('duplicateLabel') && form.controls['label'].touched) {
+                      <span class="field-error">A Router or Repeater with this name already exists</span>
+                    } @else if (form.controls['label'].invalid && form.controls['label'].touched) {
                       <span class="field-error">Label is required</span>
                     }
                   </label>
@@ -179,7 +234,65 @@ type PanelMode = 'empty' | 'node' | 'edge';
                       </label>
                     }
                   </section>
-                } @else {
+                } @else if (boundNodeType === 'Condition') {
+                  <section class="section" formGroupName="configuration">
+                    <h3>Condition</h3>
+                    <label class="field">
+                      <span class="field-label">Condition</span>
+                      <textarea
+                        rows="3"
+                        formControlName="condition"
+                        placeholder="Enter Condition"
+                        data-testid="properties-condition-input"
+                      ></textarea>
+                      @if (form.get('configuration.condition')?.invalid && form.get('configuration.condition')?.touched) {
+                        <span class="field-error">Condition is required</span>
+                      }
+                    </label>
+                  </section>
+                } @else if (boundNodeType === 'Repeater') {
+                  <section class="section" formGroupName="configuration">
+                    <h3>Repeater</h3>
+                    <label class="field">
+                      <span class="field-label">Workflow/Agent</span>
+                      <select formControlName="repeater_workflowId" data-testid="properties-repeater-workflow">
+                        <option value="">Select workflow</option>
+                        @for (wf of repeaterWorkflows; track wf.id) {
+                          <option [value]="wf.id">{{ wf.name }}</option>
+                        }
+                      </select>
+                      @if (
+                        form.get('configuration.repeater_workflowId')?.invalid &&
+                        form.get('configuration.repeater_workflowId')?.touched
+                      ) {
+                        <span class="field-error">Workflow/Agent is required</span>
+                      }
+                    </label>
+                    <label class="field">
+                      <span class="field-label">Workflow/Agent Version</span>
+                      <select formControlName="repeater_versionId" data-testid="properties-repeater-version">
+                        <option value="">Select version</option>
+                        @for (ver of repeaterVersionOptions; track ver.id) {
+                          <option [value]="ver.id">{{ ver.name }}</option>
+                        }
+                      </select>
+                      @if (
+                        form.get('configuration.repeater_versionId')?.invalid &&
+                        form.get('configuration.repeater_versionId')?.touched
+                      ) {
+                        <span class="field-error">Version is required</span>
+                      }
+                    </label>
+                    <label class="check-field">
+                      <input
+                        type="checkbox"
+                        formControlName="repeater_is_paused"
+                        data-testid="properties-repeater-paused"
+                      />
+                      <span class="field-label">Pause</span>
+                    </label>
+                  </section>
+                } @else if (configFields.length > 0) {
                   <section class="section" formGroupName="configuration">
                     <h3>Configuration</h3>
                     @for (field of configFields; track field.config_path) {
@@ -349,6 +462,10 @@ type PanelMode = 'empty' | 'node' | 'edge';
     }
     input:disabled, select:disabled, textarea:disabled { opacity: 0.7; cursor: not-allowed; }
     input[readonly] { opacity: 0.85; }
+    .check-field {
+      display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.65rem;
+    }
+    .check-field input[type='checkbox'] { width: auto; }
     .properties-footer { margin-top: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--wb-border); }
     .save-btn {
       width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--wb-border);
@@ -371,11 +488,15 @@ export class RightSidebarComponent {
   readonly statusOptions = NODE_STATUS_OPTIONS;
 
   mode: PanelMode = 'empty';
+  edgeKind: EdgeKind = 'connection';
+  boundNodeType: NodeType | null = null;
   form: FormGroup | null = null;
   configFields: XpmsFieldDescriptor[] = [];
   ensoFields: DynamicFieldSpec[] = [];
   headerSubtitle = 'Select a node or connection';
   canSave = false;
+  readonly repeaterWorkflows = REPEATER_MOCK_WORKFLOWS;
+  repeaterVersionOptions = versionsForWorkflow('');
 
   private boundNodeId: string | null = null;
   private boundEdgeId: string | null = null;
@@ -485,7 +606,10 @@ export class RightSidebarComponent {
     if (!draft || draft.id !== this.boundEdgeId) {
       return;
     }
-    const ok = this.facade.patchEdge(draft.id, { label: draft.label });
+    const ok = this.facade.patchEdge(draft.id, {
+      label: draft.label,
+      condition: draft.condition,
+    });
     if (ok) {
       const edge = this.facade.edges().find((e) => e.id === this.boundEdgeId) ?? null;
       this.bindEdge(edge, this.facade.editorMode());
@@ -515,6 +639,9 @@ export class RightSidebarComponent {
     this.headerSubtitle = 'Select a node or connection';
     this.boundNodeId = null;
     this.boundEdgeId = null;
+    this.boundNodeType = null;
+    this.edgeKind = 'connection';
+    this.repeaterVersionOptions = versionsForWorkflow('');
     this.boundMode = editorMode;
     this.canSave = false;
     if (!this.collapsed()) {
@@ -532,18 +659,47 @@ export class RightSidebarComponent {
     this.mode = 'edge';
     this.boundEdgeId = edge.id;
     this.boundNodeId = null;
+    this.boundNodeType = null;
     this.boundMode = editorMode;
     this.ensoFields = [];
     this.configFields = [];
-    this.headerSubtitle = `Connection · ${edge.id}`;
+
+    const sourceType = this.facade.nodes().find((n) => n.id === edge.source)?.type;
+    if (sourceType === 'Decision') {
+      this.edgeKind = 'connector';
+      this.headerSubtitle = `Connector · ${edge.id}`;
+    } else if (sourceType === 'Condition') {
+      this.edgeKind = 'condition-out';
+      this.headerSubtitle = `Connection · ${edge.id}`;
+    } else {
+      this.edgeKind = 'connection';
+      this.headerSubtitle = `Connection · ${edge.id}`;
+    }
 
     this.suppressDraftWrite = true;
-    this.form = this.fb.group({
-      id: [{ value: edge.id, disabled: true }],
-      source: [{ value: edge.source, disabled: true }],
-      target: [{ value: edge.target, disabled: true }],
-      label: [edge.label ?? ''],
-    });
+    if (this.edgeKind === 'connector') {
+      this.form = this.fb.group({
+        id: [{ value: edge.id, disabled: true }],
+        source: [{ value: edge.source, disabled: true }],
+        target: [{ value: edge.target, disabled: true }],
+        label: [edge.label ?? '', requiredTrimmed()],
+        condition: [edge.condition ?? '', requiredTrimmed()],
+      });
+    } else if (this.edgeKind === 'condition-out') {
+      this.form = this.fb.group({
+        id: [{ value: edge.id, disabled: true }],
+        source: [{ value: edge.source, disabled: true }],
+        target: [{ value: edge.target, disabled: true }],
+        label: [{ value: edge.label ?? '', disabled: true }],
+      });
+    } else {
+      this.form = this.fb.group({
+        id: [{ value: edge.id, disabled: true }],
+        source: [{ value: edge.source, disabled: true }],
+        target: [{ value: edge.target, disabled: true }],
+        label: [edge.label ?? ''],
+      });
+    }
     if (editorMode === 'view') {
       this.form.disable({ emitEvent: false });
     }
@@ -571,8 +727,11 @@ export class RightSidebarComponent {
     this.mode = 'node';
     this.boundNodeId = node.id;
     this.boundEdgeId = null;
+    this.boundNodeType = node.type;
+    this.edgeKind = 'connection';
     this.boundMode = editorMode;
-    this.headerSubtitle = `${node.label} · ${node.type}`;
+    const typeLabel = node.type === 'Decision' ? 'Router' : node.type;
+    this.headerSubtitle = `${node.label} · ${typeLabel}`;
 
     const ensoTask = node.data['ensoTask'];
     const hasEnso =
@@ -603,10 +762,24 @@ export class RightSidebarComponent {
         const key = controlKeyForPath(field.config_path);
         const raw = getAtPath(node.data, field.config_path);
         const value = raw === undefined ? field.value : raw;
-        configGroup[key] = [String(value), field.required ? [Validators.required] : []];
+        const validators = field.required ? [requiredTrimmed()] : [];
+        if (field.data_type === 'boolean' && field.ui_component === 'checkbox') {
+          configGroup[key] = [value === true, validators];
+        } else {
+          configGroup[key] = [value == null ? '' : String(value), validators];
+        }
+      }
+      const labelValidators = [Validators.required];
+      if (node.type === 'Decision' || node.type === 'Repeater') {
+        labelValidators.push(routerRepeaterUniqueValidator(this.facade, node.id));
+      }
+      if (node.type === 'Repeater') {
+        this.repeaterVersionOptions = versionsForWorkflow(readRepeaterData(node.data).workflowId);
+      } else {
+        this.repeaterVersionOptions = versionsForWorkflow('');
       }
       this.form = this.fb.group({
-        label: [node.label, Validators.required],
+        label: [node.label, labelValidators],
         subtitle: [node.subtitle],
         status: [node.status as NodeStatus, Validators.required],
         configuration: this.fb.group(configGroup),
@@ -629,9 +802,27 @@ export class RightSidebarComponent {
       }),
     );
     this.formSubs.add(this.form.statusChanges.subscribe(() => this.refreshCanSave(editorMode)));
+    if (node.type === 'Repeater') {
+      this.formSubs.add(
+        this.form.get(['configuration', 'repeater_workflowId'])?.valueChanges.subscribe((workflowId) => {
+          if (this.suppressDraftWrite || !this.form) {
+            return;
+          }
+          this.repeaterVersionOptions = versionsForWorkflow(String(workflowId ?? ''));
+          const versionCtrl = this.form.get(['configuration', 'repeater_versionId']);
+          if (versionCtrl && String(versionCtrl.value ?? '') !== '') {
+            versionCtrl.setValue('', { emitEvent: true });
+          }
+        }),
+      );
+    }
   }
 
   private refreshCanSave(mode: 'edit' | 'view'): void {
+    if (this.edgeKind === 'condition-out' && this.mode === 'edge') {
+      this.canSave = false;
+      return;
+    }
     this.canSave = mode === 'edit' && !!this.form && this.form.valid && this.form.dirty;
   }
 
@@ -643,10 +834,11 @@ export class RightSidebarComponent {
     if (!baseline) {
       return;
     }
-    const raw = this.form.getRawValue() as { label?: string };
+    const raw = this.form.getRawValue() as { label?: string; condition?: string };
     this.facade.setPropertiesEdgeDraft({
       ...baseline,
       label: raw.label ?? '',
+      condition: raw.condition ?? baseline.condition ?? '',
       waypoints: baseline.waypoints.map((p) => ({ ...p })),
     });
   }
@@ -664,7 +856,7 @@ export class RightSidebarComponent {
       label: string;
       subtitle: string;
       status: NodeStatus;
-      configuration?: Record<string, string>;
+      configuration?: Record<string, string | boolean>;
       enso?: Record<string, string>;
     };
 
@@ -686,7 +878,7 @@ export class RightSidebarComponent {
         const str = raw.configuration?.[key];
         const coerced =
           field.data_type === 'boolean'
-            ? str === 'true'
+            ? str === true || str === 'true'
             : field.data_type === 'number'
               ? Number(str)
               : (str ?? field.value);

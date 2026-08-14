@@ -98,6 +98,7 @@ describe('connection.math', () => {
     expect(e1).not.toBeNull();
     expect(e2).not.toBeNull();
     expect(e1!.waypoints).toEqual([]);
+    expect(e1!.condition).toBe('');
     expect(e1!.sourceSide).toBeDefined();
     expect(e1!.targetSide).toBeDefined();
     expect(isValidCreatedEdgeId(e1!.id, 'a', 'b')).toBe(true);
@@ -143,6 +144,7 @@ describe('connection.math', () => {
       source: 'a',
       target: 'b',
       label: '',
+      condition: '',
       waypoints: [] as { x: number; y: number }[],
       sourceSide: 'top' as const,
       targetSide: 'bottom' as const,
@@ -177,6 +179,34 @@ describe('connection.math', () => {
     expect(hit).not.toBeNull();
     expect(hit!.id).toBe('b');
     expect(['left', 'top', 'bottom']).toContain(hit!.side);
+  });
+
+  it('Condition diamond upper tip snaps to top (not left/right)', () => {
+    const nodes: WorkflowNode[] = [
+      {
+        id: 'src',
+        type: 'Action',
+        label: 'Src',
+        subtitle: '',
+        position: { x: 0, y: 0 },
+        status: 'idle',
+        data: {},
+      },
+      {
+        id: 'cond',
+        type: 'Condition',
+        label: 'Condition',
+        subtitle: '',
+        position: { x: 200, y: 200 },
+        status: 'idle',
+        data: {},
+      },
+    ];
+    // Upper tip / flank of 96×96 diamond — Euclidean used to prefer left
+    const topHit = findConnectionTargetAt({ x: 248, y: 208 }, nodes, 'src', 'right');
+    expect(topHit).toEqual({ id: 'cond', side: 'top' });
+    const bottomHit = findConnectionTargetAt({ x: 248, y: 288 }, nodes, 'src', 'right');
+    expect(bottomHit).toEqual({ id: 'cond', side: 'bottom' });
   });
 });
 

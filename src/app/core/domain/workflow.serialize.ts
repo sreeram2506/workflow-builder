@@ -39,6 +39,7 @@ export function serializeWorkflow(doc: WorkflowDocument): string {
     edges: doc.edges.map((e) => ({
       ...e,
       label: e.label ?? '',
+      condition: e.condition ?? '',
       waypoints: e.waypoints.map((p) => ({ ...p })),
     })),
   };
@@ -225,6 +226,7 @@ function parseEdge(item: unknown): WorkflowEdge | null {
     return null;
   }
   const label = typeof o['label'] === 'string' ? o['label'] : '';
+  const condition = typeof o['condition'] === 'string' ? o['condition'] : '';
   const waypoints: { x: number; y: number }[] = [];
   if (Array.isArray(o['waypoints'])) {
     for (const wp of o['waypoints']) {
@@ -245,6 +247,7 @@ function parseEdge(item: unknown): WorkflowEdge | null {
     source: o['source'],
     target: o['target'],
     label,
+    condition,
     waypoints,
     ...(sourceSide ? { sourceSide } : {}),
     ...(targetSide ? { targetSide } : {}),

@@ -4,8 +4,10 @@ import { getAtPath, setAtPath } from './config-path';
 import { ALLOWED_NODE_TYPES } from './workflow.models';
 import {
   LOCKED_CONFIG_PATH,
+  LOGIC_NODE_TYPES,
   assertRegistryV1Invariant,
   configurationFieldsFor,
+  isLogicNodeType,
 } from './properties.schema';
 
 describe('config-path', () => {
@@ -40,13 +42,24 @@ describe('config-path', () => {
 });
 
 describe('properties.schema registry', () => {
-  it('every NodeType has exactly one Configuration boolean at locked path', () => {
+  it('non-logic types keep exactly one Configuration boolean at locked path', () => {
     expect(assertRegistryV1Invariant()).toBe(true);
-    for (const type of ALLOWED_NODE_TYPES) {
+    for (const type of ALLOWED_NODE_TYPES.filter((t) => !isLogicNodeType(t))) {
       const fields = configurationFieldsFor(type);
       expect(fields).toHaveLength(1);
       expect(fields[0]!.data_type).toBe('boolean');
       expect(fields[0]!.config_path).toBe(LOCKED_CONFIG_PATH);
     }
+  });
+
+  it('logic types have type-specific configuration fields', () => {
+    expect(LOGIC_NODE_TYPES).toEqual(['Condition', 'Decision', 'Repeater']);
+    expect(configurationFieldsFor('Condition').map((f) => f.config_path)).toEqual(['condition']);
+    expect(configurationFieldsFor('Decision')).toEqual([]);
+    expect(configurationFieldsFor('Repeater').map((f) => f.config_path)).toEqual([
+      'repeater.workflowId',
+      'repeater.versionId',
+      'repeater.is_paused',
+    ]);
   });
 });

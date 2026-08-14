@@ -1,7 +1,10 @@
 import { ALLOWED_NODE_TYPES, type NodeStatus, type NodeType } from './workflow.models';
+import { REPEATER_MOCK_WORKFLOWS } from './repeater-mock.catalog';
 
 /** Locked Configuration mock path (under node.data). */
 export const LOCKED_CONFIG_PATH = 'config.data.ignore_keys_in_paragraph';
+
+export const LOGIC_NODE_TYPES: readonly NodeType[] = ['Condition', 'Decision', 'Repeater'];
 
 export type XpmsDataType = 'boolean' | 'string' | 'number';
 
@@ -59,14 +62,94 @@ function schemaFor(type: NodeType): NodeTypeSchema {
   };
 }
 
+function conditionSchema(): NodeTypeSchema {
+  return {
+    type: 'Condition',
+    configurationFields: [
+      {
+        name: 'Condition',
+        description: 'Expression evaluated for the true/false branch',
+        data_type: 'string',
+        value: '',
+        multi_select: false,
+        hidden: false,
+        config_path: 'condition',
+        ui_component: 'textarea',
+        required: true,
+        basic: true,
+        placeholder: 'Enter Condition',
+        options: [],
+      },
+    ],
+  };
+}
+
+function decisionSchema(): NodeTypeSchema {
+  return {
+    type: 'Decision',
+    configurationFields: [],
+  };
+}
+
+function repeaterSchema(): NodeTypeSchema {
+  return {
+    type: 'Repeater',
+    configurationFields: [
+      {
+        name: 'Workflow/Agent',
+        description: 'Nested workflow to repeat',
+        data_type: 'string',
+        value: '',
+        multi_select: false,
+        hidden: false,
+        config_path: 'repeater.workflowId',
+        ui_component: 'select',
+        required: true,
+        basic: true,
+        placeholder: 'Select workflow',
+        options: REPEATER_MOCK_WORKFLOWS.map((workflow) => workflow.id),
+      },
+      {
+        name: 'Workflow/Agent Version',
+        description: 'Version of the selected workflow',
+        data_type: 'string',
+        value: '',
+        multi_select: false,
+        hidden: false,
+        config_path: 'repeater.versionId',
+        ui_component: 'select',
+        required: true,
+        basic: true,
+        placeholder: 'Select version',
+        options: [],
+      },
+      {
+        name: 'Pause',
+        description: 'Pause this repeater',
+        data_type: 'boolean',
+        op_type: 'categorical',
+        value: false,
+        multi_select: false,
+        hidden: false,
+        config_path: 'repeater.is_paused',
+        ui_component: 'checkbox',
+        required: false,
+        basic: false,
+        placeholder: null,
+        options: [true, false],
+      },
+    ],
+  };
+}
+
 export const NODE_TYPE_SCHEMAS: Readonly<Record<NodeType, NodeTypeSchema>> = {
   Trigger: schemaFor('Trigger'),
   Action: schemaFor('Action'),
-  Condition: schemaFor('Condition'),
+  Condition: conditionSchema(),
   Delay: schemaFor('Delay'),
   End: schemaFor('End'),
-  Decision: schemaFor('Decision'),
-  Repeater: schemaFor('Repeater'),
+  Decision: decisionSchema(),
+  Repeater: repeaterSchema(),
   Notification: schemaFor('Notification'),
   AIAgent: schemaFor('AIAgent'),
 };
@@ -80,8 +163,13 @@ export function controlKeyForPath(configPath: string): string {
   return configPath.replace(/\./g, '_');
 }
 
+export function isLogicNodeType(type: NodeType): boolean {
+  return LOGIC_NODE_TYPES.includes(type);
+}
+
+/** v1 invariant: non-logic types still have exactly one Ignore Keys boolean. */
 export function assertRegistryV1Invariant(): boolean {
-  return ALLOWED_NODE_TYPES.every((type) => {
+  return ALLOWED_NODE_TYPES.filter((type) => !isLogicNodeType(type)).every((type) => {
     const fields = configurationFieldsFor(type);
     return (
       fields.length === 1 &&

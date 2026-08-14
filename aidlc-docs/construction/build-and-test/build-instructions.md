@@ -1,6 +1,6 @@
 # Build Instructions
 
-**Scope**: Units U1–U8  
+**Scope**: Units U1–U9 (including Logic Node Properties increment)  
 **Workspace**: `/Users/sreeram/ofcwork/workflow-builder`
 
 ## Prerequisites
@@ -19,20 +19,22 @@ npm install
 ```
 
 ### 2. Configure Environment
-- No `.env` required for mock graph / in-memory history / Run simulation
+- No `.env` required for mock graph / in-memory history / Run simulation / Repeater mock catalog
 - Optional: enso token + `proxy.conf.json` for live palette
 - Workflows are **not** persisted to localStorage (refresh clears)
 - Optional: tune `runStepDelayMs` (reduced-motion still caps ≤50 ms)
 
-### 3. Build
+### 3. Build All Units
 ```bash
 npm run build
 ```
 
 ### 4. Verify Build Success
 - **Expected**: `Application bundle generation complete` → `dist/workflow-builder/`
-- **Last verified** (2026-08-12T08:13:51Z): ~468.13 kB raw main / ~504.21 kB initial total / ~128.00 kB estimated transfer
-- **Common warning**: initial bundle budget 500 kB exceeded by ~4 kB (acceptable for this prototype)
+- **Last verified** (2026-08-14T04:04:02Z): ~504.34 kB raw main / ~540.48 kB initial total / ~134.68 kB estimated transfer
+- **Common warnings** (acceptable for this prototype):
+  - initial bundle budget 500 kB exceeded by ~40.48 kB
+  - `left-sidebar.component.ts` styles budget 4 kB exceeded (~6.44 kB)
 
 ### 5. Dev Serve
 ```bash
@@ -40,7 +42,13 @@ npm start
 ```
 
 ## Troubleshooting
-- Dependency errors: confirm Node 22.x; reinstall `node_modules`
-- Compile errors: fix reported `src/` paths; re-run `npm run build`
+
+### Build Fails with Dependency Errors
+- **Cause**: Wrong Node, incomplete `node_modules`
+- **Solution**: Confirm Node 22.x; delete `node_modules` and reinstall
+
+### Build Fails with Compilation Errors
+- **Cause**: Type errors in `src/`
+- **Solution**: Fix reported paths; re-run `npm run build`
 - Enso palette auth/network: static fallback + banner
 - Angular 22 needs newer Node — stay on Angular 20 for this machine

@@ -32,7 +32,8 @@ describe('App', () => {
     expect(text).toContain('Search nodes');
     // Catalog items (click-to-add targets)
     expect(text).toContain('Initiate workflows');
-    expect(text).toContain('Blank Agent');
+    expect(text).toContain('Condition');
+    expect(text).not.toContain('Blank Agent');
     expect(text).not.toContain('Canvas engine in Phase 2');
   });
 

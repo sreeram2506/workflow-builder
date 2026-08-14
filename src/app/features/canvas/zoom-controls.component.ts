@@ -73,22 +73,6 @@ import type { LayoutMode } from '../../core/domain/layout.math';
           <option value="horizontal">Horizontal</option>
           <option value="layered">Layered</option>
         </select>
-        <button
-          type="button"
-          class="z-btn"
-          [disabled]="viewMode()"
-          (click)="routeEdges.emit()"
-          aria-label="Route edges"
-          title="Route edges"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
-            <path
-              d="M2 3h4v2H4v4h2v2H2V3zm6 0h4v8H8v-2h2V5H8V3z"
-              fill="currentColor"
-            />
-          </svg>
-          Route
-        </button>
       </div>
       <div class="zoom-controls" role="group" aria-label="Zoom controls">
         <button type="button" class="z-btn" (click)="zoomIn.emit()" aria-label="Zoom in" title="Zoom in">
@@ -185,7 +169,6 @@ export class ZoomControlsComponent {
   readonly zoomOut = output<void>();
   readonly reset = output<void>();
   readonly applyLayout = output<LayoutMode>();
-  readonly routeEdges = output<void>();
   readonly undo = output<void>();
   readonly redo = output<void>();
 

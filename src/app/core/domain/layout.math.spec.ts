@@ -22,7 +22,7 @@ function node(id: string, x = 0, y = 0, type: WorkflowNode['type'] = 'Action'): 
 }
 
 function edge(id: string, source: string, target: string): WorkflowEdge {
-  return { id, source, target, label: '', waypoints: [] };
+  return { id, source, target, label: '', condition: '', waypoints: [] };
 }
 
 describe('layout.math', () => {

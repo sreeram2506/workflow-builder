@@ -237,7 +237,7 @@ export class GraphStore {
     this.commit({ ...doc, nodes }, options);
   }
 
-  patchEdge(id: string, partial: Partial<Pick<WorkflowEdge, 'label'>>): void {
+  patchEdge(id: string, partial: Partial<Pick<WorkflowEdge, 'label' | 'condition'>>): void {
     const doc = this.document();
     if (!doc) {
       return;
@@ -251,6 +251,7 @@ export class GraphStore {
       return {
         ...e,
         label: partial.label !== undefined ? partial.label : e.label,
+        condition: partial.condition !== undefined ? partial.condition : (e.condition ?? ''),
         waypoints: e.waypoints.map((p) => ({ ...p })),
       };
     });

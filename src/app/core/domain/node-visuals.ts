@@ -116,10 +116,11 @@ export function iconPathForType(type: NodeType): string {
       // Three-way branch: longer stems, up / left / right
       return 'M12 18V3m0 0l-2.4 2.8M12 3l2.4 2.8M12 10H3m0 0l2.6-2.2M3 10l2.6 2.2M12 10h9m0 0l-2.6-2.2M21 10l-2.6 2.2';
     case 'Decision':
-      return 'M4 12h8l6-6M12 12l6 6M18 6l-2.8.3M18 6l.3 2.8M18 18l-2.8-.3M18 18l.3-2.8';
+      // Y-fork with branch-aligned tips (matches canvas Router glyph)
+      return 'M3 12h9M12 12l6-5.5M12 12l6 5.5M18 6.5l-2.6.35M18 6.5l-.35 2.6M18 17.5l-.35-2.6M18 17.5l-2.6-.35';
     case 'Repeater':
-      // Dual CW sync arrows with horizontal tips (matches canvas Repeater glyph)
-      return 'M5 15.5a7 7 0 0 1 11-4.2M14.2 9.5l4.2 1.8-4.2 1.8M19 8.5a7 7 0 0 1-11 4.2M9.8 14.5l-4.2-1.8 4.2-1.8';
+      // Dual CW sync arrows; tips on N/S arc ends (matches canvas Repeater glyph)
+      return 'M7 16.5a7 7 0 0 1 5-11.5M12 5l-2.4-1.8M12 5l-2.4 1.8M17 7.5a7 7 0 0 1-5 11.5M12 19l2.4 1.8M12 19l2.4-1.8';
     case 'Delay':
       return 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5.2l3.5 2.1-1 1.6L11 13V7h2z';
     case 'Notification':

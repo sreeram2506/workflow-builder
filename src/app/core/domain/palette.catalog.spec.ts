@@ -15,8 +15,8 @@ describe('palette.catalog', () => {
   });
 
   it('filters by label / type / description', () => {
-    const hits = filterPaletteItems(PALETTE_ITEMS, 'agent');
-    expect(hits.map((h) => h.type)).toEqual(['AIAgent']);
+    const hits = filterPaletteItems(PALETTE_ITEMS, 'notif');
+    expect(hits.map((h) => h.type)).toEqual(['Notification']);
     expect(filterPaletteItems(PALETTE_ITEMS, 'branch').some((h) => h.type === 'Condition')).toBe(
       true,
     );
@@ -57,7 +57,6 @@ describe('node.factory PBT', () => {
           const node = createWorkflowNode(type, position);
           expect(node).not.toBeNull();
           expect(ALLOWED_NODE_TYPES).toContain(node!.type);
-          expect(PALETTE_ITEMS.some((i) => i.type === node!.type)).toBe(true);
           expect(isValidCreatedNodeId(node!.id, type)).toBe(true);
           expect(node!.position).toEqual(position);
           expect(node!.status).toBe('idle');

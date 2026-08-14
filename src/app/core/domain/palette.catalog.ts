@@ -23,15 +23,13 @@ export interface PaletteCategory {
 export const PALETTE_CATEGORIES: readonly PaletteCategory[] = [
   { id: 'flow', label: 'Flow' },
   { id: 'integration', label: 'Integration' },
-  { id: 'ai', label: 'AI' },
 ] as const;
 
-/** Shown in the featured shapes / Blank Agent strip (not in category lists). */
+/** Shown in the featured shapes strip (not in category lists). */
 export const FEATURED_PALETTE_TYPES: readonly NodeType[] = [
   'Condition',
   'Decision',
   'Repeater',
-  'AIAgent',
 ] as const;
 
 export const PALETTE_ITEMS: readonly PaletteItem[] = [
@@ -90,13 +88,6 @@ export const PALETTE_ITEMS: readonly PaletteItem[] = [
     label: 'Notification',
     description: 'Send alerts or notifications',
     categoryId: 'integration',
-  },
-  {
-    key: 'AIAgent',
-    type: 'AIAgent',
-    label: 'Blank Agent',
-    description: 'Run an AI-assisted step',
-    categoryId: 'ai',
   },
 ] as const;
 

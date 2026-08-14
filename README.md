@@ -1,6 +1,6 @@
 # Workflow Builder
 
-Angular workflow builder (Units U1–U8) — frontend-only, mock/in-memory data.
+Angular workflow builder (Units U1–U9) — frontend-only, mock/in-memory data.
 
 ## Stack
 - Angular **20** (latest CLI that runs on this machine’s Node 22.21.1; Angular 22 requires newer Node)
@@ -77,6 +77,14 @@ npm run build
 - View/edit toggle + **View** indicator; Run allowed in view; mutating locked
 - Polite `aria-live` announcements; status patches skip undo history
 - Env: `runStepDelayMs` (default 400)
+
+## Phase 11 scope (U9)
+- Condition Properties: General + required expression; outgoing edges labeled `true`/`false` (max 2, silent reject)
+- Router (`Decision`) Properties: General only; unique label vs other Routers/Repeaters
+- Router connectors: Name + required condition on the edge; new edges start as `Blank Condition`
+- Repeater: mock Workflow/Agent + dependent Version + Pause (no HTTP)
+- Ignore Keys hidden on Condition / Router / Repeater
+- Save-only persist (`patchNode` / `patchEdge`); view mode inspect-only
 
 ## Explicit limitations
 - **No localStorage persistence of workflows** (auth token may be read from enso `currentUser` for palette only)
