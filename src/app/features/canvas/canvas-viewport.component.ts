@@ -35,7 +35,17 @@ import { MinimapComponent } from './minimap.component';
 import { WorkflowNodeComponent } from './workflow-node.component';
 import { ZoomControlsComponent } from './zoom-controls.component';
 
-type Gesture = 'idle' | 'pan' | 'marquee' | 'nodeDrag' | 'connect' | 'waypointDrag';
+type Gesture =
+  | 'idle'
+  | 'pan'
+  | 'marquee'
+  | 'pendingNodeDrag'
+  | 'nodeDrag'
+  | 'connect'
+  | 'waypointDrag';
+
+/** Screen px before a node press becomes a drag (preserves dblclick). */
+const NODE_DRAG_THRESHOLD_PX = 5;
 
 @Component({
   selector: 'wb-canvas-viewport',
@@ -86,6 +96,7 @@ type Gesture = 'idle' | 'pan' | 'marquee' | 'nodeDrag' | 'connect' | 'waypointDr
             [selected]="isSelected(node.id)"
             (pointerDown)="onNodePointerDown($event)"
             (connectStart)="onConnectStart($event)"
+            (nodeDblClick)="onNodeDblClick($event)"
           />
         }
       </div>
@@ -323,7 +334,7 @@ export class CanvasViewportComponent implements AfterViewInit {
     try {
       const event = payload.event;
       event.stopPropagation();
-      event.preventDefault();
+      // Do not preventDefault — that suppresses dblclick and blocks Blank Agent open.
       this.refreshViewSize();
       this.clearWaypointFocus();
 
@@ -340,13 +351,38 @@ export class CanvasViewportComponent implements AfterViewInit {
         this.dragNodeIds = [payload.nodeId];
       }
 
+      // Tabbed UX: selecting Blank Agent opens/focuses a header tab (does not navigate).
+      if (!this.facade.editingAgentNodeId()) {
+        const selected = this.facade.nodes().find((n) => n.id === payload.nodeId);
+        if (selected?.type === 'AIAgent') {
+          this.facade.openAgentTab(payload.nodeId);
+        }
+      }
+
       const screen = this.toLocalScreen(event);
+      this.lastScreen = screen;
       this.lastWorld = screenToWorld(screen, this.facade.viewport());
-      this.gesture = 'nodeDrag';
-      this.facade.beginHistoryGesture();
+      this.panDistance = 0;
+      this.gesture = 'pendingNodeDrag';
       this.viewportEl().nativeElement.setPointerCapture(event.pointerId);
     } catch (err) {
       this.facade.setCanvasError(err instanceof Error ? err.message : 'Node drag error');
+    }
+  }
+
+  onNodeDblClick(payload: { event: MouseEvent; nodeId: string }): void {
+    try {
+      // Nested agent canvas edits skills as nodes — do not re-enter agent from inside.
+      if (this.facade.editingAgentNodeId()) {
+        return;
+      }
+      const node = this.facade.nodes().find((n) => n.id === payload.nodeId);
+      if (!node || node.type !== 'AIAgent') {
+        return;
+      }
+      this.facade.selectAgentTab(payload.nodeId);
+    } catch (err) {
+      this.facade.setCanvasError(err instanceof Error ? err.message : 'Agent tab error');
     }
   }
 
@@ -458,6 +494,19 @@ export class CanvasViewportComponent implements AfterViewInit {
       if (this.gesture === 'marquee' && this.marqueeOriginWorld) {
         const world = screenToWorld(screen, this.facade.viewport());
         this.marquee.set(normalizeRect(this.marqueeOriginWorld, world));
+        return;
+      }
+      if (this.gesture === 'pendingNodeDrag') {
+        const dx = screen.x - this.lastScreen.x;
+        const dy = screen.y - this.lastScreen.y;
+        this.panDistance += Math.hypot(dx, dy);
+        this.lastScreen = screen;
+        if (this.panDistance < NODE_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        this.gesture = 'nodeDrag';
+        this.facade.beginHistoryGesture();
+        this.lastWorld = screenToWorld(screen, this.facade.viewport());
         return;
       }
       if (this.gesture === 'nodeDrag') {

@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragEnd, CdkDropList } from '@angular/cdk/drag-drop';
-import { Component, DestroyRef, HostListener, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime } from 'rxjs';
@@ -10,19 +10,21 @@ import {
   logicShapeKind,
 } from '../../core/domain/node-visuals';
 import type { NodeType } from '../../core/domain/workflow.models';
-import { FEATURED_PALETTE_TYPES } from '../../core/domain/palette.catalog';
 import {
-  SIDEBAR_WIDTH_LEFT_DEFAULT,
-  clampSidebarWidth,
-} from '../../core/domain/sidebar-width';
-import {
+  BLANK_AGENT_TYPE,
+  FEATURED_PALETTE_TYPES,
   PALETTE_CATEGORIES,
   PALETTE_ITEMS,
+  blankAgentPaletteItem,
   filterPaletteItems,
   type PaletteCategory,
   type PaletteCategoryId,
   type PaletteItem,
 } from '../../core/domain/palette.catalog';
+import {
+  SIDEBAR_WIDTH_LEFT_DEFAULT,
+  clampSidebarWidth,
+} from '../../core/domain/sidebar-width';
 import { screenToWorld } from '../../core/domain/viewport.math';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { CANVAS_DROP_LIST_ID, FEATURED_PALETTE_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
@@ -43,18 +45,19 @@ export {
       class="nodes-library-root"
       [class.is-collapsed]="collapsed()"
       [style.width.px]="collapsed() ? null : panelWidth()"
+      [style.top.px]="facade.chromeInsetTop()"
       data-testid="nodes-library-root"
     >
-      <aside class="library-panel" aria-label="Nodes Library">
+      <aside class="library-panel" [attr.aria-label]="libraryTitle()">
         <header class="library-header">
-          <h2>Nodes Library</h2>
+          <h2>{{ libraryTitle() }}</h2>
           <button
             type="button"
             class="icon-btn header-toggle"
             (click)="collapsedChange.emit(!collapsed())"
             [attr.aria-expanded]="!collapsed()"
-            [attr.aria-label]="collapsed() ? 'Expand Nodes Library' : 'Collapse Nodes Library'"
-            title="Toggle Nodes Library"
+            [attr.aria-label]="collapsed() ? 'Expand ' + libraryTitle() : 'Collapse ' + libraryTitle()"
+            [attr.title]="'Toggle ' + libraryTitle()"
             data-testid="nodes-library-chip"
           >
             <svg class="chip-icon" viewBox="3 4 18 16" aria-hidden="true" focusable="false">
@@ -80,9 +83,12 @@ export {
               <p class="catalog-banner" role="status">{{ catalogError() }}</p>
             }
             @if (catalogLoading()) {
-              <p class="catalog-banner" role="status">Loading tasks…</p>
+              <p class="catalog-banner" role="status">
+                {{ paletteScope() === 'solution' ? 'Loading agents…' : 'Loading tasks…' }}
+              </p>
             }
 
+            <!-- Featured logic shapes: solution + agent skills -->
             <div
               class="featured-strip"
               cdkDropList
@@ -99,6 +105,7 @@ export {
                   tabindex="0"
                   cdkDrag
                   [cdkDragData]="item.key"
+                  [cdkDragDisabled]="facade.editorMode() === 'view'"
                   (cdkDragStarted)="onDragStarted()"
                   (cdkDragEnded)="onDragEnded($event, item)"
                   (click)="onItemActivate(item, $event)"
@@ -106,6 +113,7 @@ export {
                   [attr.aria-label]="'Add ' + item.label + ' node'"
                   [style.--accent]="accentFor(item.type)"
                   [title]="item.label"
+                  [attr.data-testid]="'logic-shape-' + item.type"
                 >
                   @if (shapeKind(item.type); as kind) {
                     <svg class="shape-preview" viewBox="0 0 100 100" width="40" height="40">
@@ -191,83 +199,185 @@ export {
             </div>
             </div>
 
-            <div class="search-row">
-              <label class="sr-only" for="palette-search">Search nodes</label>
-              <input
-                id="palette-search"
-                type="search"
-                class="search-input"
-                placeholder="Search nodes…"
-                [ngModel]="searchInput()"
-                (ngModelChange)="onSearchInput($event)"
-                autocomplete="off"
-              />
-              @if (searchInput()) {
-                <button type="button" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">
-                  Clear
-                </button>
+            @if (paletteScope() === 'solution') {
+              @if (blankAgentItem(); as agentItem) {
+                <div
+                  class="blank-agent-row"
+                  role="list"
+                  aria-label="Blank Agent"
+                  cdkDropList
+                  [id]="blankAgentListId"
+                  [cdkDropListData]="blankAgentDragProxy"
+                  [cdkDropListSortingDisabled]="true"
+                  [cdkDropListEnterPredicate]="rejectEnter"
+                >
+                  <div
+                    class="node-card blank-agent-card"
+                    role="listitem"
+                    tabindex="0"
+                    cdkDrag
+                    [cdkDragData]="agentItem.key"
+                    [cdkDragDisabled]="facade.editorMode() === 'view'"
+                    (cdkDragStarted)="onDragStarted()"
+                    (cdkDragEnded)="onDragEnded($event, agentItem)"
+                    (click)="onItemActivate(agentItem, $event)"
+                    (keydown)="onItemKeydown(agentItem, $event)"
+                    [attr.aria-label]="'Add ' + agentItem.label + ' node'"
+                    data-testid="blank-agent-palette-card"
+                  >
+                    <div class="node-icon" [attr.data-icon]="agentItem.type" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path [attr.d]="iconPath(agentItem.type)" />
+                      </svg>
+                    </div>
+                    <div class="node-text">
+                      <div class="node-title" [attr.title]="agentItem.label">{{ agentItem.label }}</div>
+                      <div class="node-desc" [attr.title]="agentItem.description">{{ agentItem.description }}</div>
+                    </div>
+                  </div>
+                </div>
               }
-            </div>
 
-            <div
-              class="library-list"
-              role="list"
-              cdkDropList
-              [id]="paletteListId"
-              [cdkDropListData]="dragProxy"
-              [cdkDropListSortingDisabled]="true"
-              [cdkDropListEnterPredicate]="rejectEnter"
-            >
-              @for (cat of categories(); track cat.id) {
-                @if (itemsForCategory(cat.id); as catItems) {
-                  @if (catItems.length > 0) {
-                    <section class="category">
-                      <button
-                        type="button"
-                        class="category-toggle"
-                        [attr.aria-expanded]="!isCollapsed(cat.id)"
-                        (click)="toggleCategory(cat.id)"
-                      >
-                        <span class="chevron" [class.collapsed]="isCollapsed(cat.id)" aria-hidden="true">▾</span>
-                        {{ cat.label }}
-                        <span class="cat-count">{{ catItems.length }}</span>
-                      </button>
-                      @if (!isCollapsed(cat.id)) {
-                        <div class="category-items">
-                          @for (item of catItems; track item.key) {
-                            <div
-                              class="node-card"
-                              role="listitem"
-                              tabindex="0"
-                              cdkDrag
-                              [cdkDragData]="item.key"
-                              (cdkDragStarted)="onDragStarted()"
-                              (cdkDragEnded)="onDragEnded($event, item)"
-                              (click)="onItemActivate(item, $event)"
-                              (keydown)="onItemKeydown(item, $event)"
-                              [attr.aria-label]="'Add ' + item.label + ' node'"
-                            >
-                              <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                  <path [attr.d]="iconPath(item.type)" />
-                                </svg>
-                              </div>
-                              <div class="node-text">
-                                <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
-                                <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
-                              </div>
-                            </div>
-                          }
-                        </div>
-                      }
-                    </section>
+              <div class="search-row">
+                <label class="sr-only" for="palette-search-agents">Search agents</label>
+                <input
+                  id="palette-search-agents"
+                  type="search"
+                  class="search-input"
+                  placeholder="Search agents…"
+                  [ngModel]="searchInput()"
+                  (ngModelChange)="onSearchInput($event)"
+                  autocomplete="off"
+                />
+                @if (searchInput()) {
+                  <button type="button" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">
+                    Clear
+                  </button>
+                }
+              </div>
+
+              <div
+                class="library-list"
+                role="list"
+                aria-label="Solution agents"
+                cdkDropList
+                [id]="paletteListId"
+                [cdkDropListData]="dragProxy"
+                [cdkDropListSortingDisabled]="true"
+                [cdkDropListEnterPredicate]="rejectEnter"
+              >
+                @for (item of solutionAgentItems(); track item.key) {
+                  <div
+                    class="node-card"
+                    role="listitem"
+                    tabindex="0"
+                    cdkDrag
+                    [cdkDragData]="item.key"
+                    [cdkDragDisabled]="facade.editorMode() === 'view'"
+                    (cdkDragStarted)="onDragStarted()"
+                    (cdkDragEnded)="onDragEnded($event, item)"
+                    (click)="onItemActivate(item, $event)"
+                    (keydown)="onItemKeydown(item, $event)"
+                    [attr.aria-label]="'Add ' + item.label + ' agent'"
+                    [attr.data-testid]="'solution-agent-' + item.key"
+                  >
+                    <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path [attr.d]="iconPath(item.type)" />
+                      </svg>
+                    </div>
+                    <div class="node-text">
+                      <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                      <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                    </div>
+                  </div>
+                } @empty {
+                  @if (!catalogLoading()) {
+                    <p class="empty-hint">No agents loaded yet.</p>
                   }
                 }
-              }
-              @if (filteredItems().length === 0 && !catalogLoading()) {
-                <p class="empty-hint">No nodes match “{{ debouncedQuery() }}”.</p>
-              }
-            </div>
+              </div>
+            } @else {
+              <div class="search-row">
+                <label class="sr-only" for="palette-search">Search skills</label>
+                <input
+                  id="palette-search"
+                  type="search"
+                  class="search-input"
+                  placeholder="Search skills…"
+                  [ngModel]="searchInput()"
+                  (ngModelChange)="onSearchInput($event)"
+                  autocomplete="off"
+                />
+                @if (searchInput()) {
+                  <button type="button" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">
+                    Clear
+                  </button>
+                }
+              </div>
+
+              <div
+                class="library-list"
+                role="list"
+                cdkDropList
+                [id]="paletteListId"
+                [cdkDropListData]="dragProxy"
+                [cdkDropListSortingDisabled]="true"
+                [cdkDropListEnterPredicate]="rejectEnter"
+              >
+                @for (cat of categories(); track cat.id) {
+                  @if (itemsForCategory(cat.id); as catItems) {
+                    @if (catItems.length > 0) {
+                      <section class="category">
+                        <button
+                          type="button"
+                          class="category-toggle"
+                          [attr.aria-expanded]="!isCollapsed(cat.id)"
+                          (click)="toggleCategory(cat.id)"
+                        >
+                          <span class="chevron" [class.collapsed]="isCollapsed(cat.id)" aria-hidden="true">▾</span>
+                          {{ cat.label }}
+                          <span class="cat-count">{{ catItems.length }}</span>
+                        </button>
+                        @if (!isCollapsed(cat.id)) {
+                          <div class="category-items">
+                            @for (item of catItems; track item.key) {
+                              <div
+                                class="node-card"
+                                role="listitem"
+                                tabindex="0"
+                                cdkDrag
+                                [cdkDragData]="item.key"
+                                [cdkDragDisabled]="facade.editorMode() === 'view'"
+                                (cdkDragStarted)="onDragStarted()"
+                                (cdkDragEnded)="onDragEnded($event, item)"
+                                (click)="onItemActivate(item, $event)"
+                                (keydown)="onItemKeydown(item, $event)"
+                                [attr.aria-label]="'Add ' + item.label + ' node'"
+                                [attr.data-testid]="'skill-palette-' + item.key"
+                              >
+                                <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
+                                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path [attr.d]="iconPath(item.type)" />
+                                  </svg>
+                                </div>
+                                <div class="node-text">
+                                  <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                                  <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </section>
+                    }
+                  }
+                }
+                @if (filteredItems().length === 0 && !catalogLoading()) {
+                  <p class="empty-hint">No skills match “{{ debouncedQuery() }}”.</p>
+                }
+              </div>
+            }
           </div>
         }
       </aside>
@@ -276,7 +386,7 @@ export {
           class="resize-grip"
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize Nodes Library"
+          [attr.aria-label]="'Resize ' + libraryTitle()"
           title="Drag to resize"
           (pointerdown)="onResizeStart($event)"
         ></div>
@@ -287,7 +397,7 @@ export {
     /* Match app.workflowbuilder.io sidebar: collapsed = min-content/auto; expanded = 100%/fixed width */
     .nodes-library-root {
       position: absolute;
-      top: 88px;
+      top: 88px; /* overridden by [style.top.px] from chrome inset */
       left: 16px;
       bottom: 16px;
       z-index: 5;
@@ -424,11 +534,20 @@ export {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.4rem;
-      margin: 0 0 0.75rem;
+      margin: 0 0 0.5rem;
       flex-shrink: 0;
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+    }
+    .blank-agent-row {
+      flex-shrink: 0;
+      width: 100%;
+      margin: 0 0 0.75rem;
+      box-sizing: border-box;
+    }
+    .blank-agent-card {
+      width: 100%;
     }
     .logic-shape-btn {
       display: flex;
@@ -577,23 +696,36 @@ export {
     .cdk-drag-placeholder { opacity: 0.35; }
   `,
 })
-export class LeftSidebarComponent {
-  private readonly facade = inject(WorkflowFacade);
+export class LeftSidebarComponent implements OnInit {
   private readonly catalogApi = inject(EnsoTaskCatalogService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly search$ = new Subject<string>();
+  readonly facade = inject(WorkflowFacade);
 
   readonly collapsed = input(false);
   readonly collapsedChange = output<boolean>();
   readonly panelWidth = input(SIDEBAR_WIDTH_LEFT_DEFAULT);
   readonly panelWidthChange = output<number>();
+  /**
+   * solution = Agents Library (logic + Blank Agent + pipeline/list agents, mock on failure).
+   * agent = Skills Library (logic + full Enso catalog for nested agent canvas).
+   */
+  readonly paletteScope = input<'solution' | 'agent'>('solution');
+  /** Agent id when paletteScope is agent (route context). */
+  readonly agentNodeId = input<string | null>(null);
+
+  libraryTitle(): string {
+    return this.paletteScope() === 'agent' ? 'Skills Library' : 'Agents Library';
+  }
 
   readonly paletteListId = PALETTE_DROP_LIST_ID;
   readonly featuredListId = FEATURED_PALETTE_DROP_LIST_ID;
+  readonly blankAgentListId = 'wb-blank-agent-palette-list';
   readonly canvasListId = CANVAS_DROP_LIST_ID;
   /** Stable empty arrays so CDK never mutates the real catalog during drag. */
   readonly dragProxy: string[] = [];
   readonly featuredDragProxy: string[] = [];
+  readonly blankAgentDragProxy: string[] = [];
   readonly rejectEnter = (): boolean => false;
 
   readonly searchInput = signal('');
@@ -642,9 +774,12 @@ export class LeftSidebarComponent {
       this.debouncedQuery.set(q);
       this.filteredItems.set(filterPaletteItems(this.allItems(), q));
     });
+  }
 
+  ngOnInit(): void {
+    const mode = this.paletteScope() === 'solution' ? 'solution-agents' : 'agent-skills';
     this.catalogApi
-      .loadCatalog()
+      .loadCatalog({ mode })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
         this.catalogLoading.set(false);
@@ -660,6 +795,13 @@ export class LeftSidebarComponent {
       });
   }
 
+  /** API-loaded agents for solution palette (excludes static Blank Agent card). */
+  solutionAgentItems(): PaletteItem[] {
+    return this.filteredItems().filter(
+      (i) => i.type === BLANK_AGENT_TYPE && i.key !== BLANK_AGENT_TYPE,
+    );
+  }
+
   onSearchInput(value: string): void {
     this.searchInput.set(value);
     this.search$.next(value);
@@ -673,8 +815,16 @@ export class LeftSidebarComponent {
   itemsForCategory(id: PaletteCategoryId): PaletteItem[] {
     const featured = new Set<string>(FEATURED_PALETTE_TYPES);
     return this.filteredItems().filter(
-      (i) => i.categoryId === id && !featured.has(i.type) && i.categoryId !== 'logic',
+      (i) =>
+        i.categoryId === id &&
+        !featured.has(i.type) &&
+        i.type !== BLANK_AGENT_TYPE &&
+        i.categoryId !== 'logic',
     );
+  }
+
+  blankAgentItem(): PaletteItem | undefined {
+    return this.allItems().find((i) => i.type === BLANK_AGENT_TYPE) ?? blankAgentPaletteItem();
   }
 
   iconPath(type: PaletteItem['type']): string {

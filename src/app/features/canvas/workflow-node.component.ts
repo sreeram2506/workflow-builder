@@ -26,6 +26,7 @@ import type { PortSide } from '../../core/domain/viewport.math';
       [style.height.px]="size().height"
       [style.--accent]="accent()"
       (pointerdown)="onPointerDown($event)"
+      (dblclick)="onDblClick($event)"
       role="button"
       [attr.aria-label]="node().label"
       [attr.aria-selected]="selected()"
@@ -371,6 +372,7 @@ export class WorkflowNodeComponent {
   readonly selected = input(false);
   readonly pointerDown = output<{ event: PointerEvent; nodeId: string }>();
   readonly connectStart = output<{ event: PointerEvent; nodeId: string; side: PortSide }>();
+  readonly nodeDblClick = output<{ event: MouseEvent; nodeId: string }>();
 
   readonly size = computed(() => nodeSizeForType(this.node().type));
   readonly accent = computed(() => accentTokenForType(this.node().type));
@@ -380,6 +382,12 @@ export class WorkflowNodeComponent {
 
   onPointerDown(event: PointerEvent): void {
     this.pointerDown.emit({ event, nodeId: this.node().id });
+  }
+
+  onDblClick(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.nodeDblClick.emit({ event, nodeId: this.node().id });
   }
 
   onSourceHandle(event: PointerEvent, side: PortSide): void {

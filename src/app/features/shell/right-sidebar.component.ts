@@ -40,6 +40,7 @@ import {
   SIDEBAR_WIDTH_RIGHT_DEFAULT,
   clampSidebarWidth,
 } from '../../core/domain/sidebar-width';
+import { ensureSkillsArray, type AgentSkillRef } from '../../core/domain/agent-skills';
 import type {
   NodeStatus,
   NodeType,
@@ -72,6 +73,7 @@ function routerRepeaterUniqueValidator(facade: WorkflowFacade, excludeId: string
       class="properties-root"
       [class.is-collapsed]="collapsed()"
       [style.width.px]="collapsed() ? null : panelWidth()"
+      [style.top.px]="facade.chromeInsetTop()"
       data-testid="properties-root"
     >
       @if (!collapsed()) {
@@ -125,7 +127,36 @@ function routerRepeaterUniqueValidator(facade: WorkflowFacade, excludeId: string
         @if (!collapsed()) {
           <hr class="panel-rule" />
           <div class="properties-body">
-            @if (mode === 'empty' || !form) {
+            @if (agentSkillsMode() && facade.selectedSkillId(); as skillId) {
+              @if (skillEntry(skillId); as skill) {
+                <section class="section" data-testid="skill-properties">
+                  <h3>Skill</h3>
+                  <label class="field">
+                    <span class="field-label">Id</span>
+                    <input type="text" [value]="skill.skillId" readonly />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Name</span>
+                    <input type="text" [value]="skill.name" readonly />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">Description</span>
+                    <textarea rows="3" [value]="skill.description" readonly></textarea>
+                  </label>
+                  @if (facade.editorMode() === 'edit') {
+                    <button
+                      type="button"
+                      class="icon-btn danger"
+                      (click)="facade.removeSkillFromAgent(agentNodeId()!, skill.skillId)"
+                    >
+                      Remove skill
+                    </button>
+                  }
+                </section>
+              } @else {
+                <p class="empty">Skill not found on this agent.</p>
+              }
+            } @else if (mode === 'empty' || !form) {
               <p class="empty">Select a node or connection to edit properties.</p>
             } @else if (mode === 'edge') {
               <form [formGroup]="form" (ngSubmit)="onSaveEdge()">
@@ -329,7 +360,7 @@ function routerRepeaterUniqueValidator(facade: WorkflowFacade, excludeId: string
     /* Match app.workflowbuilder.io sidebar: collapsed = min-content/auto; expanded = 100%/fixed width */
     .properties-root {
       position: absolute;
-      top: 88px;
+      top: 88px; /* overridden by [style.top.px] from chrome inset */
       right: 16px;
       bottom: 16px;
       z-index: 5;
@@ -480,6 +511,9 @@ export class RightSidebarComponent {
   readonly collapsedChange = output<boolean>();
   readonly panelWidth = input(SIDEBAR_WIDTH_RIGHT_DEFAULT);
   readonly panelWidthChange = output<number>();
+  /** When true, Properties can show selected skill entry on nested agent route. */
+  readonly agentSkillsMode = input(false);
+  readonly agentNodeId = input<string | null>(null);
 
   readonly facade = inject(WorkflowFacade);
   private readonly fb = inject(FormBuilder);
@@ -507,6 +541,16 @@ export class RightSidebarComponent {
   private resizing = false;
   private resizeStartX = 0;
   private resizeStartWidth = SIDEBAR_WIDTH_RIGHT_DEFAULT;
+
+  skillEntry(skillId: string): AgentSkillRef | undefined {
+    const agentId = this.agentNodeId();
+    if (!agentId) {
+      return undefined;
+    }
+    return ensureSkillsArray(
+      this.facade.nodes().find((n) => n.id === agentId)?.data,
+    ).find((s) => s.skillId === skillId);
+  }
 
   @HostListener('document:pointermove', ['$event'])
   onDocPointerMove(event: PointerEvent): void {

@@ -1,6 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { routes } from '../../app.routes';
+import { MockWorkflowRepository } from '../../core/data/mock-workflow.repository';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { GraphStore } from '../../core/stores/graph.store';
 import { RightSidebarComponent } from './right-sidebar.component';
 
 describe('RightSidebarComponent logic nodes', () => {
@@ -9,9 +13,14 @@ describe('RightSidebarComponent logic nodes', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RightSidebarComponent],
+      providers: [provideRouter(routes)],
     });
     facade = TestBed.inject(WorkflowFacade);
     facade.initialize();
+    TestBed.inject(GraphStore).setDocument(
+      TestBed.inject(MockWorkflowRepository).getSampleWorkflow(),
+      { skipHistory: true, skipAutosave: true },
+    );
   });
 
   function createExpanded(): RightSidebarComponent {

@@ -70,3 +70,6 @@
 | Import/export | Primary | Export may be allowed; import locked unless later approved |
 | Run simulation | Primary | Allowed if non-mutating display only |
 | View mode toggle | Primary (enter/exit) | Primary (remain in view) |
+| Solution palette Blank Agent | Primary | Locked add |
+| Nested skills canvas | Primary | Read-only navigate + Back |
+| Mock skills placement | Primary | Locked |

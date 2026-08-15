@@ -11,7 +11,7 @@ export type NodeType =
 
 export type NodeStatus = 'idle' | 'running' | 'success' | 'error';
 
-export type WorkflowStatus = 'draft' | 'ready' | 'running';
+export type WorkflowStatus = 'draft' | 'saved' | 'ready' | 'running';
 
 export type Theme = 'dark' | 'light';
 

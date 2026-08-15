@@ -1,3 +1,4 @@
+import type { NodeType } from './workflow.models';
 import { slugCategoryId, type PaletteCategory, type PaletteItem } from './palette.catalog';
 
 export interface EnsoTaskLike {
@@ -42,10 +43,14 @@ function dig(obj: Record<string, unknown>, path: string[]): unknown {
   return cur;
 }
 
-export function mapEnsoTasksToPalette(tasks: readonly EnsoTaskLike[]): {
+export function mapEnsoTasksToPalette(
+  tasks: readonly EnsoTaskLike[],
+  options?: { nodeType?: NodeType },
+): {
   categories: PaletteCategory[];
   items: PaletteItem[];
 } {
+  const nodeType: NodeType = options?.nodeType ?? 'Action';
   const categoryOrder: string[] = [];
   const categoryLabels = new Map<string, string>();
   const items: PaletteItem[] = [];
@@ -61,7 +66,7 @@ export function mapEnsoTasksToPalette(tasks: readonly EnsoTaskLike[]): {
     const taskId = task.task_id != null ? String(task.task_id) : label;
     items.push({
       key: `enso-${taskId}`,
-      type: 'Action',
+      type: nodeType,
       label,
       description: categoryLabel,
       categoryId,

@@ -1,9 +1,12 @@
 export const environment = {
   production: true,
   ensoTaskListUrl: 'http://enso-suite-be.red6.discovery.xpms.ai/api/canvas/task/list',
+  ensoPipelineListUrl: 'http://enso-suite-be.red6.discovery.xpms.ai/api/canvas/pipeline/list',
   ensoSolutionId: 'sol30',
   ensoUserId: '2',
   ensoAgentId: '74f8d571-205e-4f0a-9624-d703bd70fdb2',
+  ensoWorkflowId: 'workflow_f47b6364-ac6f-4383-a215-6b4b847a5b8c',
+  ensoWorkflowVersionId: '9bdeb956-f05a-4632-a648-afb077742be9',
   ensoAccessToken: '',
   ensoUserCategories: [
     'Domain Extraction',

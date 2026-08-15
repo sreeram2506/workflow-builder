@@ -2,9 +2,13 @@ export const environment = {
   production: false,
   /** Dev proxy path → enso-suite-be (see proxy.conf.json). */
   ensoTaskListUrl: '/enso-api/api/canvas/task/list',
+  /** Solution Agents Library — agent pipelines. */
+  ensoPipelineListUrl: '/enso-api/api/canvas/pipeline/list',
   ensoSolutionId: 'sol30',
   ensoUserId: '2',
   ensoAgentId: '74f8d571-205e-4f0a-9624-d703bd70fdb2',
+  ensoWorkflowId: 'workflow_f47b6364-ac6f-4383-a215-6b4b847a5b8c',
+  ensoWorkflowVersionId: '9bdeb956-f05a-4632-a648-afb077742be9',
   /**
    * Optional Bearer token override. If empty, reads `localStorage.currentUser.accesstoken`
    * (same shape as enso-suite auth).

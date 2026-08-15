@@ -83,6 +83,13 @@ export const PALETTE_ITEMS: readonly PaletteItem[] = [
     categoryId: 'logic',
   },
   {
+    key: 'AIAgent',
+    type: 'AIAgent',
+    label: 'Blank Agent',
+    description: 'Add an agent to the solution workflow',
+    categoryId: 'logic',
+  },
+  {
     key: 'Notification',
     type: 'Notification',
     label: 'Notification',
@@ -90,6 +97,13 @@ export const PALETTE_ITEMS: readonly PaletteItem[] = [
     categoryId: 'integration',
   },
 ] as const;
+
+/** Blank Agent sits under the featured strip (not in FEATURED_PALETTE_TYPES). */
+export const BLANK_AGENT_TYPE: NodeType = 'AIAgent';
+
+export function blankAgentPaletteItem(): PaletteItem | undefined {
+  return findPaletteItem(BLANK_AGENT_TYPE);
+}
 
 export function filterPaletteItems(items: readonly PaletteItem[], query: string): PaletteItem[] {
   const q = query.trim().toLowerCase();

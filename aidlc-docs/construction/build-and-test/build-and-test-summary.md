@@ -1,52 +1,47 @@
-# Build and Test Summary
+# Build and Test Summary — Solution Workflow (U-SW-01a + U-SW-01b)
 
-**Timestamp**: 2026-08-14T04:04:02Z  
-**Scope**: Units U1–U9 (Logic Node Properties increment)
+**Date**: 2026-08-15  
+**Units**: `u-sw-01a-palette-tabs`, `u-sw-01b-nested-skills`  
+**Status**: EXECUTED — awaiting approval to proceed to Operations  
 
-## Build Status
-- **Build Tool**: Angular CLI 20 / `npm run build`
-- **Node / npm**: v22.21.1 / 11.5.1
-- **Build Status**: Success
-- **Build Artifacts**: `dist/workflow-builder/`
-- **Build Time**: ~4.2s application bundle generation
-- **Bundle size (last run)**: ~504.34 kB main / ~540.48 kB initial total / ~134.68 kB estimated transfer
+## Commands run
 
-## Test Execution Summary
+```bash
+npm run build
+npm test
+```
 
-### Unit Tests
-- **Total Tests**: 99
-- **Passed**: 99
-- **Failed**: 0
-- **Coverage**: No formal gate
-- **Status**: Pass
-- **Includes**: U1–U8 suites + `logic-node-rules` PBT + right-sidebar logic bind + Condition/Router `createEdge`
+## Results
 
-### Integration Tests
-- **Automated suite**: Not generated (manual smoke for U1–U9)
-- **Status**: Documented in `integration-test-instructions.md`
+| Check | Result |
+|---|---|
+| `ng build` | Success → `dist/workflow-builder` |
+| `npm test` | **130 passed** / 21 files |
+| Budget warnings | Initial ~564 kB (limit 500); top-bar / left-sidebar component CSS over 4 kB — non-blocking |
 
-### Performance Tests
-- **Formal load/stress**: N/A
-- **Qualitative**: Documented including Properties bind and static Repeater catalog
+## Instruction files
 
-### Additional Tests
-- **Contract Tests**: N/A
-- **Security Tests**: N/A (Security Baseline off)
-- **E2E Tests**: N/A formal
+- `aidlc-docs/construction/build-and-test/build-instructions.md`
+- `aidlc-docs/construction/build-and-test/unit-test-instructions.md`
+- `aidlc-docs/construction/build-and-test/integration-test-instructions.md`
+- `aidlc-docs/construction/build-and-test/performance-test-instructions.md`
+- Unit note: `aidlc-docs/construction/u-sw-01b-nested-skills/build-and-test/build-and-test-summary.md`
 
-## Overall Status
-- **Build**: Success
-- **All Tests**: Pass (unit)
-- **Ready for Operations**: Yes (placeholder stage)
+## Extension compliance (enabled)
 
-## Notes
-- U9: Condition expression + max-2 true/false edges; Router connector Name/Condition; Repeater mock catalog; scoped registry invariant
-- `routeEdges` algorithm unchanged
-- Security Baseline disabled; Resiliency DR N/A; PBT Partial (serialize + run-order + logic-node rules)
+| Extension | Status | Notes |
+|---|---|---|
+| Resiliency Baseline | N/A | No DR/deploy changes this increment |
+| Property-Based Testing | Compliant (partial) | Existing PBT suites remain green; no new PBT required for this B&T pass |
+| Security Baseline | Disabled | Skipped per Extension Configuration |
 
-## Generated instruction files
-- `build-instructions.md`
-- `unit-test-instructions.md`
-- `integration-test-instructions.md`
-- `performance-test-instructions.md`
-- `build-and-test-summary.md`
+## Manual smoke (recommended)
+
+1. Agents Library title + Condition/Router/Repeater + Blank Agent + API or mock agents  
+2. Nested Skills Library on `/agent/:nodeId` with drag-drop canvas  
+3. Tab chips + Back; chrome inset when tabs appear  
+4. Save → toast + `saved` badge (no download); Export still downloads  
+
+## Next after approval
+
+**Operations** stage (placeholder) — Solution Workflow construction units are complete.

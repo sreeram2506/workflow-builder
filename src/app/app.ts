@@ -1,11 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ShellLayoutComponent } from './features/shell/shell-layout.component';
+import { RouterOutlet } from '@angular/router';
 import { WorkflowFacade } from './core/facade/workflow.facade';
 
 @Component({
   selector: 'app-root',
-  imports: [ShellLayoutComponent],
-  template: `<wb-shell-layout />`,
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
   styles: `:host { display: block; height: 100%; }`,
 })
 export class App implements OnInit {

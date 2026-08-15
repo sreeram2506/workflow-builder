@@ -1,40 +1,43 @@
-# Integration Test Instructions
+# Integration Test Instructions — Solution Workflow
 
 ## Purpose
-Cross-feature checks for U1–U9. No separate automated integration suite yet.
 
-## Manual Smoke (U1–U8)
+Validate U-SW-01a ↔ U-SW-01b interactions in the SPA (no separate backend test suite in this increment).
 
-### Scenarios 1–9
-Carry forward U1–U7 smoke (bootstrap, pan/zoom, select, palette, connections, Properties, Layout/Route, theme, serialize/history).
+## Automated (in unit suite)
 
-### Scenario 10 — Simulated Run & View Mode (U8)
-1. Click **Run** → nodes walk BFS with `running` → `success` badges; polite aria-live announces steps
-2. During Run, **Stop** appears → cancel leaves statuses; `runActive` clears
-3. **Reset** → all node statuses idle
-4. Toggle **View** → View badge; Import/Undo/palette add locked; pan/zoom/Export/Save/Run still work
-5. Start Run in view → allowed; switch edit↔view during Run → Stop behavior
-6. Clear all nodes (or import empty) → Run shows canvas status “Nothing to run” (no throw)
+- Facade + domain specs cover tab open → navigate `/agent/:nodeId` → enter/exit nested graph
+- `app.spec` boots shell with Agents Library + seeded canvas
+- Pipeline / task mappers cover API→palette mapping used by sidebars
 
-## Manual Smoke (U9 Logic Nodes)
+## Manual integration scenarios
 
-### Scenario 11 — Condition Properties and edges
-1. Select seed Condition (`Needs Delay?`) → Properties shows General + Condition expression; no Ignore Keys
-2. Edit expression and Save → value persists; changing selection without Save discards
-3. Connect a third outgoing from Condition → no new edge (silent)
-4. Select a Condition outgoing edge → label is read-only `true` or `false`; no condition field; no Save
+### Scenario 1: Solution → nested agent → back
 
-### Scenario 12 — Router Properties and connectors
-1. Select seed Router → General only; Ignore Keys hidden
-2. Draw a new edge from Router → label `Blank Condition`, empty condition
-3. Select that edge → Connector Name + Condition required; Save disabled until both filled
-4. Duplicate another Router/Repeater label → Save disabled with uniqueness error
+1. `npm start` (with proxy if using live Enso)
+2. From **Agents Library**, add Blank Agent or an API/mock agent
+3. Select agent → header chip appears; click chip or dblclick → `/agent/:nodeId`
+4. Drag skills / logic nodes on nested canvas; click Solution chip or **← Back**
+5. **Expected**: nested graph persists on re-open; solution graph unchanged
 
-### Scenario 13 — Repeater mock config
-1. Select seed Repeater → Workflow/Agent = Claims Intake, Version = v1.0, Pause off
-2. Change workflow → version clears; version options update
-3. Save with workflow + version + optional Pause
-4. Toggle View → fields disabled, no Save
+### Scenario 2: Agents Library API / mock fallback
 
-## Run automated integration
-None yet. Facade Vitest covers Condition/Router `createEdge`; right-sidebar spec covers bind branches.
+1. With valid token + reachable `pipeline/list` → live agents listed
+2. With auth miss or API failure → mock agents (Claims / Policy / Notify) appear; banner explains fallback
+
+### Scenario 3: Save vs Export
+
+1. Click **Save** → toast **Saved**, badge `saved`, no download
+2. Click **Export** → JSON download still works
+
+## Setup
+
+```bash
+npm start
+# optional live Enso:
+# ensure proxy.conf.json + environment token / workflow ids
+```
+
+## Cleanup
+
+Stop the dev server; no external test containers required.

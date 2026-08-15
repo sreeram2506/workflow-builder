@@ -20,7 +20,7 @@ export type ParseWorkflowResult =
   | { ok: false; error: string };
 
 const NODE_STATUSES: readonly NodeStatus[] = ['idle', 'running', 'success', 'error'];
-const WORKFLOW_STATUSES: readonly WorkflowStatus[] = ['draft', 'ready', 'running'];
+const WORKFLOW_STATUSES: readonly WorkflowStatus[] = ['draft', 'saved', 'ready', 'running'];
 
 export function serializeWorkflow(doc: WorkflowDocument): string {
   const payload: SerializedWorkflow = {

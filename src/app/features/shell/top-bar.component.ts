@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal, viewChild } from '@angular/core';
+import { Component, HostListener, inject, input, signal, viewChild } from '@angular/core';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { ImportWorkflowDialogComponent } from './import-workflow-dialog.component';
 import { ThemeToggleComponent } from '../theme/theme-toggle.component';
@@ -9,22 +9,37 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
   imports: [ImportWorkflowDialogComponent, ThemeToggleComponent],
   template: `
     <header class="top-bar" role="banner">
+      <div class="top-bar-row">
       <div class="toolbar">
         <div class="logo" aria-label="Workflow Builder" title="Workflow Builder">
-          <svg width="55" height="22" viewBox="0 0 55 22" fill="none" aria-hidden="true">
-            <path
-              d="M51.1847 0.0967331H46.6515C44.9018 0.0967331 43.4828 1.51569 43.4828 3.2654V8.16968C43.4828 9.18006 42.2631 9.68726 41.5466 8.97543L33.5415 1.01788C32.9477 0.427487 32.1447 0.0967331 31.3081 0.0967331H24.9104C23.1607 0.0967331 21.7417 1.51569 21.7417 3.2654V8.14016C21.7417 9.1492 20.5241 9.65707 19.8069 8.94726L11.797 1.01385C11.204 0.426145 10.4023 0.0967331 9.56766 0.0967331H3.16865C1.41895 0.0967331 0 1.51569 0 3.2654V9.65506C0 10.4957 0.334107 11.3014 0.92785 11.8959L9.94269 20.9108C10.5371 21.5052 11.3429 21.8386 12.1835 21.8386H18.5731C20.3228 21.8386 21.7417 20.4197 21.7417 18.67V13.765C21.7417 12.7553 22.9614 12.2474 23.678 12.9592L31.6865 20.9175C32.2802 21.5072 33.0833 21.8386 33.9199 21.8386H40.3148C42.0645 21.8386 43.4835 20.4197 43.4835 18.67V12.1032C43.4835 11.4759 43.992 10.9673 44.6193 10.9673H51.1861C52.9358 10.9673 54.3547 9.54838 54.3547 7.79867V3.2654C54.3547 1.51569 52.9358 0.0967331 51.1861 0.0967331H51.1847Z"
-              fill="currentColor"
-            />
-          </svg>
+          <img
+            class="logo-mark"
+            src="brand-mark.png"
+            width="28"
+            height="28"
+            alt=""
+            decoding="async"
+          />
         </div>
 
         <div class="nav-segment">
+          @if (showBack()) {
+            <button
+              type="button"
+              class="icon-btn text-btn"
+              data-testid="agent-back-btn"
+              (click)="facade.navigateBackToSolution(backAgentNodeId())"
+              title="Back to solution"
+              aria-label="Back to solution"
+            >
+              ← Back
+            </button>
+          }
           <button
             type="button"
             class="icon-btn"
             (click)="facade.saveDownload()"
-            title="Save (download JSON)"
+            title="Save"
             aria-label="Save"
           >
             <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
@@ -152,6 +167,55 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
           </svg>
         </button>
       </div>
+      </div>
+
+      @if (facade.agentTabs().length > 0) {
+        <div class="agent-tabs" role="tablist" aria-label="Solution and agent tabs" data-testid="agent-tabs-strip">
+          <button
+            type="button"
+            class="agent-chip solution-chip"
+            role="tab"
+            [class.active]="!facade.editingAgentNodeId()"
+            [attr.aria-selected]="!facade.editingAgentNodeId()"
+            data-testid="solution-tab"
+            (click)="onSolutionTab()"
+            title="Solution workflow"
+          >
+            Solution
+          </button>
+          @for (tab of facade.agentTabs(); track tab.nodeId) {
+            <div
+              class="agent-chip"
+              role="presentation"
+              [class.active]="facade.editingAgentNodeId() === tab.nodeId"
+              [class.focused]="
+                !facade.editingAgentNodeId() && facade.focusedAgentTabId() === tab.nodeId
+              "
+              [attr.data-testid]="'agent-tab-' + tab.nodeId"
+            >
+              <button
+                type="button"
+                class="agent-chip-label"
+                role="tab"
+                [attr.aria-selected]="facade.editingAgentNodeId() === tab.nodeId"
+                (click)="facade.focusAgentTabChrome(tab.nodeId)"
+                [title]="'Open ' + facade.agentTabLabel(tab.nodeId)"
+              >
+                {{ facade.agentTabLabel(tab.nodeId) }}
+              </button>
+              <button
+                type="button"
+                class="agent-chip-close"
+                (click)="onCloseTab(tab.nodeId); $event.stopPropagation()"
+                [attr.aria-label]="'Close ' + facade.agentTabLabel(tab.nodeId)"
+                title="Close tab"
+              >
+                ×
+              </button>
+            </div>
+          }
+        </div>
+      }
 
       <div class="sr-live" aria-live="polite" aria-atomic="true">{{ facade.runAnnouncement() }}</div>
     </header>
@@ -167,17 +231,26 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
     .top-bar {
       position: relative;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.45rem;
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.65rem 1rem 0.55rem;
       background: var(--wb-bg-elevated);
       border: 1px solid var(--wb-border);
       border-radius: 12px;
       box-shadow: var(--wb-shadow-soft);
       pointer-events: all;
       box-sizing: border-box;
+    }
+
+    .top-bar-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 2.25rem;
     }
 
     .toolbar {
@@ -190,8 +263,17 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
 
     .logo {
       display: inline-flex;
+      align-items: center;
       color: var(--wb-text);
       flex-shrink: 0;
+    }
+
+    .logo-mark {
+      display: block;
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      background: transparent;
     }
 
     .nav-segment {
@@ -236,6 +318,12 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
       border: 1px solid color-mix(in srgb, var(--wb-status-draft) 45%, transparent);
     }
 
+    .status[data-status='saved'] {
+      background: color-mix(in srgb, var(--wb-node-action) 22%, transparent);
+      color: var(--wb-node-action);
+      border: 1px solid color-mix(in srgb, var(--wb-node-action) 45%, transparent);
+    }
+
     .view-badge {
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -246,6 +334,87 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
       background: color-mix(in srgb, var(--wb-accent) 18%, transparent);
       color: var(--wb-accent);
       border: 1px solid color-mix(in srgb, var(--wb-accent) 40%, transparent);
+    }
+
+    .agent-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 -0.15rem;
+      padding: 0.45rem 0.15rem 0.1rem;
+      overflow-x: auto;
+      border-top: 1px solid color-mix(in srgb, var(--wb-border) 55%, transparent);
+    }
+
+    .agent-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      max-width: 200px;
+      min-height: 1.85rem;
+      padding: 0.15rem 0.2rem 0.15rem 0.7rem;
+      border: 1px solid var(--wb-border);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--wb-bg-app) 75%, #000);
+      color: var(--wb-text);
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .agent-chip.solution-chip {
+      padding: 0.35rem 0.9rem;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      color: var(--wb-text);
+      background: color-mix(in srgb, var(--wb-bg-app) 82%, #000);
+    }
+
+    .agent-chip.focused:not(.active) {
+      border-color: color-mix(in srgb, var(--wb-accent) 40%, var(--wb-border));
+      background: color-mix(in srgb, var(--wb-accent) 16%, var(--wb-bg-app));
+    }
+
+    .agent-chip.active,
+    .agent-chip.solution-chip.active {
+      border-color: color-mix(in srgb, var(--wb-accent) 50%, var(--wb-border));
+      background: color-mix(in srgb, var(--wb-accent) 38%, var(--wb-bg-elevated));
+      color: var(--wb-text);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--wb-accent) 22%, transparent);
+    }
+
+    .agent-chip-label {
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      padding: 0.2rem 0.15rem;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-chip-close {
+      border: 0;
+      background: transparent;
+      color: var(--wb-text-muted);
+      cursor: pointer;
+      padding: 0.15rem 0.45rem 0.2rem;
+      font-size: 0.95rem;
+      line-height: 1;
+      border-radius: 999px;
+    }
+
+    .agent-chip-close:hover {
+      color: var(--wb-text);
+      background: color-mix(in srgb, var(--wb-text) 10%, transparent);
     }
 
     .sr-live {
@@ -311,6 +480,8 @@ import { ThemeToggleComponent } from '../theme/theme-toggle.component';
 })
 export class TopBarComponent {
   readonly facade = inject(WorkflowFacade);
+  readonly showBack = input(false);
+  readonly backAgentNodeId = input<string | null>(null);
   readonly importOpen = signal(false);
   readonly importDialog = viewChild(ImportWorkflowDialogComponent);
 
@@ -321,6 +492,20 @@ export class TopBarComponent {
       return;
     }
     this.importOpen.set(false);
+  }
+
+  onSolutionTab(): void {
+    if (this.facade.editingAgentNodeId()) {
+      this.facade.navigateBackToSolution(this.facade.editingAgentNodeId());
+    }
+  }
+
+  onCloseTab(nodeId: string): void {
+    const wasEditing = this.facade.editingAgentNodeId() === nodeId;
+    this.facade.closeAgentTab(nodeId);
+    if (wasEditing) {
+      this.facade.navigateBackToSolution(nodeId);
+    }
   }
 
   @HostListener('document:keydown', ['$event'])

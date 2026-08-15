@@ -1,16 +1,30 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkflowFacade } from './workflow.facade';
 import { RunSimulationService } from '../run/run-simulation.service';
 import { GraphStore } from '../stores/graph.store';
+import { MockWorkflowRepository } from '../data/mock-workflow.repository';
+import { routes } from '../../app.routes';
+
+/** App boots empty; most facade specs still need the sample fixture graph. */
+function initWithSample(facade: WorkflowFacade): void {
+  facade.initialize();
+  TestBed.inject(GraphStore).setDocument(
+    TestBed.inject(MockWorkflowRepository).getSampleWorkflow(),
+    { skipHistory: true, skipAutosave: true },
+  );
+}
 
 describe('WorkflowFacade.createNode', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('appends a node, selects it, and does not open properties side-effects', () => {
@@ -35,15 +49,25 @@ describe('WorkflowFacade.createNode', () => {
     // screen (400,300) with default viewport {0,0,1}
     expect(created.position).toEqual({ x: 400, y: 300 });
   });
+
+  it('returns workflow status to draft after an edit following Save', () => {
+    facade.saveDownload();
+    expect(facade.workflowStatus()).toBe('saved');
+    expect(facade.canvasStatus()).toBe('Saved');
+    facade.createNode('Delay', { x: 10, y: 20 });
+    expect(facade.workflowStatus()).toBe('draft');
+  });
 });
 
 describe('WorkflowFacade.createEdge', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('creates edge between seed nodes and selects it', () => {
@@ -105,9 +129,11 @@ describe('WorkflowFacade.patchNode', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('patches label and nested configuration data', () => {
@@ -154,9 +180,11 @@ describe('WorkflowFacade.layoutAndRoute', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('routeEdges replaces waypoints without throwing', () => {
@@ -180,9 +208,11 @@ describe('WorkflowFacade.historyAndClipboard', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('undo restores after createNode', () => {
@@ -223,9 +253,11 @@ describe('WorkflowFacade.runAndViewMode', () => {
   let facade: WorkflowFacade;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
     facade = TestBed.inject(WorkflowFacade);
-    facade.initialize();
+    initWithSample(facade);
   });
 
   it('startRun then stopRun clears runActive and leaves statuses', () => {
@@ -284,5 +316,115 @@ describe('WorkflowFacade.runAndViewMode', () => {
     facade.startRun();
     expect(facade.runActive()).toBe(false);
     expect(facade.canvasStatus()).toBe('Nothing to run');
+  });
+});
+
+describe('WorkflowFacade.agentTabs', () => {
+  let facade: WorkflowFacade;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
+    facade = TestBed.inject(WorkflowFacade);
+    initWithSample(facade);
+  });
+
+  it('opens a tab for Blank Agent and focuses without nesting', () => {
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    facade.openAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(1);
+    expect(facade.focusedAgentTabId()).toBe(id);
+    expect(facade.agentTabLabel(id)).toBe('Blank Agent');
+  });
+
+  it('ignores non-AIAgent openAgentTab', () => {
+    const id = facade.createNode('Action', { x: 1, y: 1 })!;
+    facade.openAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('FIFO-evicts oldest when opening a sixth tab', () => {
+    const ids: string[] = [];
+    for (let i = 0; i < 6; i++) {
+      ids.push(facade.createNode('AIAgent', { x: i * 10, y: 0 })!);
+      facade.openAgentTab(ids[i]!);
+    }
+    expect(facade.agentTabs()).toHaveLength(5);
+    expect(facade.agentTabs().map((t) => t.nodeId)).not.toContain(ids[0]);
+    expect(facade.agentTabs().map((t) => t.nodeId)).toContain(ids[5]);
+  });
+
+  it('closes tab and prunes on delete', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    facade.openAgentTab(id);
+    facade.closeAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(0);
+    const id2 = facade.createNode('AIAgent', { x: 5, y: 5 })!;
+    facade.openAgentTab(id2);
+    facade.deleteNodes([id2]);
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('allows open/close in view mode', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    facade.setEditorMode('view');
+    facade.openAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(1);
+    facade.closeAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('enterAgentCanvas swaps graph and persists nestedWorkflow on exit', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    const solutionCount = facade.nodeCount();
+    expect(facade.enterAgentCanvas(id)).toBe(true);
+    expect(facade.editingAgentNodeId()).toBe(id);
+    expect(facade.nodeCount()).toBe(0);
+    facade.createNode('Action', { x: 5, y: 5 });
+    expect(facade.nodeCount()).toBe(1);
+    facade.exitAgentCanvas();
+    expect(facade.editingAgentNodeId()).toBeNull();
+    expect(facade.nodeCount()).toBe(solutionCount);
+    const agent = facade.nodes().find((n) => n.id === id)!;
+    const nested = (agent.data['nestedWorkflow'] as { nodes: unknown[] } | undefined)?.nodes;
+    expect(nested).toHaveLength(1);
+  });
+
+  it('selectAgentTab opens tab and navigates to agent route', async () => {
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    const router = TestBed.inject(Router);
+    facade.selectAgentTab(id);
+    await Promise.resolve();
+    expect(facade.agentTabs()).toHaveLength(1);
+    expect(router.url).toBe(`/agent/${id}`);
+  });
+
+  it('adds skill from palette item', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(
+      facade.addSkillFromPaletteItem(id, {
+        key: 'Trigger',
+        label: 'Trigger',
+        description: 'Initiate workflows',
+      }),
+    ).toBe(true);
+    expect(facade.agentSkills(id)[0]?.skillId).toBe('Trigger');
+  });
+
+  it('adds and removes skills with dedupe', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(facade.addSkillToAgent(id, 'skill-extract-fields')).toBe(true);
+    expect(facade.agentSkills(id)).toHaveLength(1);
+    expect(facade.addSkillToAgent(id, 'skill-extract-fields')).toBe(false);
+    expect(facade.agentSkills(id)).toHaveLength(1);
+    expect(facade.removeSkillFromAgent(id, 'skill-extract-fields')).toBe(true);
+    expect(facade.agentSkills(id)).toHaveLength(0);
+  });
+
+  it('blocks skill mutations in view mode', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    facade.setEditorMode('view');
+    expect(facade.addSkillToAgent(id, 'skill-summarize')).toBe(false);
   });
 });

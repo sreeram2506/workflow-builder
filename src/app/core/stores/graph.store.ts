@@ -8,6 +8,8 @@ import { HistoryService } from '../history/history.service';
 export interface GraphWriteOptions {
   skipHistory?: boolean;
   skipAutosave?: boolean;
+  /** When true, do not flip `saved` → `draft` on this write. */
+  skipDirtyStatus?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -262,11 +264,20 @@ export class GraphStore {
   }
 
   private commit(next: WorkflowDocument, options: GraphWriteOptions = {}): void {
+    let doc = next;
+    // Content edits after Save return the badge to draft (viewport/run/swap use skipHistory).
+    if (!options.skipHistory && !options.skipDirtyStatus && doc.status === 'saved') {
+      doc = {
+        ...doc,
+        status: 'draft',
+        updatedAt: new Date().toISOString(),
+      };
+    }
     const current = this.document();
     if (!options.skipHistory && current) {
       this.history.recordBeforeMutation(current);
     }
-    this.document.set(next);
+    this.document.set(doc);
     if (!options.skipAutosave) {
       this.autoSave.notifyMutation();
     }

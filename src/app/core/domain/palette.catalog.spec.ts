@@ -1,7 +1,10 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
+  BLANK_AGENT_TYPE,
+  FEATURED_PALETTE_TYPES,
   PALETTE_ITEMS,
+  blankAgentPaletteItem,
   filterPaletteItems,
   findPaletteItem,
 } from './palette.catalog';
@@ -27,6 +30,13 @@ describe('palette.catalog', () => {
       expect(ALLOWED_NODE_TYPES).toContain(item.type);
       expect(findPaletteItem(item.type)?.label).toBe(item.label);
     }
+  });
+
+  it('includes Blank Agent and keeps it out of featured strip types', () => {
+    expect(blankAgentPaletteItem()?.type).toBe(BLANK_AGENT_TYPE);
+    expect(blankAgentPaletteItem()?.label).toBe('Blank Agent');
+    expect(FEATURED_PALETTE_TYPES).not.toContain('AIAgent');
+    expect(FEATURED_PALETTE_TYPES).toEqual(['Condition', 'Decision', 'Repeater']);
   });
 });
 

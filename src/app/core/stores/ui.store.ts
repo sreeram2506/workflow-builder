@@ -11,6 +11,7 @@ import type {
   WorkflowEdge,
   WorkflowNode,
 } from '../domain/workflow.models';
+import type { AgentTab } from '../domain/agent-tabs';
 
 @Injectable({ providedIn: 'root' })
 export class UiStore {
@@ -40,6 +41,15 @@ export class UiStore {
   readonly runAnnouncement = signal<string | null>(null);
   /** Last known canvas viewport CSS size (for click-to-add at center). */
   readonly viewSize = signal({ w: 800, h: 600 });
+  /** Open Blank Agent tabs (session UI; U-SW-01a). */
+  readonly agentTabs = signal<AgentTab[]>([]);
+  readonly focusedAgentTabId = signal<string | null>(null);
+  /** Nested skills panel selection (U-SW-01b). */
+  readonly selectedSkillId = signal<string | null>(null);
+  /** When set, GraphStore holds that Blank Agent's nested canvas (not the solution doc). */
+  readonly editingAgentNodeId = signal<string | null>(null);
+  /** Distance from stage top to clear header chrome (sidebars). */
+  readonly chromeInsetTop = signal(88);
 
   resetSessionDefaults(): void {
     this.theme.set('dark');
@@ -59,6 +69,11 @@ export class UiStore {
     this.runActive.set(false);
     this.runAnnouncement.set(null);
     this.viewSize.set({ w: 800, h: 600 });
+    this.agentTabs.set([]);
+    this.focusedAgentTabId.set(null);
+    this.selectedSkillId.set(null);
+    this.editingAgentNodeId.set(null);
+    this.chromeInsetTop.set(88);
   }
 
   setTheme(theme: Theme): void {
@@ -136,5 +151,23 @@ export class UiStore {
 
   setViewSize(size: { w: number; h: number }): void {
     this.viewSize.set(size);
+  }
+
+  setAgentTabs(tabs: AgentTab[], focusedNodeId: string | null): void {
+    this.agentTabs.set([...tabs]);
+    this.focusedAgentTabId.set(focusedNodeId);
+  }
+
+  setSelectedSkillId(skillId: string | null): void {
+    this.selectedSkillId.set(skillId);
+  }
+
+  setEditingAgentNodeId(nodeId: string | null): void {
+    this.editingAgentNodeId.set(nodeId);
+  }
+
+  setChromeInsetTop(px: number): void {
+    const next = Number.isFinite(px) ? Math.max(72, Math.round(px)) : 88;
+    this.chromeInsetTop.set(next);
   }
 }

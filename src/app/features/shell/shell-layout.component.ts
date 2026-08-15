@@ -4,11 +4,18 @@ import { TopBarComponent } from './top-bar.component';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar.component';
 import { CanvasHostComponent } from '../canvas/canvas-host.component';
+import { ChromeInsetDirective } from './chrome-inset.directive';
 
 @Component({
   selector: 'wb-shell-layout',
   standalone: true,
-  imports: [TopBarComponent, LeftSidebarComponent, RightSidebarComponent, CanvasHostComponent],
+  imports: [
+    TopBarComponent,
+    LeftSidebarComponent,
+    RightSidebarComponent,
+    CanvasHostComponent,
+    ChromeInsetDirective,
+  ],
   template: `
     <div class="shell" [attr.data-mode]="facade.editorMode()">
       @if (facade.bootstrapError(); as err) {
@@ -16,12 +23,13 @@ import { CanvasHostComponent } from '../canvas/canvas-host.component';
       }
       <div class="stage">
         <wb-canvas-host />
-        <div class="header-overlay">
+        <div class="header-overlay" wbChromeInset>
           <wb-top-bar />
         </div>
         <wb-left-sidebar
           [collapsed]="facade.leftSidebarCollapsed()"
           [panelWidth]="facade.nodesLibraryWidth()"
+          paletteScope="solution"
           (collapsedChange)="facade.setLeftCollapsed($event)"
           (panelWidthChange)="facade.setNodesLibraryWidth($event)"
         />
@@ -62,6 +70,7 @@ import { CanvasHostComponent } from '../canvas/canvas-host.component';
       right: 0;
       z-index: 10;
       padding: 1rem;
+      overflow: visible;
       pointer-events: none;
       box-sizing: border-box;
     }

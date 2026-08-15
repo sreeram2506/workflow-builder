@@ -1,6 +1,21 @@
 import { Injectable } from '@angular/core';
 import type { WorkflowDocument } from '../domain/workflow.models';
 
+/** Default boot document — empty Untitled canvas (R58). */
+export const EMPTY_WORKFLOW: WorkflowDocument = {
+  id: 'wf-untitled',
+  name: 'Untitled Workflow',
+  status: 'draft',
+  version: 1,
+  updatedAt: '2026-08-15T00:00:00.000Z',
+  viewport: { x: 0, y: 0, scale: 1 },
+  nodes: [],
+  edges: [],
+};
+
+/**
+ * Populated fixture for unit tests only — not loaded on app boot.
+ */
 export const SAMPLE_WORKFLOW: WorkflowDocument = {
   id: 'wf-sample-001',
   name: 'Sample Automation',
@@ -98,6 +113,11 @@ export const SAMPLE_WORKFLOW: WorkflowDocument = {
 
 @Injectable({ providedIn: 'root' })
 export class MockWorkflowRepository {
+  getEmptyWorkflow(): WorkflowDocument {
+    return structuredClone(EMPTY_WORKFLOW);
+  }
+
+  /** Test fixture — do not use for app boot. */
   getSampleWorkflow(): WorkflowDocument {
     return structuredClone(SAMPLE_WORKFLOW);
   }

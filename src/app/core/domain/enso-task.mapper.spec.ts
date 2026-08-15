@@ -22,4 +22,14 @@ describe('enso-task.mapper', () => {
     expect(items[0]!.key).toBe('enso-t1');
     expect(items.filter((i) => i.categoryId === 'domain-extraction')).toHaveLength(2);
   });
+
+  it('maps tasks as AIAgent when requested', () => {
+    const { items } = mapEnsoTasksToPalette(
+      [{ task_id: 'a1', display_name: 'Claims Agent', user_category: 'Workflow Manipulation' }],
+      { nodeType: 'AIAgent' },
+    );
+    expect(items).toHaveLength(1);
+    expect(items[0]!.type).toBe('AIAgent');
+    expect(items[0]!.key).toBe('enso-a1');
+  });
 });

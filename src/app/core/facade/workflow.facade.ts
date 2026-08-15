@@ -1,4 +1,5 @@
 import { Injectable, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { MockWorkflowRepository } from '../data/mock-workflow.repository';
 import {
@@ -13,6 +14,25 @@ import { nextConditionOutLabel } from '../domain/logic-node-rules';
 import { applyLayoutMode, type LayoutMode } from '../domain/layout.math';
 import { createWorkflowNode, createWorkflowNodeFromPaletteItem, newNodeId } from '../domain/node.factory';
 import type { PaletteItem } from '../domain/palette.catalog';
+import {
+  closeAgentTab,
+  openAgentTab,
+  pruneMissingNodeIds,
+} from '../domain/agent-tabs';
+import {
+  appendSkill,
+  ensureSkillsArray,
+  removeSkill,
+  withSkillsData,
+  type AgentSkillRef,
+} from '../domain/agent-skills';
+import {
+  fromAgentEditableDocument,
+  readAgentNestedGraph,
+  toAgentEditableDocument,
+  withNestedWorkflow,
+} from '../domain/agent-graph';
+import { findMockSkill } from '../domain/mock-skills.catalog';
 import { nextTheme } from '../domain/theme.utils';
 import {
   clampZoom,
@@ -30,6 +50,7 @@ import type {
   NodeType,
   SelectionState,
   Viewport,
+  WorkflowDocument,
   WorkflowEdge,
   WorkflowNode,
 } from '../domain/workflow.models';
@@ -74,6 +95,9 @@ export class WorkflowFacade {
   private readonly autoSave = inject(AutoSaveService);
   private readonly clipboard = inject(ClipboardService);
   private readonly runSim = inject(RunSimulationService);
+  private readonly router = inject(Router);
+  /** Stashed solution document while GraphStore holds an agent nested canvas. */
+  private solutionDocument: WorkflowDocument | null = null;
 
   readonly document = this.graph.document;
   readonly theme = this.ui.theme;
@@ -92,6 +116,11 @@ export class WorkflowFacade {
   readonly selectionFocusEdgeId = this.ui.selectionFocusEdgeId;
   readonly propertiesDraft = this.ui.propertiesDraft;
   readonly propertiesEdgeDraft = this.ui.propertiesEdgeDraft;
+  readonly agentTabs = this.ui.agentTabs;
+  readonly focusedAgentTabId = this.ui.focusedAgentTabId;
+  readonly selectedSkillId = this.ui.selectedSkillId;
+  readonly editingAgentNodeId = this.ui.editingAgentNodeId;
+  readonly chromeInsetTop = this.ui.chromeInsetTop;
   readonly canUndo = this.history.canUndo;
   readonly canRedo = this.history.canRedo;
   readonly autoSaveDirty = this.autoSave.dirty;
@@ -109,7 +138,7 @@ export class WorkflowFacade {
   initialize(): void {
     this.ui.resetSessionDefaults();
     this.history.clear();
-    const doc = this.repo.getSampleWorkflow();
+    const doc = this.repo.getEmptyWorkflow();
     this.graph.setDocument(doc, { skipHistory: true, skipAutosave: true });
     this.themeApplicator.apply(this.ui.theme());
   }
@@ -122,6 +151,10 @@ export class WorkflowFacade {
 
   setLeftCollapsed(collapsed: boolean): void {
     this.ui.setLeftCollapsed(collapsed);
+  }
+
+  setChromeInsetTop(px: number): void {
+    this.ui.setChromeInsetTop(px);
   }
 
   setRightCollapsed(collapsed: boolean): void {
@@ -439,11 +472,243 @@ export class WorkflowFacade {
         return;
       }
       this.graph.removeNodes(ids);
+      this.pruneAgentTabs();
       this.clearSelection();
       this.setCanvasError(null);
     } catch (err) {
       this.setCanvasError(err instanceof Error ? err.message : 'Failed to delete node');
     }
+  }
+
+  /** Open or focus an agent tab for a Blank Agent (no nested navigation). */
+  openAgentTab(nodeId: string): void {
+    const node = this.findSolutionAgent(nodeId);
+    if (!node) {
+      return;
+    }
+    const result = openAgentTab(this.ui.agentTabs(), nodeId);
+    this.ui.setAgentTabs(result.tabs, result.focusedNodeId);
+    if (!this.ui.editingAgentNodeId()) {
+      this.selectNodes([nodeId]);
+      this.focusNodeInSelection(nodeId);
+    }
+  }
+
+  /** Focus tab and navigate to nested agent canvas route. */
+  selectAgentTab(nodeId: string): void {
+    if (!this.findSolutionAgent(nodeId)) {
+      return;
+    }
+    this.openAgentTab(nodeId);
+    this.ui.setSelectedSkillId(null);
+    void this.router.navigate(['/agent', nodeId]);
+  }
+
+  navigateBackToSolution(agentNodeId?: string | null): void {
+    const id = agentNodeId ?? this.ui.focusedAgentTabId() ?? this.ui.editingAgentNodeId();
+    this.ui.setSelectedSkillId(null);
+    this.exitAgentCanvas();
+    void this.router.navigate(['/']).then(() => {
+      if (id && this.nodes().some((n) => n.id === id)) {
+        this.selectNodes([id]);
+        this.focusNodeInSelection(id);
+        this.ui.setAgentTabs(this.ui.agentTabs(), id);
+      }
+    });
+  }
+
+  /**
+   * Enter nested agent canvas: stash solution doc, load agent.data.nestedWorkflow into GraphStore.
+   * Call from agent route; safe to re-enter same agent or switch agents.
+   */
+  enterAgentCanvas(agentNodeId: string): boolean {
+    if (this.ui.editingAgentNodeId() === agentNodeId) {
+      this.openAgentTab(agentNodeId);
+      return true;
+    }
+
+    if (this.ui.editingAgentNodeId()) {
+      this.flushAgentCanvasToSolution();
+    } else {
+      const doc = this.graph.document();
+      if (!doc) {
+        return false;
+      }
+      this.solutionDocument = structuredClone(doc);
+    }
+
+    const solution = this.solutionDocument;
+    if (!solution) {
+      return false;
+    }
+    const agent = solution.nodes.find((n) => n.id === agentNodeId && n.type === 'AIAgent');
+    if (!agent) {
+      this.history.clear();
+      this.graph.setDocument(solution, { skipHistory: true, skipAutosave: true });
+      this.solutionDocument = null;
+      this.ui.setEditingAgentNodeId(null);
+      return false;
+    }
+
+    const nested = readAgentNestedGraph(agent.data);
+    const editable = toAgentEditableDocument(agentNodeId, agent.label || 'Blank Agent', nested);
+    this.history.clear();
+    this.clearSelection();
+    this.ui.setEditingAgentNodeId(agentNodeId);
+    this.ui.setSelectedSkillId(null);
+    this.graph.setDocument(editable, { skipHistory: true, skipAutosave: true });
+    this.openAgentTab(agentNodeId);
+    this.setRightCollapsed(false);
+    return true;
+  }
+
+  /** Persist nested canvas onto solution agent and restore solution GraphStore. */
+  exitAgentCanvas(): void {
+    if (!this.ui.editingAgentNodeId()) {
+      return;
+    }
+    this.flushAgentCanvasToSolution();
+    if (this.solutionDocument) {
+      this.history.clear();
+      this.clearSelection();
+      this.graph.setDocument(this.solutionDocument, { skipHistory: true, skipAutosave: true });
+      this.solutionDocument = null;
+    }
+    this.ui.setEditingAgentNodeId(null);
+  }
+
+  /** Validate agent route param; load nested canvas or redirect home. */
+  ensureAgentRoute(nodeId: string): boolean {
+    if (!this.enterAgentCanvas(nodeId)) {
+      this.setCanvasStatus('Agent not found');
+      void this.router.navigate(['/']);
+      return false;
+    }
+    return true;
+  }
+
+  private findSolutionAgent(nodeId: string): WorkflowNode | undefined {
+    const pool = this.solutionDocument?.nodes ?? this.graph.document()?.nodes ?? [];
+    return pool.find((n) => n.id === nodeId && n.type === 'AIAgent');
+  }
+
+  private flushAgentCanvasToSolution(): void {
+    const editingId = this.ui.editingAgentNodeId();
+    const nestedDoc = this.graph.document();
+    if (!editingId || !nestedDoc || !this.solutionDocument) {
+      return;
+    }
+    const nested = fromAgentEditableDocument(nestedDoc);
+    this.solutionDocument = {
+      ...this.solutionDocument,
+      updatedAt: new Date().toISOString(),
+      nodes: this.solutionDocument.nodes.map((n) =>
+        n.id === editingId
+          ? { ...n, data: withNestedWorkflow(n.data, nested) }
+          : n,
+      ),
+    };
+  }
+
+  agentSkills(agentNodeId: string): AgentSkillRef[] {
+    const node = this.findSolutionAgent(agentNodeId);
+    return ensureSkillsArray(node?.data);
+  }
+
+  addSkillToAgent(agentNodeId: string, skillId: string): boolean {
+    if (this.ui.editorMode() === 'view') {
+      return false;
+    }
+    const node = this.nodes().find((n) => n.id === agentNodeId);
+    const mock = findMockSkill(skillId);
+    if (!node || node.type !== 'AIAgent' || !mock) {
+      return false;
+    }
+    return this.addSkillRef(agentNodeId, {
+      skillId: mock.skillId,
+      name: mock.name,
+      description: mock.description,
+    });
+  }
+
+  /** Add a Nodes Library palette item as an agent skill (nested agent view). */
+  addSkillFromPaletteItem(
+    agentNodeId: string,
+    item: { key: string; label: string; description: string; taskId?: string },
+  ): boolean {
+    const skillId = item.taskId ? `enso-${item.taskId}` : item.key;
+    return this.addSkillRef(agentNodeId, {
+      skillId,
+      name: item.label,
+      description: item.description,
+    });
+  }
+
+  addSkillRef(
+    agentNodeId: string,
+    skill: { skillId: string; name: string; description: string },
+  ): boolean {
+    if (this.ui.editorMode() === 'view') {
+      return false;
+    }
+    const node = this.nodes().find((n) => n.id === agentNodeId);
+    if (!node || node.type !== 'AIAgent') {
+      return false;
+    }
+    const current = ensureSkillsArray(node.data);
+    const { skills, added } = appendSkill(current, skill);
+    if (!added) {
+      this.ui.setSelectedSkillId(skill.skillId);
+      return false;
+    }
+    const ok = this.patchNode(agentNodeId, { data: withSkillsData(node.data, skills) });
+    if (ok) {
+      this.ui.setSelectedSkillId(skill.skillId);
+    }
+    return ok;
+  }
+
+  removeSkillFromAgent(agentNodeId: string, skillId: string): boolean {
+    if (this.ui.editorMode() === 'view') {
+      return false;
+    }
+    const node = this.nodes().find((n) => n.id === agentNodeId);
+    if (!node || node.type !== 'AIAgent') {
+      return false;
+    }
+    const next = removeSkill(ensureSkillsArray(node.data), skillId);
+    const ok = this.patchNode(agentNodeId, { data: withSkillsData(node.data, next) });
+    if (ok && this.ui.selectedSkillId() === skillId) {
+      this.ui.setSelectedSkillId(null);
+    }
+    return ok;
+  }
+
+  setSelectedSkillId(skillId: string | null): void {
+    this.ui.setSelectedSkillId(skillId);
+  }
+
+  closeAgentTab(nodeId: string): void {
+    const result = closeAgentTab(this.ui.agentTabs(), this.ui.focusedAgentTabId(), nodeId);
+    this.ui.setAgentTabs(result.tabs, result.focusedNodeId);
+  }
+
+  focusAgentTabChrome(nodeId: string): void {
+    if (!this.ui.agentTabs().some((t) => t.nodeId === nodeId)) {
+      return;
+    }
+    this.selectAgentTab(nodeId);
+  }
+
+  agentTabLabel(nodeId: string): string {
+    return this.findSolutionAgent(nodeId)?.label ?? 'Blank Agent';
+  }
+
+  private pruneAgentTabs(): void {
+    const pool = this.solutionDocument ?? this.graph.document();
+    const alive = new Set((pool?.nodes ?? []).map((n) => n.id));
+    const result = pruneMissingNodeIds(this.ui.agentTabs(), this.ui.focusedAgentTabId(), alive);
+    this.ui.setAgentTabs(result.tabs, result.focusedNodeId);
   }
 
   /** Delete current selection: nodes (and their edges) preferred over edges-only. */
@@ -636,14 +901,22 @@ export class WorkflowFacade {
     }
   }
 
-  /** Save / Export: download JSON. */
+  /** Save: mark document saved + toast — does not download (use Export for that). */
   saveDownload(): void {
     try {
       const doc = this.graph.document();
       if (!doc) {
         return;
       }
-      this.serialization.download(doc, 'Saved');
+      this.graph.setDocument(
+        {
+          ...doc,
+          status: 'saved',
+          updatedAt: new Date().toISOString(),
+        },
+        { skipHistory: true },
+      );
+      this.setCanvasStatus('Saved');
       this.setCanvasError(null);
     } catch (err) {
       this.setCanvasError(err instanceof Error ? err.message : 'Save failed');
