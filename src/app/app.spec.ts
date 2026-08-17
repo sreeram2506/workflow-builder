@@ -23,7 +23,7 @@ describe('App', () => {
       (i) =>
         (FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(i.type) ||
         i.type === BLANK_AGENT_TYPE,
-    );
+    ).map((i) => (i.type === 'AIAgent' ? { ...i, origin: 'default-agent' as const } : i));
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
@@ -38,6 +38,7 @@ describe('App', () => {
                 items: [...staticItems],
                 source: 'static' as const,
                 error: null,
+                emptyRemote: false,
               }),
           },
         },

@@ -13,17 +13,32 @@ export interface OpenAgentTabsResult {
   focusedNodeId: string | null;
 }
 
+/** Keep first occurrence of each nodeId. */
+export function uniqueAgentTabs(tabs: readonly AgentTab[]): AgentTab[] {
+  const seen = new Set<string>();
+  const next: AgentTab[] = [];
+  for (const tab of tabs) {
+    if (seen.has(tab.nodeId)) {
+      continue;
+    }
+    seen.add(tab.nodeId);
+    next.push(tab);
+  }
+  return next;
+}
+
 /** Open or focus a tab for nodeId. At capacity, FIFO-evict oldest by openedAt. */
 export function openAgentTab(
   tabs: readonly AgentTab[],
   nodeId: string,
   now: number = Date.now(),
 ): OpenAgentTabsResult {
-  const existing = tabs.find((t) => t.nodeId === nodeId);
+  const unique = uniqueAgentTabs(tabs);
+  const existing = unique.find((t) => t.nodeId === nodeId);
   if (existing) {
-    return { tabs: [...tabs], focusedNodeId: nodeId };
+    return { tabs: unique, focusedNodeId: nodeId };
   }
-  let next = [...tabs];
+  let next = unique;
   if (next.length >= MAX_AGENT_TABS) {
     const oldest = next.reduce((a, b) => (a.openedAt <= b.openedAt ? a : b));
     next = next.filter((t) => t.nodeId !== oldest.nodeId);

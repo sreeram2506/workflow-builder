@@ -1,43 +1,43 @@
-# Integration Test Instructions — Solution Workflow
+# Integration Test Instructions
 
 ## Purpose
+U-PAL-01 palette merge/helpers plus U-PAL-02 catalog compose and Agents Library UI.
 
-Validate U-SW-01a ↔ U-SW-01b interactions in the SPA (no separate backend test suite in this increment).
+## Test Scenarios
 
-## Automated (in unit suite)
+### Scenario 1: Config core → catalog wiring
+- **Description**: Resolved `features().palette` filters catalog emit and sidebar cards
+- **Setup**: `npm test`
+- **Test Steps**: helper specs + `enso-task-catalog.service.spec.ts` + `left-sidebar.palette.spec.ts`
+- **Expected Results**: omit vs `[]` vs present; empty-remote empty-state; error static + banner (no mocks)
+- **Cleanup**: none
 
-- Facade + domain specs cover tab open → navigate `/agent/:nodeId` → enter/exit nested graph
-- `app.spec` boots shell with Agents Library + seeded canvas
-- Pipeline / task mappers cover API→palette mapping used by sidebars
+### Scenario 2: JSON → running SPA
+- **Description**: `/assets/wb-ui-config.json` palette overlay after focus reload
+- **Setup**: `npm start`
+- **Test Steps**: copy `src/assets/examples/wb-ui-config.palette-host.json` over the active file; click back into the browser
+- **Expected Results**: Claims Agent + Policy Agent; featured types per example allow-list; restore with `echo '{}' > src/assets/wb-ui-config.json`
+- **Cleanup**: restore JSON
 
-## Manual integration scenarios
+## Setup Integration Test Environment
 
-### Scenario 1: Solution → nested agent → back
-
-1. `npm start` (with proxy if using live Enso)
-2. From **Agents Library**, add Blank Agent or an API/mock agent
-3. Select agent → header chip appears; click chip or dblclick → `/agent/:nodeId`
-4. Drag skills / logic nodes on nested canvas; click Solution chip or **← Back**
-5. **Expected**: nested graph persists on re-open; solution graph unchanged
-
-### Scenario 2: Agents Library API / mock fallback
-
-1. With valid token + reachable `pipeline/list` → live agents listed
-2. With auth miss or API failure → mock agents (Claims / Policy / Notify) appear; banner explains fallback
-
-### Scenario 3: Save vs Export
-
-1. Click **Save** → toast **Saved**, badge `saved`, no download
-2. Click **Export** → JSON download still works
-
-## Setup
-
+### 1. Start Required Services
 ```bash
 npm start
-# optional live Enso:
-# ensure proxy.conf.json + environment token / workflow ids
 ```
 
-## Cleanup
+### 2. Configure Service Endpoints
+None for palette JSON. Enso HTTP is optional; missing/failing auth uses the error path (static + banner).
 
-Stop the dev server; no external test containers required.
+## Run Integration Tests
+
+### 1. Execute Integration Test Suite
+```bash
+npm test
+```
+
+### 2. Verify Service Interactions
+See `docs/workflow-builder-ui-config-try.md`.
+
+### 3. Cleanup
+Stop `ng serve` if started only for this stage. Restore `src/assets/wb-ui-config.json` to `{}`.

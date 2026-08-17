@@ -11,7 +11,7 @@ import type {
   WorkflowEdge,
   WorkflowNode,
 } from '../domain/workflow.models';
-import type { AgentTab } from '../domain/agent-tabs';
+import { uniqueAgentTabs, type AgentTab } from '../domain/agent-tabs';
 
 @Injectable({ providedIn: 'root' })
 export class UiStore {
@@ -154,8 +154,11 @@ export class UiStore {
   }
 
   setAgentTabs(tabs: AgentTab[], focusedNodeId: string | null): void {
-    this.agentTabs.set([...tabs]);
-    this.focusedAgentTabId.set(focusedNodeId);
+    const unique = uniqueAgentTabs(tabs);
+    this.agentTabs.set(unique);
+    this.focusedAgentTabId.set(
+      focusedNodeId && unique.some((t) => t.nodeId === focusedNodeId) ? focusedNodeId : null,
+    );
   }
 
   setSelectedSkillId(skillId: string | null): void {
@@ -167,7 +170,7 @@ export class UiStore {
   }
 
   setChromeInsetTop(px: number): void {
-    const next = Number.isFinite(px) ? Math.max(72, Math.round(px)) : 88;
+    const next = Number.isFinite(px) ? Math.max(0, Math.round(px)) : 16;
     this.chromeInsetTop.set(next);
   }
 }

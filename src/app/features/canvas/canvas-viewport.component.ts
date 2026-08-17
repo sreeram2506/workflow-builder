@@ -25,6 +25,7 @@ import {
   type PortSide,
   type Rect,
 } from '../../core/domain/viewport.math';
+import { injectEffectiveUi } from '../../core/ui-config';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { CANVAS_DROP_LIST_ID } from '../shell/palette-dnd.ids';
 import {
@@ -101,23 +102,27 @@ const NODE_DRAG_THRESHOLD_PX = 5;
         }
       </div>
 
-      <div class="chrome-bar">
-        <wb-zoom-controls
-          [scale]="facade.viewport().scale"
-          [viewMode]="facade.editorMode() === 'view'"
-          [canUndo]="facade.canUndo()"
-          [canRedo]="facade.canRedo()"
-          (zoomIn)="onZoomIn()"
-          (zoomOut)="onZoomOut()"
-          (reset)="onZoomReset()"
-          (applyLayout)="onApplyLayout($event)"
-          (undo)="facade.undo()"
-          (redo)="facade.redo()"
-        />
-      </div>
-      <div class="chrome-minimap">
-        <wb-minimap [viewWidth]="viewSize().w" [viewHeight]="viewSize().h" />
-      </div>
+      @if (ui.is('canvas.enabled')) {
+        <div class="chrome-bar">
+          <wb-zoom-controls
+            [scale]="facade.viewport().scale"
+            [viewMode]="facade.editorMode() === 'view'"
+            [canUndo]="facade.canUndo()"
+            [canRedo]="facade.canRedo()"
+            (zoomIn)="onZoomIn()"
+            (zoomOut)="onZoomOut()"
+            (reset)="onZoomReset()"
+            (applyLayout)="onApplyLayout($event)"
+            (undo)="facade.undo()"
+            (redo)="facade.redo()"
+          />
+        </div>
+      }
+      @if (ui.is('canvas.enabled') && ui.is('canvas.minimap')) {
+        <div class="chrome-minimap">
+          <wb-minimap [viewWidth]="viewSize().w" [viewHeight]="viewSize().h" />
+        </div>
+      }
     </div>
   `,
   styles: `
@@ -181,6 +186,7 @@ const NODE_DRAG_THRESHOLD_PX = 5;
 })
 export class CanvasViewportComponent implements AfterViewInit {
   readonly facade = inject(WorkflowFacade);
+  readonly ui = injectEffectiveUi();
   private readonly scheduler = inject(CanvasPerformanceScheduler);
   private readonly viewportEl = viewChild.required<ElementRef<HTMLElement>>('viewportEl');
 

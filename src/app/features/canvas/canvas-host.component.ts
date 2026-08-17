@@ -7,7 +7,7 @@ import { CanvasViewportComponent } from './canvas-viewport.component';
   standalone: true,
   imports: [CanvasViewportComponent],
   template: `
-    <section class="canvas-host" aria-label="Workflow canvas">
+    <section class="canvas-host" aria-label="Workflow canvas" data-testid="workflow-canvas">
       @if (facade.canvasError(); as err) {
         <div class="canvas-error" role="status">{{ err }}</div>
       }

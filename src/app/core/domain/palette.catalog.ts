@@ -13,6 +13,8 @@ export interface PaletteItem {
   /** Present when sourced from enso task/list. */
   taskId?: string;
   taskMeta?: Record<string, unknown>;
+  /** Host/built-in default agent card (Blank Agent or defaultAgents). */
+  origin?: 'default-agent';
 }
 
 export interface PaletteCategory {

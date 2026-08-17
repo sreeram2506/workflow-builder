@@ -5,6 +5,7 @@ import {
   closeAgentTab,
   openAgentTab,
   pruneMissingNodeIds,
+  uniqueAgentTabs,
 } from './agent-tabs';
 
 describe('agent-tabs', () => {
@@ -18,6 +19,19 @@ describe('agent-tabs', () => {
     const r = openAgentTab([{ nodeId: 'a', openedAt: 50 }], 'a', 999);
     expect(r.tabs).toEqual([{ nodeId: 'a', openedAt: 50 }]);
     expect(r.focusedNodeId).toBe('a');
+  });
+
+  it('collapses duplicate nodeIds when opening', () => {
+    const r = openAgentTab(
+      [
+        { nodeId: 'a', openedAt: 1 },
+        { nodeId: 'a', openedAt: 2 },
+      ],
+      'a',
+      9,
+    );
+    expect(r.tabs).toEqual([{ nodeId: 'a', openedAt: 1 }]);
+    expect(uniqueAgentTabs(r.tabs)).toHaveLength(1);
   });
 
   it('FIFO-evicts oldest when opening beyond max', () => {

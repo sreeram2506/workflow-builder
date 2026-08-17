@@ -5,6 +5,7 @@ import { WorkflowFacade } from './workflow.facade';
 import { RunSimulationService } from '../run/run-simulation.service';
 import { GraphStore } from '../stores/graph.store';
 import { MockWorkflowRepository } from '../data/mock-workflow.repository';
+import { blankAgentPaletteItem } from '../domain/palette.catalog';
 import { routes } from '../../app.routes';
 
 /** App boots empty; most facade specs still need the sample fixture graph. */
@@ -336,6 +337,30 @@ describe('WorkflowFacade.agentTabs', () => {
     expect(facade.agentTabs()).toHaveLength(1);
     expect(facade.focusedAgentTabId()).toBe(id);
     expect(facade.agentTabLabel(id)).toBe('Blank Agent');
+  });
+
+  it('does not duplicate a tab when opening the same agent twice', () => {
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    facade.openAgentTab(id);
+    facade.openAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(1);
+    expect(facade.focusedAgentTabId()).toBe(id);
+  });
+
+  it('reuses a palette Blank Agent instead of creating another tab', () => {
+    facade.initialize();
+    const item = blankAgentPaletteItem()!;
+    const first = facade.createNodeFromPaletteItem(item, { x: 10, y: 10 });
+    const second = facade.createNodeFromPaletteItem(item, { x: 80, y: 80 });
+    expect(second).toBe(first);
+    expect(facade.nodes().filter((n) => n.type === 'AIAgent')).toHaveLength(1);
+    expect(facade.agentTabs()).toHaveLength(1);
+    expect(facade.agentTabs()[0]?.nodeId).toBe(first);
+  });
+
+  it('allows chrome inset below the former 72px minimum', () => {
+    facade.setChromeInsetTop(16);
+    expect(facade.chromeInsetTop()).toBe(16);
   });
 
   it('ignores non-AIAgent openAgentTab', () => {

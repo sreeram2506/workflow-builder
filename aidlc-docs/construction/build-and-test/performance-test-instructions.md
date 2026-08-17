@@ -1,19 +1,14 @@
-# Performance Test Instructions — Solution Workflow
+# Performance Test Instructions
 
-## Status
+## Purpose
+No load/stress suite for this increment. U-PAL-01 is in-memory merge/filter; U-PAL-02 is one catalog load per library plus the same filter.
 
-**N/A / lightweight** for this increment.
+## Performance Requirements
+N/A — NFR Design skipped for both units.
 
-U-SW-01a / U-SW-01b did not introduce dedicated load/stress targets. Client is a local SPA; Enso calls are proxied third-party APIs outside this repo’s perf harness.
+## Setup / Run
+N/A.
 
-## Optional smoke checks
+Optional: `npm test` (PBT Partial on allow-list filter + merge only).
 
-| Check | How | Pass heuristic |
-|---|---|---|
-| Cold build | `npm run build` | Completes in tens of seconds on a typical laptop |
-| Unit suite | `npm test` | ~10s class runtime for 130 tests |
-| Dev serve | `npm start` | Interactive canvas remains usable with dozens of nodes |
-
-## When to expand
-
-Add formal performance tests if NFRs later require palette load SLAs, large nested-graph routing budgets, or concurrent editor sessions.
+Bundle budget warning (~580 kB vs 500 kB) is accepted as a warning, not a test failure.

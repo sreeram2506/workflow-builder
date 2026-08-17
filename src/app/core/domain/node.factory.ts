@@ -41,7 +41,9 @@ export function createWorkflowNodeFromPaletteItem(
   if (!isAllowedNodeType(item.type)) {
     return null;
   }
-  const data: Record<string, unknown> = {};
+  const data: Record<string, unknown> = {
+    paletteKey: item.key,
+  };
   if (item.taskMeta) {
     data['ensoTask'] = { ...item.taskMeta };
   }
@@ -54,4 +56,24 @@ export function createWorkflowNodeFromPaletteItem(
     status: 'idle',
     data,
   };
+}
+
+/** Reuse an existing AIAgent that was created from the same palette row. */
+export function findExistingAgentForPaletteItem(
+  nodes: readonly WorkflowNode[],
+  item: PaletteItem,
+): WorkflowNode | undefined {
+  if (item.type !== 'AIAgent') {
+    return undefined;
+  }
+  return nodes.find((n) => {
+    if (n.type !== 'AIAgent') {
+      return false;
+    }
+    const key = n.data?.['paletteKey'];
+    if (typeof key === 'string' && key.length > 0) {
+      return key === item.key;
+    }
+    return n.label === item.label;
+  });
 }

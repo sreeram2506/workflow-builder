@@ -90,6 +90,13 @@ npm run build
 - **No localStorage persistence of workflows** (auth token may be read from enso `currentUser` for palette only)
 - No real workflow engine / branch evaluation / backend run API
 
+## UI configurability (embed)
+
+Host apps can hide chrome regions and filter palette types via `provideWorkflowBuilderUi`, `/assets/wb-ui-config.json`, and Syncfusion-style instance inputs (`[ui]`, `[palettes]`, `[defaultAgents]`) on the shells.
+
+- Embed API + flag table: [docs/workflow-builder-ui-embed.md](docs/workflow-builder-ui-embed.md)
+- Try JSON examples locally: [docs/workflow-builder-ui-config-try.md](docs/workflow-builder-ui-config-try.md)
+
 ## Project layout
 ```
 src/app/core/          # stores, facade, domain, history, run, seed, canvas scheduler

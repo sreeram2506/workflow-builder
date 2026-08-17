@@ -1,5 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, input } from '@angular/core';
+import {
+  createEffectiveUiReader,
+  mergeInstanceUiFeatures,
+  UI_EFFECTIVE_FEATURES,
+  UiConfigService,
+  type UiFeaturesPartial,
+} from '../../core/ui-config';
+import type { DefaultAgentCard } from '../../core/ui-config/ui-features.types';
+import type { PaletteItem } from '../../core/domain/palette.catalog';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { AgentTabsComponent } from './agent-tabs.component';
+import { ChromeShortcutsDirective } from './chrome-shortcuts.directive';
 import { TopBarComponent } from './top-bar.component';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar.component';
@@ -11,34 +22,65 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
   standalone: true,
   imports: [
     TopBarComponent,
+    AgentTabsComponent,
     LeftSidebarComponent,
     RightSidebarComponent,
     CanvasHostComponent,
     ChromeInsetDirective,
+    ChromeShortcutsDirective,
+  ],
+  providers: [
+    {
+      provide: UI_EFFECTIVE_FEATURES,
+      useFactory: (host: ShellLayoutComponent) => host.effectiveUi,
+      deps: [ShellLayoutComponent],
+    },
   ],
   template: `
-    <div class="shell" [attr.data-mode]="facade.editorMode()">
+    <div class="shell" [attr.data-mode]="facade.editorMode()" wbChromeShortcuts>
       @if (facade.bootstrapError(); as err) {
         <div class="error-banner" role="alert">{{ err }}</div>
       }
+      @if (uiConfig.loadStatus().kind === 'missing' || uiConfig.loadStatus().kind === 'invalid') {
+        <div class="config-banner" role="status" data-testid="ui-config-banner">
+          {{ uiConfig.loadStatus().message }}
+        </div>
+      }
       <div class="stage">
         <wb-canvas-host />
-        <div class="header-overlay" wbChromeInset>
-          <wb-top-bar />
-        </div>
-        <wb-left-sidebar
-          [collapsed]="facade.leftSidebarCollapsed()"
-          [panelWidth]="facade.nodesLibraryWidth()"
-          paletteScope="solution"
-          (collapsedChange)="facade.setLeftCollapsed($event)"
-          (panelWidthChange)="facade.setNodesLibraryWidth($event)"
-        />
-        <wb-right-sidebar
-          [collapsed]="facade.rightSidebarCollapsed()"
-          [panelWidth]="facade.propertiesWidth()"
-          (collapsedChange)="facade.setRightCollapsed($event)"
-          (panelWidthChange)="facade.setPropertiesWidth($event)"
-        />
+        @if (effectiveUi.is('topBar.enabled') || (effectiveUi.is('agentTabs.enabled') && facade.agentTabs().length > 0)) {
+          <div
+            class="header-overlay"
+            [class.compact]="!effectiveUi.is('topBar.enabled')"
+            wbChromeInset
+          >
+            @if (effectiveUi.is('topBar.enabled')) {
+              <wb-top-bar />
+            }
+            @if (effectiveUi.is('agentTabs.enabled')) {
+              <wb-agent-tabs />
+            }
+          </div>
+        }
+        @if (effectiveUi.is('agentsLibrary.enabled')) {
+          <wb-left-sidebar
+            [collapsed]="facade.leftSidebarCollapsed()"
+            [panelWidth]="facade.nodesLibraryWidth()"
+            paletteScope="solution"
+            [palettes]="palettes()"
+            [defaultAgents]="defaultAgents()"
+            (collapsedChange)="facade.setLeftCollapsed($event)"
+            (panelWidthChange)="facade.setNodesLibraryWidth($event)"
+          />
+        }
+        @if (effectiveUi.is('propertiesPanel.enabled')) {
+          <wb-right-sidebar
+            [collapsed]="facade.rightSidebarCollapsed()"
+            [panelWidth]="facade.propertiesWidth()"
+            (collapsedChange)="facade.setRightCollapsed($event)"
+            (panelWidthChange)="facade.setPropertiesWidth($event)"
+          />
+        }
       </div>
     </div>
   `,
@@ -57,6 +99,14 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
       font-size: 0.9rem;
       z-index: 20;
     }
+    .config-banner {
+      background: color-mix(in srgb, var(--wb-accent) 16%, transparent);
+      color: var(--wb-text);
+      border-bottom: 1px solid color-mix(in srgb, var(--wb-accent) 45%, var(--wb-border));
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      z-index: 20;
+    }
     .stage {
       position: relative;
       flex: 1;
@@ -69,6 +119,9 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
       left: 0;
       right: 0;
       z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
       padding: 1rem;
       overflow: visible;
       pointer-events: none;
@@ -77,8 +130,32 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
     .header-overlay > * {
       pointer-events: all;
     }
+    .header-overlay.compact {
+      padding: 0.5rem 1rem;
+    }
   `,
 })
 export class ShellLayoutComponent {
   readonly facade = inject(WorkflowFacade);
+  readonly uiConfig = inject(UiConfigService);
+  /** Instance chrome overlay (omit = no overlay). */
+  readonly ui = input<UiFeaturesPartial | undefined>();
+  readonly palettes = input<PaletteItem[] | undefined>();
+  readonly defaultAgents = input<DefaultAgentCard[] | undefined>();
+
+  readonly effectiveFeatures = computed(() =>
+    mergeInstanceUiFeatures(this.uiConfig.features(), this.ui()),
+  );
+  readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
+
+  constructor() {
+    effect(() => {
+      const features = this.effectiveFeatures();
+      const overlayShown =
+        features.topBar.enabled || (features.agentTabs.enabled && this.facade.agentTabs().length > 0);
+      if (!overlayShown) {
+        this.facade.setChromeInsetTop(16);
+      }
+    });
+  }
 }

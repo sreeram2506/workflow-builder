@@ -1,9 +1,20 @@
 import { CdkDrag, CdkDragEnd, CdkDropList } from '@angular/cdk/drag-drop';
-import { Component, DestroyRef, HostListener, OnInit, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  HostListener,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, switchMap } from 'rxjs';
 import { EnsoTaskCatalogService } from '../../core/data/enso-task-catalog.service';
+import type { CatalogLoadMode, CatalogLoadOptions } from '../../core/data/catalog.types';
 import {
   accentTokenForType,
   iconPathForType,
@@ -13,9 +24,6 @@ import type { NodeType } from '../../core/domain/workflow.models';
 import {
   BLANK_AGENT_TYPE,
   FEATURED_PALETTE_TYPES,
-  PALETTE_CATEGORIES,
-  PALETTE_ITEMS,
-  blankAgentPaletteItem,
   filterPaletteItems,
   type PaletteCategory,
   type PaletteCategoryId,
@@ -27,6 +35,8 @@ import {
 } from '../../core/domain/sidebar-width';
 import { screenToWorld } from '../../core/domain/viewport.math';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { UiConfigService } from '../../core/ui-config';
+import type { DefaultAgentCard } from '../../core/ui-config/ui-features.types';
 import { CANVAS_DROP_LIST_ID, FEATURED_PALETTE_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
 
 /** Shared CDK drop-list ids for palette ↔ canvas connection. */
@@ -87,7 +97,15 @@ export {
                 {{ paletteScope() === 'solution' ? 'Loading agents…' : 'Loading tasks…' }}
               </p>
             }
-
+            @if (catalogEmptyRemote() && !catalogLoading()) {
+              <p class="empty-hint" data-testid="palette-empty-remote">
+                {{
+                  paletteScope() === 'solution'
+                    ? 'No agents from the catalog yet.'
+                    : 'No skills from the catalog yet.'
+                }}
+              </p>
+            } @else if (!catalogEmptyRemote()) {
             <!-- Featured logic shapes: solution + agent skills -->
             <div
               class="featured-strip"
@@ -200,41 +218,44 @@ export {
             </div>
 
             @if (paletteScope() === 'solution') {
-              @if (blankAgentItem(); as agentItem) {
+              @if (defaultAgentItems().length) {
                 <div
                   class="blank-agent-row"
                   role="list"
-                  aria-label="Blank Agent"
+                  aria-label="Default agents"
+                  data-testid="default-agent-strip"
                   cdkDropList
                   [id]="blankAgentListId"
                   [cdkDropListData]="blankAgentDragProxy"
                   [cdkDropListSortingDisabled]="true"
                   [cdkDropListEnterPredicate]="rejectEnter"
                 >
-                  <div
-                    class="node-card blank-agent-card"
-                    role="listitem"
-                    tabindex="0"
-                    cdkDrag
-                    [cdkDragData]="agentItem.key"
-                    [cdkDragDisabled]="facade.editorMode() === 'view'"
-                    (cdkDragStarted)="onDragStarted()"
-                    (cdkDragEnded)="onDragEnded($event, agentItem)"
-                    (click)="onItemActivate(agentItem, $event)"
-                    (keydown)="onItemKeydown(agentItem, $event)"
-                    [attr.aria-label]="'Add ' + agentItem.label + ' node'"
-                    data-testid="blank-agent-palette-card"
-                  >
-                    <div class="node-icon" [attr.data-icon]="agentItem.type" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path [attr.d]="iconPath(agentItem.type)" />
-                      </svg>
+                  @for (item of defaultAgentItems(); track item.key) {
+                    <div
+                      class="node-card blank-agent-card"
+                      role="listitem"
+                      tabindex="0"
+                      cdkDrag
+                      [cdkDragData]="item.key"
+                      [cdkDragDisabled]="facade.editorMode() === 'view'"
+                      (cdkDragStarted)="onDragStarted()"
+                      (cdkDragEnded)="onDragEnded($event, item)"
+                      (click)="onItemActivate(item, $event)"
+                      (keydown)="onItemKeydown(item, $event)"
+                      [attr.aria-label]="'Add ' + item.label + ' node'"
+                      [attr.data-testid]="'default-agent-card-' + item.key"
+                    >
+                      <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                          <path [attr.d]="iconPath(item.type)" />
+                        </svg>
+                      </div>
+                      <div class="node-text">
+                        <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                        <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                      </div>
                     </div>
-                    <div class="node-text">
-                      <div class="node-title" [attr.title]="agentItem.label">{{ agentItem.label }}</div>
-                      <div class="node-desc" [attr.title]="agentItem.description">{{ agentItem.description }}</div>
-                    </div>
-                  </div>
+                  }
                 </div>
               }
 
@@ -377,6 +398,7 @@ export {
                   <p class="empty-hint">No skills match “{{ debouncedQuery() }}”.</p>
                 }
               </div>
+            }
             }
           </div>
         }
@@ -696,10 +718,12 @@ export {
     .cdk-drag-placeholder { opacity: 0.35; }
   `,
 })
-export class LeftSidebarComponent implements OnInit {
+export class LeftSidebarComponent {
   private readonly catalogApi = inject(EnsoTaskCatalogService);
+  private readonly uiConfig = inject(UiConfigService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly search$ = new Subject<string>();
+  private readonly catalogReload$ = new Subject<CatalogLoadMode>();
   readonly facade = inject(WorkflowFacade);
 
   readonly collapsed = input(false);
@@ -707,12 +731,16 @@ export class LeftSidebarComponent implements OnInit {
   readonly panelWidth = input(SIDEBAR_WIDTH_LEFT_DEFAULT);
   readonly panelWidthChange = output<number>();
   /**
-   * solution = Agents Library (logic + Blank Agent + pipeline/list agents, mock on failure).
-   * agent = Skills Library (logic + full Enso catalog for nested agent canvas).
+   * solution = Agents Library (logic + default agents + catalog agents).
+   * agent = Skills Library (logic + catalog for nested agent canvas).
    */
   readonly paletteScope = input<'solution' | 'agent'>('solution');
   /** Agent id when paletteScope is agent (route context). */
   readonly agentNodeId = input<string | null>(null);
+  /** Unbound = omit (Enso/adapter). `[]` = empty-remote. */
+  readonly palettes = input<PaletteItem[] | undefined>();
+  /** Solution only. Unbound = JSON/provider. Present (incl. `[]`) replaces Blank Agent. */
+  readonly defaultAgents = input<DefaultAgentCard[] | undefined>();
 
   libraryTitle(): string {
     return this.paletteScope() === 'agent' ? 'Skills Library' : 'Agents Library';
@@ -732,9 +760,10 @@ export class LeftSidebarComponent implements OnInit {
   readonly debouncedQuery = signal('');
   readonly catalogLoading = signal(true);
   readonly catalogError = signal<string | null>(null);
-  readonly categories = signal<PaletteCategory[]>([...PALETTE_CATEGORIES]);
-  readonly allItems = signal<PaletteItem[]>([...PALETTE_ITEMS]);
-  readonly filteredItems = signal<PaletteItem[]>([...PALETTE_ITEMS]);
+  readonly catalogEmptyRemote = signal(false);
+  readonly categories = signal<PaletteCategory[]>([]);
+  readonly allItems = signal<PaletteItem[]>([]);
+  readonly filteredItems = signal<PaletteItem[]>([]);
   readonly collapsedCategories = signal<Record<string, boolean>>({});
 
   private dragActive = false;
@@ -774,16 +803,29 @@ export class LeftSidebarComponent implements OnInit {
       this.debouncedQuery.set(q);
       this.filteredItems.set(filterPaletteItems(this.allItems(), q));
     });
-  }
-
-  ngOnInit(): void {
-    const mode = this.paletteScope() === 'solution' ? 'solution-agents' : 'agent-skills';
-    this.catalogApi
-      .loadCatalog({ mode })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.catalogReload$
+      .pipe(
+        switchMap((mode) => {
+          this.catalogLoading.set(true);
+          const options: CatalogLoadOptions = { mode };
+          const palettes = this.palettes();
+          if (palettes !== undefined) {
+            options.hostPalettes = palettes;
+          }
+          if (this.paletteScope() === 'solution') {
+            const defaults = this.defaultAgents();
+            if (defaults !== undefined) {
+              options.hostDefaultAgents = defaults;
+            }
+          }
+          return this.catalogApi.loadCatalog(options);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((result) => {
         this.catalogLoading.set(false);
         this.catalogError.set(result.error);
+        this.catalogEmptyRemote.set(result.emptyRemote);
         this.categories.set(result.categories.filter((c) => c.id !== 'logic'));
         this.allItems.set(result.items);
         this.filteredItems.set(filterPaletteItems(result.items, this.debouncedQuery()));
@@ -793,12 +835,23 @@ export class LeftSidebarComponent implements OnInit {
         }
         this.collapsedCategories.set(collapsed);
       });
+    effect(() => {
+      const scope = this.paletteScope();
+      const palette = this.uiConfig.features().palette;
+      void palette.solution.types;
+      void palette.solution.defaultAgents;
+      void palette.agent.types;
+      void this.palettes();
+      void this.defaultAgents();
+      const mode: CatalogLoadMode = scope === 'solution' ? 'solution-agents' : 'agent-skills';
+      untracked(() => this.catalogReload$.next(mode));
+    });
   }
 
-  /** API-loaded agents for solution palette (excludes static Blank Agent card). */
+  /** API-loaded agents for solution palette (excludes default-agent cards). */
   solutionAgentItems(): PaletteItem[] {
     return this.filteredItems().filter(
-      (i) => i.type === BLANK_AGENT_TYPE && i.key !== BLANK_AGENT_TYPE,
+      (i) => i.type === BLANK_AGENT_TYPE && i.origin !== 'default-agent',
     );
   }
 
@@ -823,8 +876,8 @@ export class LeftSidebarComponent implements OnInit {
     );
   }
 
-  blankAgentItem(): PaletteItem | undefined {
-    return this.allItems().find((i) => i.type === BLANK_AGENT_TYPE) ?? blankAgentPaletteItem();
+  defaultAgentItems(): PaletteItem[] {
+    return this.allItems().filter((i) => i.origin === 'default-agent');
   }
 
   iconPath(type: PaletteItem['type']): string {
@@ -839,7 +892,7 @@ export class LeftSidebarComponent implements OnInit {
     return accentTokenForType(type);
   }
 
-  /** Condition / Router / Repeater — featured row above search (always from full catalog). */
+  /** Condition / Router / Repeater — featured row from filtered catalog items only. */
   logicShapeItems(): PaletteItem[] {
     const order: NodeType[] = ['Condition', 'Decision', 'Repeater'];
     return order

@@ -1,6 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, inject, input, output, signal, viewChild } from '@angular/core';
 import type { LayoutMode } from '../../core/domain/layout.math';
+import { injectEffectiveUi } from '../../core/ui-config';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.component';
 
@@ -10,88 +11,100 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
   imports: [DecimalPipe, ImportWorkflowDialogComponent],
   template: `
     <div class="chrome-controls" role="group" aria-label="Canvas controls">
-      <div class="workflow-actions" role="group" aria-label="Workflow actions">
-        <button
-          type="button"
-          class="z-btn icon"
-          (click)="facade.saveDownload()"
-          title="Save"
-          aria-label="Save"
-        >
-          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-            <path
-              d="M208,32H83.31A15.86,15.86,0,0,0,72,36.69L36.69,72A15.86,15.86,0,0,0,32,83.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM168,48v32H88V48Zm40,160H48V83.31L83.31,48H72v40a16,16,0,0,0,16,16h80a16,16,0,0,0,16-16V48h8ZM152,152a24,24,0,1,1-24-24A24,24,0,0,1,152,152Z"
-            />
-          </svg>
-        </button>
-        <button
-          type="button"
-          class="z-btn text"
-          (click)="facade.exportDownload()"
-          title="Export JSON"
-          aria-label="Export JSON"
-        >
-          <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-            <path
-              d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM88.69,104.69,120,73.37V176a8,8,0,0,0,16,0V73.37l31.31,31.32a8,8,0,0,0,11.32-11.32l-45-45a8,8,0,0,0-11.32,0l-45,45a8,8,0,0,0,11.32,11.32Z"
-            />
-          </svg>
-          <span>Export</span>
-        </button>
-        <button
-          type="button"
-          class="z-btn text"
-          [disabled]="viewMode()"
-          (click)="importOpen.set(true)"
-          title="Import JSON"
-          aria-label="Import JSON"
-        >
-          <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-            <path
-              d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L95.66,98.34a8,8,0,0,0-11.32,11.32Z"
-            />
-          </svg>
-          <span>Import</span>
-        </button>
-        @if (facade.runActive()) {
-          <button
-            type="button"
-            class="z-btn icon"
-            (click)="facade.stopRun()"
-            title="Stop run"
-            aria-label="Stop run"
-          >
-            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-              <path
-                d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8Z"
-              />
-            </svg>
-          </button>
-        } @else {
-          <button
-            type="button"
-            class="z-btn icon"
-            (click)="facade.startRun()"
-            title="Run simulation"
-            aria-label="Run simulation"
-          >
-            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-              <path
-                d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"
-              />
-            </svg>
-          </button>
-        }
-        <button
-          type="button"
-          class="z-btn text"
-          (click)="facade.resetStatuses()"
-          title="Reset node statuses"
-          aria-label="Reset node statuses"
-        >
-          Reset
-        </button>
-      </div>
+      @if (ui.is('canvas.floatingActions')) {
+        <div class="workflow-actions" role="group" aria-label="Workflow actions">
+          @if (ui.is('canvas.save')) {
+            <button
+              type="button"
+              class="z-btn icon"
+              (click)="facade.saveDownload()"
+              title="Save"
+              aria-label="Save"
+            >
+              <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M208,32H83.31A15.86,15.86,0,0,0,72,36.69L36.69,72A15.86,15.86,0,0,0,32,83.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM168,48v32H88V48Zm40,160H48V83.31L83.31,48H72v40a16,16,0,0,0,16,16h80a16,16,0,0,0,16-16V48h8ZM152,152a24,24,0,1,1-24-24A24,24,0,0,1,152,152Z"
+                />
+              </svg>
+            </button>
+          }
+          @if (ui.is('canvas.export')) {
+            <button
+              type="button"
+              class="z-btn text"
+              (click)="facade.exportDownload()"
+              title="Export JSON"
+              aria-label="Export JSON"
+            >
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM88.69,104.69,120,73.37V176a8,8,0,0,0,16,0V73.37l31.31,31.32a8,8,0,0,0,11.32-11.32l-45-45a8,8,0,0,0-11.32,0l-45,45a8,8,0,0,0,11.32,11.32Z"
+                />
+              </svg>
+              <span>Export</span>
+            </button>
+          }
+          @if (ui.is('canvas.import')) {
+            <button
+              type="button"
+              class="z-btn text"
+              [disabled]="viewMode()"
+              (click)="importOpen.set(true)"
+              title="Import JSON"
+              aria-label="Import JSON"
+            >
+              <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L95.66,98.34a8,8,0,0,0-11.32,11.32Z"
+                />
+              </svg>
+              <span>Import</span>
+            </button>
+          }
+          @if (ui.is('canvas.run')) {
+            @if (facade.runActive()) {
+              <button
+                type="button"
+                class="z-btn icon"
+                (click)="facade.stopRun()"
+                title="Stop run"
+                aria-label="Stop run"
+              >
+                <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8Z"
+                  />
+                </svg>
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="z-btn icon"
+                (click)="facade.startRun()"
+                title="Run simulation"
+                aria-label="Run simulation"
+              >
+                <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"
+                  />
+                </svg>
+              </button>
+            }
+          }
+          @if (ui.is('canvas.reset')) {
+            <button
+              type="button"
+              class="z-btn text"
+              (click)="facade.resetStatuses()"
+              title="Reset node statuses"
+              aria-label="Reset node statuses"
+            >
+              Reset
+            </button>
+          }
+        </div>
+      }
 
       <div class="history-group" role="group" aria-label="History">
         <button
@@ -141,11 +154,13 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
           </svg>
         </button>
       </div>
+      @if (ui.is('canvas.layoutControls')) {
       <div class="layout-group" role="group" aria-label="Layout">
         <label class="layout-label" for="wb-layout-select">Layout</label>
         <select
           id="wb-layout-select"
           class="layout-select"
+          data-testid="layout-select"
           [disabled]="viewMode()"
           (change)="onLayoutChange($event)"
           aria-label="Apply layout"
@@ -157,6 +172,8 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
           <option value="layered">Layered</option>
         </select>
       </div>
+      }
+      @if (ui.is('canvas.zoomControls')) {
       <div class="zoom-controls" role="group" aria-label="Zoom controls">
         <button type="button" class="z-btn" (click)="zoomIn.emit()" aria-label="Zoom in" title="Zoom in">
           +
@@ -169,6 +186,7 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
         </button>
         <span class="scale" aria-live="polite">{{ (scale() * 100) | number: '1.0-0' }}%</span>
       </div>
+      }
     </div>
 
     @if (importOpen()) {
@@ -259,6 +277,7 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
 })
 export class ZoomControlsComponent {
   readonly facade = inject(WorkflowFacade);
+  readonly ui = injectEffectiveUi();
   readonly scale = input(1);
   readonly viewMode = input(false);
   readonly canUndo = input(false);

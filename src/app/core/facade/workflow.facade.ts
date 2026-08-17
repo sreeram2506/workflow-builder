@@ -12,7 +12,12 @@ import {
 import { routeAllEdges } from '../domain/edge-routing';
 import { nextConditionOutLabel } from '../domain/logic-node-rules';
 import { applyLayoutMode, type LayoutMode } from '../domain/layout.math';
-import { createWorkflowNode, createWorkflowNodeFromPaletteItem, newNodeId } from '../domain/node.factory';
+import {
+  createWorkflowNode,
+  createWorkflowNodeFromPaletteItem,
+  findExistingAgentForPaletteItem,
+  newNodeId,
+} from '../domain/node.factory';
 import type { PaletteItem } from '../domain/palette.catalog';
 import {
   closeAgentTab,
@@ -387,12 +392,22 @@ export class WorkflowFacade {
       if (!this.graph.document()) {
         return null;
       }
+      const existing = findExistingAgentForPaletteItem(this.solutionNodes(), item);
+      if (existing) {
+        this.selectNodes([existing.id]);
+        this.openAgentTab(existing.id);
+        this.setCanvasError(null);
+        return existing.id;
+      }
       const node = createWorkflowNodeFromPaletteItem(item, position);
       if (!node) {
         return null;
       }
       this.graph.addNode(node);
       this.selectNodes([node.id]);
+      if (node.type === 'AIAgent') {
+        this.openAgentTab(node.id);
+      }
       this.setCanvasError(null);
       return node.id;
     } catch (err) {
@@ -587,9 +602,12 @@ export class WorkflowFacade {
     return true;
   }
 
+  private solutionNodes(): WorkflowNode[] {
+    return this.solutionDocument?.nodes ?? this.graph.document()?.nodes ?? [];
+  }
+
   private findSolutionAgent(nodeId: string): WorkflowNode | undefined {
-    const pool = this.solutionDocument?.nodes ?? this.graph.document()?.nodes ?? [];
-    return pool.find((n) => n.id === nodeId && n.type === 'AIAgent');
+    return this.solutionNodes().find((n) => n.id === nodeId && n.type === 'AIAgent');
   }
 
   private flushAgentCanvasToSolution(): void {

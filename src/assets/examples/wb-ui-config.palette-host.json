@@ -1,0 +1,22 @@
+{
+  "palette": {
+    "solution": {
+      "types": ["Condition", "Decision", "Repeater", "AIAgent", "Stream"],
+      "defaultAgents": [
+        {
+          "key": "claims",
+          "label": "Claims Agent",
+          "description": "Triage inbound claims"
+        },
+        {
+          "key": "policy",
+          "label": "Policy Agent",
+          "description": "Validate policy rules"
+        }
+      ]
+    },
+    "agent": {
+      "types": ["Action", "Condition", "Decision"]
+    }
+  }
+}

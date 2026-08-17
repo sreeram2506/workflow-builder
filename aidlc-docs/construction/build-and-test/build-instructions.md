@@ -1,56 +1,42 @@
-# Build Instructions — Solution Workflow (U-SW-01a + U-SW-01b)
+# Build Instructions
+
+SPA increment **Palette / catalog host config** (U-PAL-01 + U-PAL-02). Per-unit notes: `u-pal-01-palette-config-core/build-and-test/`, `u-pal-02-catalog-wiring/build-and-test/`.
 
 ## Prerequisites
+- **Build Tool**: npm + Angular 20
+- **Dependencies**: `npm install`
+- **Environment Variables**: none for local build
+- **System Requirements**: Node.js for Angular 20
 
-- **Build Tool**: Angular CLI 20 / `ng build` via npm scripts
-- **Runtime**: Node.js 20+ recommended; npm
-- **Dependencies**: See root `package.json` (Angular 20, CDK, RxJS, Zone.js)
-- **Environment**: Optional Enso proxy — `proxy.conf.json` maps `/enso-api` → enso-suite-be
-- **System**: macOS / Linux / Windows with sufficient disk for `node_modules` + `dist/`
+Repo root: `/Users/sreeram/ofcwork/workflow-builder`
 
 ## Build Steps
 
 ### 1. Install Dependencies
-
 ```bash
 npm install
 ```
 
-### 2. Configure Environment (optional for local Enso)
-
-- Dev: `src/environments/environment.ts` (`ensoTaskListUrl`, `ensoPipelineListUrl`, token / workflow ids)
-- Prod: `src/environments/environment.prod.ts`
-- Serve with proxy when calling live Enso APIs:
-
-```bash
-ng serve --proxy-config proxy.conf.json
-# or: npm start (if project already wires proxy)
-```
+### 2. Configure Environment
+No extra env vars. Runtime file: `src/assets/wb-ui-config.json` (committed `{}`).  
+Palette allow-lists / `defaultAgents` may live in that JSON. Catalog adapters are **provider-only**.
 
 ### 3. Build All Units
-
 ```bash
 npm run build
 ```
 
-Produces SPA bundle under `dist/workflow-builder/`.
-
 ### 4. Verify Build Success
-
-- **Expected**: `Application bundle generation complete` and `Output location: .../dist/workflow-builder`
-- **Artifacts**: `dist/workflow-builder/main-*.js`, `polyfills-*.js`, `styles-*.css`
-- **Acceptable warnings** (non-blocking as of 2026-08-15):
-  - Initial bundle budget exceeded (~564 kB vs 500 kB)
-  - Component style budgets for `top-bar` / `left-sidebar`
+- **Expected Output**: `dist/workflow-builder`
+- **Build Artifacts**: hashed `main` / `polyfills` / `styles` + `/assets` (including `examples/wb-ui-config.palette-host.json`)
+- **Common Warnings**: initial bundle ~580 kB vs 500 kB warn; left-sidebar CSS ~6 kB vs 4 kB warn
 
 ## Troubleshooting
 
-### Dependency install fails
+### Build Fails with Dependency Errors
+- **Cause**: incomplete install
+- **Solution**: `npm install` at repo root
 
-- Clear lock/cache issues: remove `node_modules`, re-run `npm install`
-- Confirm Node/npm versions
-
-### Compilation / type errors
-
-- Run `npm test` to surface failing specs
-- Ensure `environment.ts` / `environment.prod.ts` share the same keys (pipeline URL, workflow ids)
+### Build Fails with Compilation Errors
+- **Cause**: TypeScript errors in `src/`
+- **Solution**: `npm test` then fix the reported file

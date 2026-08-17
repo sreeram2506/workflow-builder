@@ -1,47 +1,46 @@
-# Build and Test Summary — Solution Workflow (U-SW-01a + U-SW-01b)
+# Build and Test Summary
 
-**Date**: 2026-08-15  
-**Units**: `u-sw-01a-palette-tabs`, `u-sw-01b-nested-skills`  
-**Status**: EXECUTED — awaiting approval to proceed to Operations  
+SPA increment **Palette / catalog host config** (U-PAL-01 + U-PAL-02).
 
-## Commands run
+**Date**: 2026-08-17  
+**Status**: APPROVED  
 
-```bash
-npm run build
-npm test
-```
+## Build Status
+- **Build Tool**: Angular 20 / `npm run build`
+- **Build Status**: Success
+- **Build Artifacts**: `dist/workflow-builder`
+- **Build Time**: ~5 s (`ng build`) plus ~17 s `npm test`
+- **Warnings**: initial bundle ~580 kB (warn 500 kB); left-sidebar CSS ~6 kB (warn 4 kB)
 
-## Results
+## Test Execution Summary
 
-| Check | Result |
-|---|---|
-| `ng build` | Success → `dist/workflow-builder` |
-| `npm test` | **130 passed** / 21 files |
-| Budget warnings | Initial ~564 kB (limit 500); top-bar / left-sidebar component CSS over 4 kB — non-blocking |
+### Unit Tests
+- **Total Tests**: 203
+- **Passed**: 203
+- **Failed**: 0
+- **Coverage**: not enforced
+- **Status**: Pass
 
-## Instruction files
+### Integration Tests
+- **Test Scenarios**: U-PAL-01 merge/helpers + U-PAL-02 catalog/sidebar (automated); JSON palette smoke documented
+- **Passed**: included in the 203
+- **Failed**: 0
+- **Status**: Pass (automated); manual JSON smoke documented, not a separate CI job
 
-- `aidlc-docs/construction/build-and-test/build-instructions.md`
-- `aidlc-docs/construction/build-and-test/unit-test-instructions.md`
-- `aidlc-docs/construction/build-and-test/integration-test-instructions.md`
-- `aidlc-docs/construction/build-and-test/performance-test-instructions.md`
-- Unit note: `aidlc-docs/construction/u-sw-01b-nested-skills/build-and-test/build-and-test-summary.md`
+### Performance Tests
+- **Status**: N/A (no NFR targets; NFR Design skipped)
 
-## Extension compliance (enabled)
+### Additional Tests
+- **Contract Tests**: N/A (no new service contracts)
+- **Security Tests**: N/A as a scanner job; catalog error copy must not include tokens or “mock agents” (asserted in unit specs)
+- **E2E Tests**: N/A (no Playwright/Cypress suite in `package.json`)
 
-| Extension | Status | Notes |
-|---|---|---|
-| Resiliency Baseline | N/A | No DR/deploy changes this increment |
-| Property-Based Testing | Compliant (partial) | Existing PBT suites remain green; no new PBT required for this B&T pass |
-| Security Baseline | Disabled | Skipped per Extension Configuration |
+## Overall Status
+- **Build**: Success
+- **All Tests**: Pass
+- **Ready for Operations**: Yes — approved 2026-08-17
 
-## Manual smoke (recommended)
+## Next Steps
+Build and Test approved. Operations is a placeholder; see `aidlc-docs/operations/palette-host-config-operations-placeholder.md`.
 
-1. Agents Library title + Condition/Router/Repeater + Blank Agent + API or mock agents  
-2. Nested Skills Library on `/agent/:nodeId` with drag-drop canvas  
-3. Tab chips + Back; chrome inset when tabs appear  
-4. Save → toast + `saved` badge (no download); Export still downloads  
-
-## Next after approval
-
-**Operations** stage (placeholder) — Solution Workflow construction units are complete.
+Unit-level copies: `aidlc-docs/construction/u-pal-01-palette-config-core/build-and-test/`, `aidlc-docs/construction/u-pal-02-catalog-wiring/build-and-test/`.

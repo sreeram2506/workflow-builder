@@ -41,14 +41,14 @@ describe('palette.catalog', () => {
 });
 
 describe('node.factory', () => {
-  it('creates idle node with empty data and catalog label', () => {
+  it('creates idle node with paletteKey and catalog label', () => {
     const node = createWorkflowNode('Action', { x: 10, y: 20 });
     expect(node).not.toBeNull();
     expect(node!.type).toBe('Action');
     expect(node!.label).toBe('Action');
     expect(node!.position).toEqual({ x: 10, y: 20 });
     expect(node!.status).toBe('idle');
-    expect(node!.data).toEqual({});
+    expect(node!.data).toEqual({ paletteKey: 'Action' });
     expect(isValidCreatedNodeId(node!.id, 'Action')).toBe(true);
   });
 

@@ -15,7 +15,7 @@ export class ChromeInsetDirective implements AfterViewInit, OnDestroy {
     const node = this.el.nativeElement;
     const publish = (): void => {
       const h = node.getBoundingClientRect().height;
-      this.facade.setChromeInsetTop(h > 0 ? h : 88);
+      this.facade.setChromeInsetTop(h > 0 ? h : 16);
     };
     if (typeof ResizeObserver !== 'undefined') {
       this.observer = new ResizeObserver(() => publish());

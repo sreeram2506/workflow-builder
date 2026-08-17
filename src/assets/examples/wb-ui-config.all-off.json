@@ -1,0 +1,34 @@
+{
+  "topBar": {
+    "enabled": false,
+    "logo": false,
+    "title": false,
+    "status": false,
+    "theme": false,
+    "editView": false
+  },
+  "agentTabs": {
+    "enabled": false
+  },
+  "agentsLibrary": {
+    "enabled": false
+  },
+  "skillsLibrary": {
+    "enabled": false
+  },
+  "propertiesPanel": {
+    "enabled": false
+  },
+  "canvas": {
+    "enabled": false,
+    "zoomControls": false,
+    "minimap": false,
+    "floatingActions": false,
+    "layoutControls": false,
+    "save": false,
+    "export": false,
+    "import": false,
+    "run": false,
+    "reset": false
+  }
+}
