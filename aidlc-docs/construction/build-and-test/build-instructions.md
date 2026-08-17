@@ -1,6 +1,6 @@
 # Build Instructions
 
-SPA increment **Palette / catalog host config** (U-PAL-01 + U-PAL-02). Per-unit notes: `u-pal-01-palette-config-core/build-and-test/`, `u-pal-02-catalog-wiring/build-and-test/`.
+SPA increment **Host logic extras + agent metadata** (U-LIM-01).
 
 ## Prerequisites
 - **Build Tool**: npm + Angular 20
@@ -18,8 +18,7 @@ npm install
 ```
 
 ### 2. Configure Environment
-No extra env vars. Runtime file: `src/assets/wb-ui-config.json` (committed `{}`).  
-Palette allow-lists / `defaultAgents` may live in that JSON. Catalog adapters are **provider-only**.
+No extra env vars. Host `[palettes]` / `[defaultAgents]` extras (`iconUrl`, `iconPath`, `metadata`) are instance inputs. Do not put tokens in those fields or in embed examples.
 
 ### 3. Build All Units
 ```bash
@@ -28,8 +27,10 @@ npm run build
 
 ### 4. Verify Build Success
 - **Expected Output**: `dist/workflow-builder`
-- **Build Artifacts**: hashed `main` / `polyfills` / `styles` + `/assets` (including `examples/wb-ui-config.palette-host.json`)
-- **Common Warnings**: initial bundle ~580 kB vs 500 kB warn; left-sidebar CSS ~6 kB vs 4 kB warn
+- **Build Artifacts**: hashed `main` / `polyfills` / `styles`
+- **Common Warnings**: initial bundle ~590 kB vs 500 kB warn; left-sidebar CSS ~6.14 kB vs 4 kB warn (accepted)
+
+Verified 2026-08-17: `ng build` success, `dist/workflow-builder`.
 
 ## Troubleshooting
 

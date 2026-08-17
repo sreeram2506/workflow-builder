@@ -235,7 +235,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
     expect(result.error).toBeNull();
   });
 
-  it('present hostPalettes skips Enso and keeps featured plus defaults', async () => {
+  it('present hostPalettes skips Enso, omits static featured, keeps defaults', async () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -250,8 +250,44 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
     expect(result.source).toBe('host');
     expect(result.emptyRemote).toBe(false);
     expect(result.items.some((i) => i.key === 'host-b')).toBe(true);
-    expect(result.items.some((i) => i.type === 'Condition')).toBe(true);
+    expect(result.items.some((i) => i.type === 'Condition')).toBe(false);
     expect(result.items.some((i) => i.origin === 'default-agent')).toBe(true);
+  });
+
+  it('present hostPalettes keeps host logic extras and not the static Condition key', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const extra: PaletteItem = {
+      key: 'extra-c',
+      type: 'Condition',
+      label: 'Extra If',
+      description: '',
+      categoryId: 'logic',
+    };
+    const result = await firstValueFrom(
+      TestBed.inject(EnsoTaskCatalogService).loadCatalog({
+        mode: 'solution-agents',
+        hostPalettes: [extra, hostB],
+      }),
+    );
+    expect(result.items.filter((i) => i.type === 'Condition').map((i) => i.key)).toEqual(['extra-c']);
+    expect(result.items.some((i) => i.key === 'Condition')).toBe(false);
+  });
+
+  it('agent-skills host palettes omit static featured', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const result = await firstValueFrom(
+      TestBed.inject(EnsoTaskCatalogService).loadCatalog({
+        mode: 'agent-skills',
+        hostPalettes: [hostB],
+      }),
+    );
+    expect(result.source).toBe('host');
+    expect(result.items.some((i) => i.type === 'Condition')).toBe(false);
+    expect(result.items.some((i) => i.key === 'host-b')).toBe(true);
   });
 
   it('present hostPalettes wins over catalog provider token', async () => {

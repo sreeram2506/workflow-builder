@@ -1,13 +1,15 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { PALETTE_ITEMS, type PaletteItem } from './palette.catalog';
 import { ALLOWED_NODE_TYPES } from './workflow.models';
 import {
   aiAgentAllowed,
+  featuredLogicItems,
   filterPaletteItemsByAllowList,
   resolveDefaultAgents,
+  sanitizeHostDefaultAgents,
   sanitizeHostPaletteItems,
 } from './palette-host.helpers';
+import { FEATURED_PALETTE_TYPES, PALETTE_ITEMS, type PaletteItem } from './palette.catalog';
 import type { AllowListState, DefaultAgentCard } from '../ui-config/ui-features.types';
 
 const nodeTypeArb = fc.constantFrom(...ALLOWED_NODE_TYPES);
@@ -111,6 +113,67 @@ describe('palette-host.helpers PBT', () => {
         expect(aiAgentAllowed({ mode: 'only', types })).toBe(types.includes('AIAgent'));
       }),
       { numRuns: 40 },
+    );
+  });
+
+  it('featuredLogicItems(false) is at most one per type in Condition/Decision/Repeater order (P-LIM-03)', () => {
+    fc.assert(
+      fc.property(fc.array(itemArb, { maxLength: 16 }), (items) => {
+        const out = featuredLogicItems(items, false);
+        const types = out.map((i) => i.type);
+        expect(new Set(types).size).toBe(types.length);
+        const order = ['Condition', 'Decision', 'Repeater'] as const;
+        const ranks = types.map((t) => order.indexOf(t as (typeof order)[number]));
+        expect(ranks.every((r) => r >= 0)).toBe(true);
+        expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
+        for (const item of out) {
+          expect(items.find((i) => i.type === item.type)).toEqual(item);
+        }
+      }),
+      { numRuns: 60 },
+    );
+  });
+
+  it('featuredLogicItems(true) is all logic-typed items in input order (P-LIM-04)', () => {
+    fc.assert(
+      fc.property(fc.array(itemArb, { maxLength: 16 }), (items) => {
+        const expected = items.filter((i) =>
+          (FEATURED_PALETTE_TYPES as readonly string[]).includes(i.type),
+        );
+        expect(featuredLogicItems(items, true)).toEqual(expected);
+      }),
+      { numRuns: 60 },
+    );
+  });
+
+  it('non-object metadata omitted; plain object shallow-copied (P-LIM-05)', () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(
+          fc.constant(null),
+          fc.constant(1),
+          fc.constant('x'),
+          fc.array(fc.string(), { maxLength: 3 }),
+          fc.dictionary(fc.string({ minLength: 1, maxLength: 6 }), fc.string(), { maxKeys: 3 }),
+        ),
+        (metadata) => {
+          const palette = sanitizeHostPaletteItems([
+            { key: 'k', type: 'Condition', label: 'If', metadata },
+          ]);
+          const agents = sanitizeHostDefaultAgents([{ key: 'k', label: 'If', metadata }]);
+          const isPlain =
+            metadata !== null && typeof metadata === 'object' && !Array.isArray(metadata);
+          if (isPlain) {
+            expect(palette[0]?.metadata).toEqual({ ...(metadata as Record<string, unknown>) });
+            expect(agents[0]?.metadata).toEqual({ ...(metadata as Record<string, unknown>) });
+            expect(palette[0]?.metadata).not.toBe(metadata);
+          } else {
+            expect(palette[0]?.metadata).toBeUndefined();
+            expect(agents[0]?.metadata).toBeUndefined();
+          }
+        },
+      ),
+      { numRuns: 50 },
     );
   });
 

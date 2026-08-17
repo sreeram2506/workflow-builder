@@ -4173,3 +4173,190 @@ Return a summary of files created/modified and any test failures you couldn't fi
 **Context**: OPERATIONS (placeholder) — Host UI chrome inputs
 
 ---
+## New increment — Host logic extras + agent metadata
+**Timestamp**: 2026-08-17T17:33:00Z
+**User Input**: "i want to do more changes 1. like router , condition , repater user has should option to rovide more with icons , needed 2. these agents apart from default label has to support metada as well"
+**AI Response**: "Started new AI-DLC increment. Displayed welcome. Workspace Detection: brownfield Angular SPA. Reverse Engineering SKIP (incremental; prior host-palette / logic-node / [ui] artifacts). Requirements Analysis opened with 12 questions (9 functional + 3 extension opt-ins). No application code until answers locked."
+**Context**: INCEPTION Workspace Detection + Requirements Analysis (questions OPEN)
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/requirements/logic-icons-metadata-requirement-verification-questions.md, then reply answered."
+
+---
+## Logic-icons-metadata — Requirements answers locked; stage approval requested
+**Timestamp**: 2026-08-17T17:41:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1=A Q2=B Q3=C Q4=A Q5=A Q6=A Q7=A Q8=A Q9=A Q10=A Q11=A Q12=B. No contradictions (Q1 extra cards + Q2 host replaces built-ins are compatible). Loaded Security, Resiliency, PBT (partial) rules. Wrote intent analysis + requirements. User Stories will execute (host-facing library + embed API). Requested Requirements approval."
+**Context**: INCEPTION Requirements Analysis Step 7–9 — Host logic extras + agent metadata
+**AI Prompt**: "Requirements Analysis Complete. Review aidlc-docs/inception/requirements/logic-icons-metadata-requirements.md. Request Changes or Approve & Continue to User Stories."
+
+---
+## Logic-icons-metadata — Requirements approved; User Stories Part 1 opened
+**Timestamp**: 2026-08-17T17:44:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Recorded requirements approval. User Stories assessment: Execute=Yes (host API + author library). Wrote logic-icons-metadata-user-stories-assessment.md and story-generation-plan.md with Q1–Q5. Awaiting answers then plan approval before generating stories."
+**Context**: INCEPTION User Stories Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/logic-icons-metadata-story-generation-plan.md, then reply answered."
+
+---
+## Logic-icons-metadata — Story plan answers locked; generation approval requested
+**Timestamp**: 2026-08-17T17:45:30Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1–Q5 all A (P-HOST+P-AUTHOR; 4 stories; hybrid; Gherkin; increment-specific stories file). No ambiguities. Requested approval to generate stories and personas."
+**Context**: INCEPTION User Stories Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Story generation plan complete. Review aidlc-docs/inception/plans/logic-icons-metadata-story-generation-plan.md. Ready to proceed to generation?"
+
+---
+## Logic-icons-metadata — User Stories generated; stage approval requested
+**Timestamp**: 2026-08-17T17:46:30Z
+**User Input**: " proceed to generation"
+**AI Response**: "Generated US-LIM-01..04 in logic-icons-metadata-stories.md (Gherkin; FR-LIM-01..10 covered). Updated personas.md additively for P-HOST/P-AUTHOR. Marked story plan checklist complete. Requested User Stories approval before Workflow Planning."
+**Context**: INCEPTION User Stories Part 2 — Host logic extras + agent metadata
+**AI Prompt**: "User Stories Complete. Review aidlc-docs/inception/user-stories/logic-icons-metadata-stories.md and personas.md. Request Changes or Approve & Continue to Workflow Planning."
+
+---
+## Logic-icons-metadata — User Stories approved; Workflow Planning presented
+**Timestamp**: 2026-08-17T17:48:30Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Recorded User Stories approval. Wrote logic-icons-metadata-execution-plan.md: execute App Design + Units (U-LIM-01) + FD + CG + BT; skip NFR/Infra; Operations placeholder. Risk Low-Medium (featured-strip replace). Q1 in plan for override. Requested execution-plan approval."
+**Context**: INCEPTION Workflow Planning — Host logic extras + agent metadata
+**AI Prompt**: "Workflow Planning Complete. Review aidlc-docs/inception/plans/logic-icons-metadata-execution-plan.md. Request Changes, Add Skipped Stages, or Approve & Continue to Application Design."
+
+---
+## Logic-icons-metadata — Execution plan approved; Application Design Part 1 opened
+**Timestamp**: 2026-08-17T17:50:30Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Locked execution plan Q1=A (App Design + U-LIM-01; skip NFR/Infra). Opened application-design plan with Q1–Q5 (icon sanitizer location, featured helper, icon UI, drop mapping, no new injectable). Awaiting answers then plan approval before generating AD artifacts."
+**Context**: INCEPTION Application Design Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/logic-icons-metadata-application-design-plan.md, then reply answered."
+
+---
+## Logic-icons-metadata — Application Design plan answers locked; generation approval requested
+**Timestamp**: 2026-08-17T17:52:30Z
+**User Input**: "answered"
+**AI Response**: "Locked AD Q1–Q5 all A (icon-url.ts; featuredLogicItems helper; sidebar methods no child component; extend createWorkflowNodeFromPaletteItem; no new injectable). No ambiguities. Requested approval to generate AD artifacts."
+**Context**: INCEPTION Application Design Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Application design plan complete. Review aidlc-docs/inception/plans/logic-icons-metadata-application-design-plan.md. Ready to proceed to generation?"
+
+---
+## Logic-icons-metadata — Application Design generated; stage approval requested
+**Timestamp**: 2026-08-17T17:53:30Z
+**User Input**: "roceed to generation"
+**AI Response**: "Generated logic-icons-metadata-components/methods/services/component-dependency/application-design.md. Q1-Q5 A: icon-url.ts, featuredLogicItems, sidebar icons, factory metadata, no new injectable. Marked plan checklist complete. Requested AD approval before Units Generation."
+**Context**: INCEPTION Application Design Part 2 — Host logic extras + agent metadata
+**AI Prompt**: "Application Design Complete. Review aidlc-docs/inception/application-design/logic-icons-metadata-*.md. Request Changes or Approve & Continue to Units Generation."
+
+---
+## Logic-icons-metadata — Application Design approved; Units Generation Part 1 opened
+**Timestamp**: 2026-08-17T17:54:30Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Recorded Application Design approval. Opened logic-icons-metadata-unit-of-work-plan.md with Q1–Q4 (grouping, construction stages, code org, ownership). Proposed single unit U-LIM-01. Awaiting answers then plan approval before generating unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/logic-icons-metadata-unit-of-work-plan.md, then reply answered."
+
+---
+## Logic-icons-metadata — Units plan answers locked; generation approval requested
+**Timestamp**: 2026-08-17T17:56:30Z
+**User Input**: "answered"
+**AI Response**: "Locked Units Q1–Q4 all A (U-LIM-01 all stories; FD→CG→BT; extend existing domain files + icon-url.ts; same stream). No ambiguities. Requested approval to generate unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — Host logic extras + agent metadata
+**AI Prompt**: "Unit of work plan complete. Review aidlc-docs/inception/plans/logic-icons-metadata-unit-of-work-plan.md. Ready to proceed to generation?"
+
+---
+## Logic-icons-metadata — Units generated; stage approval requested
+**Timestamp**: 2026-08-17T17:58:00Z
+**User Input**: " proceed to generation"
+**AI Response**: "Generated logic-icons-metadata-unit-of-work.md, -dependency.md, -story-map.md for single unit U-LIM-01 (US-LIM-01..04; FD→CG→BT; icon-url.ts + extend existing files). Marked plan checklist complete. Requested Units Generation stage approval."
+**Context**: INCEPTION Units Generation Part 2 — Host logic extras + agent metadata
+**AI Prompt**: "Units Generation Complete. Review aidlc-docs/inception/application-design/logic-icons-metadata-unit-of-work*.md. Request Changes or Approve & Continue to CONSTRUCTION."
+
+---
+## Logic-icons-metadata — Units approved; U-LIM-01 Functional Design plan opened
+**Timestamp**: 2026-08-17T17:59:30Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Marked Units Generation approved. Entered CONSTRUCTION for U-LIM-01. Created functional design plan with Q1–Q7 (relative URLs, featured present, shallow metadata, iconPath, img error, PBT, duplicate keys). Awaiting answers."
+**Context**: INCEPTION Units → CONSTRUCTION Functional Design Part 1 — U-LIM-01
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/construction/plans/u-lim-01-logic-icons-metadata-functional-design-plan.md, then reply answered."
+
+---
+## U-LIM-01 FD Part 1 answers locked; generation approval requested
+**Timestamp**: 2026-08-17T18:01:30Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1–Q7 all A (relative URL rules; present = non-empty after sanitize; shallow metadata; iconPath as d; per-item img error; PBT invariants; no new palette dedupe). No ambiguities. Requested approval to generate FD artifacts."
+**Context**: CONSTRUCTION Functional Design Part 1 — U-LIM-01
+**AI Prompt**: "Functional design plan complete. Review aidlc-docs/construction/plans/u-lim-01-logic-icons-metadata-functional-design-plan.md. Ready to proceed to generation?"
+
+---
+## U-LIM-01 Functional Design generation complete; stage approval requested
+**Timestamp**: 2026-08-17T18:02:30Z
+**User Input**: "proceed to generation"
+**AI Response**: "Generated business-logic-model, business-rules, domain-entities, frontend-components under construction/u-lim-01-logic-icons-metadata/functional-design/. P-LIM-01..05 documented. Marked plan checklist complete. Requested Continue to Next Stage (Code Generation) or Request Changes."
+**Context**: CONSTRUCTION Functional Design Part 2 — U-LIM-01
+**AI Prompt**: "Functional Design Complete - U-LIM-01. Review functional-design/. Request Changes or Continue to Next Stage (Code Generation)."
+
+---
+## U-LIM-01 Functional Design approved; Code Generation plan opened
+**Timestamp**: 2026-08-17T18:03:30Z
+**User Input**: "Continue to Next Stage "
+**AI Response**: "Skipped NFR/Infra per execution plan. Created u-lim-01-logic-icons-metadata-code-generation-plan.md (10 steps: icon-url, types, sanitizers/featured, JSON, compose omit, factory, sidebar, docs, regression, summaries). Awaiting plan approval."
+**Context**: CONSTRUCTION Code Generation Part 1 — U-LIM-01
+**AI Prompt**: "Review aidlc-docs/construction/plans/u-lim-01-logic-icons-metadata-code-generation-plan.md. Approve this plan to run Part 2?"
+
+---
+## U-LIM-01 Code Generation plan approved; Part 2 executed
+**Timestamp**: 2026-08-17T18:14:00Z
+**User Input**: "Approve this plan"
+**AI Response**: "Executed CG plan steps 1–10. Created icon-url.ts + tests. Extended types, sanitizers, featuredLogicItems, JSON defaultAgents extras, catalog omit static featured, factory data.metadata, sidebar icons/strip, embed docs, try samples. npm test 254 passed; npm run build success (budget warnings). Summaries under construction/u-lim-01-logic-icons-metadata/code/. Requested Request Changes or Continue to Next Stage (Build and Test)."
+**Context**: CONSTRUCTION Code Generation Part 2 — U-LIM-01
+**AI Prompt**: "Code Generation Complete - U-LIM-01. Review generated code. Request Changes or Continue to Next Stage (Build and Test)."
+
+---
+## U-LIM-01 Code Generation — Request Changes (details needed)
+**Timestamp**: 2026-08-17T18:15:30Z
+**User Input**: "Request Changes "
+**AI Response**: "Logged Request Changes. Did not modify code. Opened u-lim-01-logic-icons-metadata-code-generation-change-questions.md (Q1 area, Q2 proceed). Awaiting filled [Answer]: tags."
+**Context**: CONSTRUCTION Code Generation — U-LIM-01 change request
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/construction/plans/u-lim-01-logic-icons-metadata-code-generation-change-questions.md, then reply answered."
+
+---
+## U-LIM-01 Code Generation change answers locked; implementing canvas icons
+**Timestamp**: 2026-08-17T18:18:30Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=B library icons, Q2=A implement. User: featured Extra If icon should match after drop onto canvas. Copy iconUrl/iconPath onto node.data and render on wb-workflow-node (same precedence and img fallback)."
+**Context**: CONSTRUCTION Code Generation — U-LIM-01 Request Changes
+
+---
+## U-LIM-01 Code Generation change applied; stage approval requested
+**Timestamp**: 2026-08-17T18:22:30Z
+**User Input**: "answered"
+**AI Response**: "Implemented canvas host icons: factory copies iconUrl/iconPath onto node.data; wb-workflow-node shows the same icon inside the logic frame or agent avatar. npm test 259 passed. Requested Request Changes or Continue to Next Stage (Build and Test)."
+**Context**: CONSTRUCTION Code Generation Part 2 — U-LIM-01 (change request)
+**AI Prompt**: "Code Generation Complete - U-LIM-01. Review generated code. Request Changes or Continue to Next Stage (Build and Test)."
+
+---
+## U-LIM-01 Code Generation approved; Build and Test executed
+**Timestamp**: 2026-08-17T18:24:30Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Marked Code Generation approved. Ran npm test (259 passed / 35 files) and npm run build (success; budget warnings). Wrote build-and-test instructions and summary for U-LIM-01. Requested Approve and Continue to Operations or Request Changes."
+**Context**: CONSTRUCTION Build and Test — U-LIM-01 Host logic extras + agent metadata
+**AI Prompt**: "Build and Test Complete. Review aidlc-docs/construction/build-and-test/build-and-test-summary.md. Request Changes or Approve and Continue to Operations."
+
+---
+## Build and Test Stage
+**Timestamp**: 2026-08-17T18:24:30Z
+**Build Status**: Success
+**Test Status**: Pass (259 / 259)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- security-test-instructions.md
+- build-and-test-summary.md
+
+---
+## U-LIM-01 Build and Test approved; Operations placeholder
+**Timestamp**: 2026-08-17T18:25:30Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Approved Build and Test. Operations is a placeholder. Wrote logic-icons-metadata-operations-placeholder.md. Increment Host logic extras + agent metadata (U-LIM-01) is COMPLETE. Workflow ends here for this increment."
+**Context**: OPERATIONS PLACEHOLDER — Host logic extras + agent metadata
+
+---

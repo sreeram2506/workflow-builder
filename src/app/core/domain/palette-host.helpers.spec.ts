@@ -3,6 +3,8 @@ import { PALETTE_ITEMS, blankAgentPaletteItem } from './palette.catalog';
 import {
   aiAgentAllowed,
   applySolutionDefaultAgents,
+  defaultAgentCardToPaletteItem,
+  featuredLogicItems,
   filterPaletteItemsByAllowList,
   resolveDefaultAgents,
   sanitizeHostDefaultAgents,
@@ -127,5 +129,103 @@ describe('palette-host.helpers', () => {
         null,
       ]),
     ).toEqual([{ key: 'policy', label: 'Policy Agent', description: 'X' }]);
+  });
+
+  it('sanitizeHostPaletteItems copies extras and drops unsafe iconUrl / non-object metadata', () => {
+    const out = sanitizeHostPaletteItems([
+      {
+        key: 'ok',
+        type: 'Condition',
+        label: 'If',
+        iconUrl: 'javascript:alert(1)',
+        iconPath: ' M1 1 ',
+        metadata: { owner: 'host' },
+        taskMeta: { task_id: 't1' },
+      },
+      {
+        key: 'url',
+        type: 'Decision',
+        label: 'Router',
+        iconUrl: 'https://cdn.example/r.png',
+        metadata: ['nope'],
+        taskMeta: null,
+      },
+    ]);
+    expect(out).toEqual([
+      {
+        key: 'ok',
+        type: 'Condition',
+        label: 'If',
+        description: '',
+        categoryId: 'agents',
+        iconPath: 'M1 1',
+        metadata: { owner: 'host' },
+        taskMeta: { task_id: 't1' },
+      },
+      {
+        key: 'url',
+        type: 'Decision',
+        label: 'Router',
+        description: '',
+        categoryId: 'agents',
+        iconUrl: 'https://cdn.example/r.png',
+      },
+    ]);
+  });
+
+  it('sanitizeHostDefaultAgents copies extras and not taskMeta', () => {
+    const out = sanitizeHostDefaultAgents([
+      {
+        key: 'policy',
+        label: 'Policy',
+        iconUrl: '/assets/a.png',
+        metadata: { team: 'ops' },
+        taskMeta: { ignored: true },
+      },
+    ]);
+    expect(out).toEqual([
+      {
+        key: 'policy',
+        label: 'Policy',
+        description: '',
+        iconUrl: '/assets/a.png',
+        metadata: { team: 'ops' },
+      },
+    ]);
+    expect(out[0]).not.toHaveProperty('taskMeta');
+  });
+
+  it('defaultAgentCardToPaletteItem copies extras', () => {
+    expect(
+      defaultAgentCardToPaletteItem({
+        key: 'claims',
+        label: 'Claims',
+        description: 'Triage',
+        iconUrl: 'https://cdn.example/a.png',
+        iconPath: 'M0 0',
+        metadata: { owner: 'host' },
+      }),
+    ).toEqual({
+      key: 'claims',
+      type: 'AIAgent',
+      label: 'Claims',
+      description: 'Triage',
+      categoryId: 'logic',
+      origin: 'default-agent',
+      iconUrl: 'https://cdn.example/a.png',
+      iconPath: 'M0 0',
+      metadata: { owner: 'host' },
+    });
+  });
+
+  it('featuredLogicItems first-of-type vs all remaining', () => {
+    const items = [
+      { key: 'c1', type: 'Condition' as const, label: 'A', description: '', categoryId: 'logic' },
+      { key: 'c2', type: 'Condition' as const, label: 'B', description: '', categoryId: 'logic' },
+      { key: 'd1', type: 'Decision' as const, label: 'R', description: '', categoryId: 'logic' },
+      { key: 'a1', type: 'AIAgent' as const, label: 'Agent', description: '', categoryId: 'agents' },
+    ];
+    expect(featuredLogicItems(items, false).map((i) => i.key)).toEqual(['c1', 'd1']);
+    expect(featuredLogicItems(items, true).map((i) => i.key)).toEqual(['c1', 'c2', 'd1']);
   });
 });

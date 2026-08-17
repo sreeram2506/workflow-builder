@@ -1,4 +1,5 @@
 import type { NodeType } from '../domain/workflow.models';
+import { sanitizeIconUrl } from '../domain/icon-url';
 import type {
   AllowListState,
   DefaultAgentCard,
@@ -172,8 +173,19 @@ function normalizeDefaultAgentCards(raw: unknown): DefaultAgentCard[] {
       continue;
     }
     const description = typeof item['description'] === 'string' ? item['description'] : '';
+    const card: DefaultAgentCard = { key, label, description };
+    const url = sanitizeIconUrl(item['iconUrl']);
+    if (url) {
+      card.iconUrl = url;
+    }
+    if (typeof item['iconPath'] === 'string' && item['iconPath'].trim().length > 0) {
+      card.iconPath = item['iconPath'].trim();
+    }
+    if (isPlainObject(item['metadata'])) {
+      card.metadata = { ...item['metadata'] };
+    }
     byKey.delete(key);
-    byKey.set(key, { key, label, description });
+    byKey.set(key, card);
   }
   return [...byKey.values()];
 }

@@ -3,25 +3,39 @@
 ## Project Information
 - **Project Name**: Angular Workflow Builder
 - **Project Type**: Greenfield origin; brownfield increment
-- **Start Date**: 2026-08-17T13:15:40Z
-- **Current Stage**: OPERATIONS — placeholder (Host UI chrome inputs COMPLETE)
+- **Start Date**: 2026-08-17T17:33:00Z
+- **Current Stage**: OPERATIONS — PLACEHOLDER (increment complete)
 - **Current Phase**: OPERATIONS
-- **Current Unit**: U-HUI-01 (complete)
-- **Active Increment**: Host UI chrome inputs (`[ui]` Syncfusion-style) — COMPLETE
+- **Current Unit**: U-LIM-01
+- **Active Increment**: Host logic extras + agent metadata (icons + metadata) — COMPLETE
+
+## Workspace State
+- **Existing Code**: Yes
+- **Programming Languages**: TypeScript, HTML, SCSS (Angular)
+- **Build System**: npm / Angular CLI / Vitest
+- **Project Structure**: Monolith SPA (workflow canvas + embeddable shells)
+- **Workspace Root**: `/Users/sreeram/ofcwork/workflow-builder`
+- **Reverse Engineering Needed**: No (skipped)
+- **Prior Increment**: Host UI chrome inputs (`[ui]`) — COMPLETE
 
 ## Extension Configuration
 | Extension | Enabled | Mode | Decided At |
 |---|---|---|---|
-| Security Baseline | Yes | New-code scoped (Q8=C) | Host UI RA |
-| Resiliency Baseline | Yes | Directional; DR/CAB N/A (Q9=C) | Host UI RA |
-| Property-Based Testing | Yes | Partial — instance `[ui]` merge (Q10=B) | Host UI RA |
+| Security Baseline | Yes | New-code scoped (Q10=A) | Logic-icons-metadata RA |
+| Resiliency Baseline | Yes | Directional; DR/CAB N/A (SPA increment) | Logic-icons-metadata RA |
+| Property-Based Testing | Yes | Partial — sanitizers / mapping (Q12=B) | Logic-icons-metadata RA |
 
-## Proposed Units
-- **U-HUI-01** Instance `[ui]` overlay + shells + docs (stories US-HUI-01..04) — COMPLETE
+## Execution Plan Summary
+- **Approved**: Q1=A — App Design + Units (U-LIM-01) + FD + CG + BT; skip NFR/Infra
+- **Plan file**: `aidlc-docs/inception/plans/logic-icons-metadata-execution-plan.md`
+
+## Code Location Rules
+- **Application Code**: Workspace root (NEVER in aidlc-docs/)
+- **Documentation**: aidlc-docs/ only
 
 ## Stage Progress
 
-### INCEPTION — Host UI chrome inputs
+### INCEPTION — Host logic extras + agent metadata
 - [x] Workspace Detection
 - [x] Reverse Engineering — SKIP
 - [x] Requirements Analysis — approved
@@ -30,20 +44,19 @@
 - [x] Application Design — approved
 - [x] Units Generation — approved
 
-### CONSTRUCTION — U-HUI-01
+### CONSTRUCTION — U-LIM-01
 - [x] Functional Design — approved
-- [x] NFR Requirements — SKIP
-- [x] NFR Design — SKIP
-- [x] Infrastructure Design — SKIP
+- [ ] NFR Requirements — SKIP
+- [ ] NFR Design — SKIP
+- [ ] Infrastructure Design — SKIP
 - [x] Code Generation — approved
-- [x] Build and Test — approved (233 tests; build OK)
+- [x] Build and Test — approved
 
-### OPERATIONS — Host UI chrome inputs
-- [x] Operations — PLACEHOLDER (`aidlc-docs/operations/host-ui-inputs-operations-placeholder.md`)
+### OPERATIONS
+- [x] Operations — PLACEHOLDER (complete for this increment)
 
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS (placeholder complete)
-- **Increment**: Host UI chrome inputs — COMPLETE
-- **Deliverable**: `[ui]` on `wb-shell-layout` / `wb-agent-skills-shell` (defaults → JSON → provider → `[ui]`)
-- **Docs**: `docs/workflow-builder-ui-embed.md`
-- **Timestamp**: 2026-08-17T13:41:08Z
+- **Lifecycle Phase**: OPERATIONS
+- **Current Stage**: Placeholder — increment complete
+- **Blocked On**: None
+- **Timestamp**: 2026-08-17T18:25:30Z

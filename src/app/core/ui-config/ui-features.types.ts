@@ -56,6 +56,9 @@ export interface DefaultAgentCard {
   key: string;
   label: string;
   description: string;
+  iconUrl?: string;
+  iconPath?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export type DefaultAgentsState =

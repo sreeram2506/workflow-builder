@@ -29,6 +29,7 @@ import {
   type PaletteCategoryId,
   type PaletteItem,
 } from '../../core/domain/palette.catalog';
+import { featuredLogicItems, sanitizeHostPaletteItems } from '../../core/domain/palette-host.helpers';
 import {
   SIDEBAR_WIDTH_LEFT_DEFAULT,
   clampSidebarWidth,
@@ -107,6 +108,8 @@ export {
               </p>
             } @else if (!catalogEmptyRemote()) {
             <!-- Featured logic shapes: solution + agent skills -->
+            @if (logicShapeItems(); as featuredItems) {
+            @if (featuredItems.length) {
             <div
               class="featured-strip"
               cdkDropList
@@ -116,7 +119,7 @@ export {
               [cdkDropListEnterPredicate]="rejectEnter"
             >
             <div class="logic-shapes-row" role="list" aria-label="Logic shapes">
-              @for (item of logicShapeItems(); track item.key) {
+              @for (item of featuredItems; track item.key) {
                 <div
                   class="logic-shape-btn"
                   role="listitem"
@@ -133,7 +136,20 @@ export {
                   [title]="item.label"
                   [attr.data-testid]="'logic-shape-' + item.type"
                 >
-                  @if (shapeKind(item.type); as kind) {
+                  @if (showIconImg(item)) {
+                    <img
+                      class="palette-icon-img featured"
+                      [src]="item.iconUrl || ''"
+                      alt=""
+                      draggable="false"
+                      data-testid="palette-icon-img"
+                      (error)="onPaletteIconError(item)"
+                    />
+                  } @else if (item.iconPath) {
+                    <svg class="shape-preview" viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
+                      <path [attr.d]="item.iconPath" />
+                    </svg>
+                  } @else if (shapeKind(item.type); as kind) {
                     <svg class="shape-preview" viewBox="0 0 100 100" width="40" height="40">
                       @switch (kind) {
                         @case ('rhombus') {
@@ -216,6 +232,8 @@ export {
               }
             </div>
             </div>
+            }
+            }
 
             @if (paletteScope() === 'solution') {
               @if (defaultAgentItems().length) {
@@ -246,9 +264,20 @@ export {
                       [attr.data-testid]="'default-agent-card-' + item.key"
                     >
                       <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                          <path [attr.d]="iconPath(item.type)" />
-                        </svg>
+                        @if (showIconImg(item)) {
+                          <img
+                            class="palette-icon-img"
+                            [src]="item.iconUrl || ''"
+                            alt=""
+                            draggable="false"
+                            data-testid="palette-icon-img"
+                            (error)="onPaletteIconError(item)"
+                          />
+                        } @else {
+                          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path [attr.d]="cardIconPath(item)" />
+                          </svg>
+                        }
                       </div>
                       <div class="node-text">
                         <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
@@ -303,9 +332,20 @@ export {
                     [attr.data-testid]="'solution-agent-' + item.key"
                   >
                     <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path [attr.d]="iconPath(item.type)" />
-                      </svg>
+                      @if (showIconImg(item)) {
+                        <img
+                          class="palette-icon-img"
+                          [src]="item.iconUrl || ''"
+                          alt=""
+                          draggable="false"
+                          data-testid="palette-icon-img"
+                          (error)="onPaletteIconError(item)"
+                        />
+                      } @else {
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                          <path [attr.d]="cardIconPath(item)" />
+                        </svg>
+                      }
                     </div>
                     <div class="node-text">
                       <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
@@ -378,9 +418,20 @@ export {
                                 [attr.data-testid]="'skill-palette-' + item.key"
                               >
                                 <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                    <path [attr.d]="iconPath(item.type)" />
-                                  </svg>
+                                  @if (showIconImg(item)) {
+                                    <img
+                                      class="palette-icon-img"
+                                      [src]="item.iconUrl || ''"
+                                      alt=""
+                                      draggable="false"
+                                      data-testid="palette-icon-img"
+                                      (error)="onPaletteIconError(item)"
+                                    />
+                                  } @else {
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                      <path [attr.d]="cardIconPath(item)" />
+                                    </svg>
+                                  }
                                 </div>
                                 <div class="node-text">
                                   <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
@@ -679,6 +730,17 @@ export {
       width: 36px; height: 36px; border-radius: 8px; background: var(--wb-icon-well);
       color: var(--wb-accent); display: grid; place-items: center; flex-shrink: 0;
     }
+    .palette-icon-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+    .palette-icon-img.featured {
+      width: 40px;
+      height: 40px;
+    }
     .shape-preview {
       display: block;
       overflow: visible;
@@ -765,6 +827,7 @@ export class LeftSidebarComponent {
   readonly allItems = signal<PaletteItem[]>([]);
   readonly filteredItems = signal<PaletteItem[]>([]);
   readonly collapsedCategories = signal<Record<string, boolean>>({});
+  readonly failedIconKeys = signal<ReadonlySet<string>>(new Set());
 
   private dragActive = false;
   private resizing = false;
@@ -826,6 +889,7 @@ export class LeftSidebarComponent {
         this.catalogLoading.set(false);
         this.catalogError.set(result.error);
         this.catalogEmptyRemote.set(result.emptyRemote);
+        this.failedIconKeys.set(new Set());
         this.categories.set(result.categories.filter((c) => c.id !== 'logic'));
         this.allItems.set(result.items);
         this.filteredItems.set(filterPaletteItems(result.items, this.debouncedQuery()));
@@ -880,8 +944,25 @@ export class LeftSidebarComponent {
     return this.allItems().filter((i) => i.origin === 'default-agent');
   }
 
-  iconPath(type: PaletteItem['type']): string {
-    return iconPathForType(type);
+  cardIconPath(item: PaletteItem): string {
+    return item.iconPath || iconPathForType(item.type);
+  }
+
+  hostPalettesPresent(): boolean {
+    const palettes = this.palettes();
+    return palettes !== undefined && sanitizeHostPaletteItems(palettes).length > 0;
+  }
+
+  showIconImg(item: PaletteItem): boolean {
+    return !!item.iconUrl && !this.failedIconKeys().has(item.key);
+  }
+
+  onPaletteIconError(item: PaletteItem): void {
+    this.failedIconKeys.update((cur) => {
+      const next = new Set(cur);
+      next.add(item.key);
+      return next;
+    });
   }
 
   shapeKind(type: NodeType) {
@@ -894,10 +975,7 @@ export class LeftSidebarComponent {
 
   /** Condition / Router / Repeater — featured row from filtered catalog items only. */
   logicShapeItems(): PaletteItem[] {
-    const order: NodeType[] = ['Condition', 'Decision', 'Repeater'];
-    return order
-      .map((t) => this.allItems().find((i) => i.type === t))
-      .filter((i): i is PaletteItem => !!i);
+    return featuredLogicItems(this.allItems(), this.hostPalettesPresent());
   }
 
   isCollapsed(id: PaletteCategoryId): boolean {

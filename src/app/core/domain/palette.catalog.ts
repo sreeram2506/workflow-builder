@@ -15,6 +15,12 @@ export interface PaletteItem {
   taskMeta?: Record<string, unknown>;
   /** Host/built-in default agent card (Blank Agent or defaultAgents). */
   origin?: 'default-agent';
+  /** Sanitized library image URL. */
+  iconUrl?: string;
+  /** SVG path `d` (viewBox 0 0 24 24). */
+  iconPath?: string;
+  /** Host extras copied onto the dropped node. */
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaletteCategory {

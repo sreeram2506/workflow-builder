@@ -83,7 +83,7 @@ export class EnsoTaskCatalogService {
     const remote = sanitizeHostPaletteItems(raw, fallback);
     const defaults = this.hostDefaultAgentsState(options);
     if (canvas === 'solution') {
-      const composed = this.composeSolution(remote, undefined, defaults);
+      const composed = this.composeSolution(remote, undefined, defaults, remote.length > 0);
       return {
         ...composed,
         source: 'host',
@@ -91,7 +91,7 @@ export class EnsoTaskCatalogService {
         emptyRemote: false,
       };
     }
-    const composed = this.composeSkills(remote, undefined);
+    const composed = this.composeSkills(remote, undefined, remote.length > 0);
     return {
       ...composed,
       source: 'host',
@@ -203,13 +203,16 @@ export class EnsoTaskCatalogService {
     remoteItems: readonly PaletteItem[],
     remoteCategories: readonly PaletteCategory[] | undefined,
     defaultAgentsOverride?: DefaultAgentsState,
+    omitStaticFeatured = false,
   ): { categories: PaletteCategory[]; items: PaletteItem[] } {
     const cfg = this.uiConfig.features().palette.solution;
-    const staticItems = PALETTE_ITEMS.filter(
-      (item) =>
-        (FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(item.type) ||
-        item.type === BLANK_AGENT_TYPE,
-    );
+    const staticItems = PALETTE_ITEMS.filter((item) => {
+      const isFeatured = (FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(item.type);
+      if (omitStaticFeatured && isFeatured) {
+        return false;
+      }
+      return isFeatured || item.type === BLANK_AGENT_TYPE;
+    });
     const filtered = filterPaletteItemsByAllowList(staticItems, cfg.types);
     const defaults = resolveDefaultAgents(
       defaultAgentsOverride ?? cfg.defaultAgents,
@@ -228,9 +231,15 @@ export class EnsoTaskCatalogService {
   private composeSkills(
     remoteItems: readonly PaletteItem[],
     remoteCategories: readonly PaletteCategory[] | undefined,
+    omitStaticFeatured = false,
   ): { categories: PaletteCategory[]; items: PaletteItem[] } {
     const cfg = this.uiConfig.features().palette.agent;
-    const filteredStatic = filterPaletteItemsByAllowList(PALETTE_ITEMS, cfg.types);
+    const staticSource = omitStaticFeatured
+      ? PALETTE_ITEMS.filter(
+          (item) => !(FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(item.type),
+        )
+      : PALETTE_ITEMS;
+    const filteredStatic = filterPaletteItemsByAllowList(staticSource, cfg.types);
     const remoteFiltered = filterPaletteItemsByAllowList(remoteItems, cfg.types);
     const extra = (remoteCategories ?? []).filter(
       (cat) => !PALETTE_CATEGORIES.some((base) => base.id === cat.id),

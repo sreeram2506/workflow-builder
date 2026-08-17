@@ -223,6 +223,37 @@ describe('merge-ui-features', () => {
     });
   });
 
+  it('normalizePartial keeps sanitized defaultAgents extras', () => {
+    const partial = normalizePartial({
+      palette: {
+        solution: {
+          defaultAgents: [
+            {
+              key: 'a',
+              label: 'A',
+              iconUrl: 'javascript:alert(1)',
+              iconPath: ' M0 0 ',
+              metadata: { team: 'ops' },
+            },
+            {
+              key: 'b',
+              label: 'B',
+              iconUrl: 'https://cdn.example/a.png',
+              metadata: ['nope'],
+            },
+          ],
+        },
+      },
+    });
+    expect(partial.palette?.solution?.defaultAgents).toEqual({
+      mode: 'present',
+      cards: [
+        { key: 'a', label: 'A', description: '', iconPath: 'M0 0', metadata: { team: 'ops' } },
+        { key: 'b', label: 'B', description: '', iconUrl: 'https://cdn.example/a.png' },
+      ],
+    });
+  });
+
   it('malformed palette groups are ignored', () => {
     const partial = normalizePartial({
       palette: 'nope',

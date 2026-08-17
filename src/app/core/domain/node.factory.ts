@@ -2,6 +2,7 @@ import { isAllowedNodeType } from './theme.utils';
 import { findPaletteItem, type PaletteItem } from './palette.catalog';
 import type { NodeType, WorkflowNode } from './workflow.models';
 import type { Point } from './viewport.math';
+import { sanitizeIconUrl } from './icon-url';
 
 const ID_PATTERN = /^n-[A-Za-z]+-[a-z0-9]+$/;
 
@@ -41,11 +42,21 @@ export function createWorkflowNodeFromPaletteItem(
   if (!isAllowedNodeType(item.type)) {
     return null;
   }
-  const data: Record<string, unknown> = {
+    const data: Record<string, unknown> = {
     paletteKey: item.key,
   };
   if (item.taskMeta) {
     data['ensoTask'] = { ...item.taskMeta };
+  }
+  if (item.metadata) {
+    data['metadata'] = { ...item.metadata };
+  }
+  const iconUrl = sanitizeIconUrl(item.iconUrl);
+  if (iconUrl) {
+    data['iconUrl'] = iconUrl;
+  }
+  if (item.iconPath && item.iconPath.trim().length > 0) {
+    data['iconPath'] = item.iconPath.trim();
   }
   return {
     id: newNodeId(item.type),

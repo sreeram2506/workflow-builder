@@ -1,18 +1,1 @@
-{
-    "palette": {
-      "solution": {
-        "types": ["Condition", "Decision", "Repeater", "AIAgent"],
-        "defaultAgents": [
-          {
-            "key": "claims",
-            "label": "Claims Agent",
-            "description": "Triage inbound claims"
-          }
-        ]
-      },
-      "agent": {
-        "types": ["Action", "Condition", "Decision"]
-      }
-    }
-  }
-  
+{}

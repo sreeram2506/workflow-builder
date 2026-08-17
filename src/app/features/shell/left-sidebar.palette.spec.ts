@@ -202,4 +202,79 @@ describe('LeftSidebar palette (U-PAL-02)', () => {
     expect(last.hostPalettes?.[0]?.key).toBe('enso-agent-1');
     expect(last.hostDefaultAgents).toBeUndefined();
   });
+
+  it('unbound palettes shows first Condition only even when catalog has extras', async () => {
+    const extra: PaletteItem = {
+      key: 'c2',
+      type: 'Condition',
+      label: 'Extra If',
+      description: '',
+      categoryId: 'logic',
+    };
+    const { fixture } = await mount(() => of(catalogLoad({ items: [condition, extra, blank] })));
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelectorAll('[data-testid="logic-shape-Condition"]')).toHaveLength(1);
+    expect(el.textContent).not.toContain('Extra If');
+  });
+
+  it('present palettes lists every Condition in catalog order', async () => {
+    const extra: PaletteItem = {
+      key: 'c2',
+      type: 'Condition',
+      label: 'Extra If',
+      description: '',
+      categoryId: 'logic',
+    };
+    const { fixture } = await mount(() => of(catalogLoad({ items: [extra, condition, blank] })));
+    fixture.componentRef.setInput('palettes', [remoteAgent]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const shapes = el.querySelectorAll('[data-testid="logic-shape-Condition"]');
+    expect(shapes).toHaveLength(2);
+    expect(shapes[0]?.textContent).toContain('Extra If');
+    expect(shapes[1]?.textContent).toContain('Condition');
+  });
+
+  it('renders iconUrl as img and does not show metadata keys', async () => {
+    const withIcon: PaletteItem = {
+      ...condition,
+      iconUrl: 'https://cdn.example/c.png',
+      metadata: { secretToken: 'nope-lim' },
+    };
+    const { fixture } = await mount(() => of(catalogLoad({ items: [withIcon, blank] })));
+    const el = fixture.nativeElement as HTMLElement;
+    const img = el.querySelector('[data-testid="palette-icon-img"]') as HTMLImageElement | null;
+    expect(img?.getAttribute('src')).toBe('https://cdn.example/c.png');
+    expect(el.textContent).not.toContain('secretToken');
+    expect(el.textContent).not.toContain('nope-lim');
+  });
+
+  it('renders iconPath when iconUrl is absent', async () => {
+    const withPath: PaletteItem = {
+      ...condition,
+      iconPath: 'M0 0h10v10H0z',
+    };
+    const { fixture } = await mount(() => of(catalogLoad({ items: [withPath, blank] })));
+    const el = fixture.nativeElement as HTMLElement;
+    const shape = el.querySelector('[data-testid="logic-shape-Condition"]');
+    expect(shape?.querySelector('[data-testid="palette-icon-img"]')).toBeNull();
+    expect(shape?.querySelector('path')?.getAttribute('d')).toBe('M0 0h10v10H0z');
+  });
+
+  it('img error falls back to the type glyph for that key', async () => {
+    const withIcon: PaletteItem = {
+      ...condition,
+      iconUrl: 'https://cdn.example/missing.png',
+    };
+    const { fixture } = await mount(() => of(catalogLoad({ items: [withIcon, blank] })));
+    const el = fixture.nativeElement as HTMLElement;
+    const img = el.querySelector('[data-testid="palette-icon-img"]') as HTMLImageElement;
+    expect(img).toBeTruthy();
+    img.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(el.querySelector('[data-testid="palette-icon-img"]')).toBeNull();
+    expect(el.querySelector('[data-testid="logic-shape-Condition"] .shape-preview')).toBeTruthy();
+  });
 });

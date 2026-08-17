@@ -151,7 +151,6 @@ Bind catalog cards on the host tags. These are **instance** inputs — they win 
 import type { PaletteItem } from './core/domain/palette.catalog';
 import type { DefaultAgentCard } from './core/ui-config';
 
-// Catalog card labeled Stream — type must be a known NodeType (e.g. AIAgent).
 const palettes: PaletteItem[] = [
   {
     key: 'stream',
@@ -159,26 +158,51 @@ const palettes: PaletteItem[] = [
     label: 'Stream',
     description: 'Host-supplied agent',
     categoryId: 'agents',
+    iconUrl: 'https://cdn.example/stream.png',
+    metadata: { owner: 'platform' },
+  },
+  {
+    key: 'extra-if',
+    type: 'Condition',
+    label: 'Extra If',
+    description: 'Second condition card',
+    categoryId: 'logic',
+    iconPath: 'M12 2 L2 22 h20 z',
+    metadata: { kind: 'extra-condition' },
   },
 ];
 
 const defaultAgents: DefaultAgentCard[] = [
-  { key: 'policy', label: 'Policy Agent', description: 'Default from parent' },
+  {
+    key: 'policy',
+    label: 'Policy Agent',
+    description: 'Default from parent',
+    iconUrl: '/assets/policy.png',
+    metadata: { team: 'ops' },
+  },
 ];
 ```
 
 `wb-agent-skills-shell` accepts `[palettes]` only (no `[defaultAgents]`).
 
+Optional library fields on palette items and default-agent cards:
+
+- `iconUrl` — `https:`, `/…`, `./…`, or raster `data:image/png|jpeg|gif|webp`. Rejected values (`javascript:`, `http:`, `file:`, `../`, SVG data) are dropped. URL wins over `iconPath`.
+- `iconPath` — SVG path `d` (viewBox `0 0 24 24`) when there is no usable URL.
+- `metadata` — plain object copied onto the dropped node as `data.metadata`. Not shown in the library or Properties.
+
+If an image fails to load, that card falls back to `iconPath` or the type glyph. On drop, the same `iconUrl` / `iconPath` are copied onto `node.data` so the canvas node shows the same icon (inside the Condition / Router / Repeater frame, or in the agent avatar).
+
 | Binding | Library |
 |---|---|
-| Omit `[palettes]` | Enso or `provideWorkflowBuilderUi({ catalog })` (U-PAL-02) |
+| Omit `[palettes]` | Enso or `provideWorkflowBuilderUi({ catalog })` (U-PAL-02). Featured strip is the first Condition, Router, and Repeater. |
 | `[palettes]="[]"` | Empty-state only (`palette-empty-remote`). Featured and default agents hidden. |
-| `[palettes]="items"` | Parent owns the remote list. Featured Condition / Router / Repeater and default agents stay. Enso and the catalog adapter are not called. |
+| `[palettes]="items"` (non-empty after sanitize) | Parent owns the remote list. Built-in featured three are **replaced**: the strip lists every remaining Condition / Router / Repeater from the host catalog (zero or more). Default agents stay. Enso and the catalog adapter are not called. |
 | Omit `[defaultAgents]` | JSON / provider `palette.solution.defaultAgents` (Blank Agent if omitted there) |
 | `[defaultAgents]="[]"` | No default-agent cards (unless `[palettes]="[]"`, which already hides them) |
 | Unknown `type` (e.g. `"Stream"`) | Row dropped. Canvas cannot create unknown node types. |
 
-Do not put access tokens in palette items or embed examples.
+Do not put access tokens in palette items, `metadata`, or embed examples.
 
 ## Load status banner
 

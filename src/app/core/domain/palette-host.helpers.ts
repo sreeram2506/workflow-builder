@@ -1,17 +1,48 @@
 import {
   BLANK_AGENT_TYPE,
+  FEATURED_PALETTE_TYPES,
   blankAgentPaletteItem,
   type PaletteItem,
 } from './palette.catalog';
 import type { AllowListState, DefaultAgentCard, DefaultAgentsState } from '../ui-config/ui-features.types';
 import { ALLOWED_NODE_TYPES, type NodeType } from './workflow.models';
+import { sanitizeIconUrl } from './icon-url';
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 function isAllowedNodeType(value: unknown): value is NodeType {
   return typeof value === 'string' && (ALLOWED_NODE_TYPES as readonly string[]).includes(value);
+}
+
+function applyHostExtras(
+  rec: Record<string, unknown>,
+  target: {
+    iconUrl?: string;
+    iconPath?: string;
+    metadata?: Record<string, unknown>;
+    taskMeta?: Record<string, unknown>;
+  },
+  copyTaskMeta: boolean,
+): void {
+  const url = sanitizeIconUrl(rec['iconUrl']);
+  if (url) {
+    target.iconUrl = url;
+  }
+  if (isNonEmptyString(rec['iconPath'])) {
+    target.iconPath = rec['iconPath'].trim();
+  }
+  if (isPlainObject(rec['metadata'])) {
+    target.metadata = { ...rec['metadata'] };
+  }
+  if (copyTaskMeta && isPlainObject(rec['taskMeta'])) {
+    target.taskMeta = { ...rec['taskMeta'] };
+  }
 }
 
 /** Drop unknown types and invalid shapes. Remaining rows are canvas-safe PaletteItems. */
@@ -41,6 +72,7 @@ export function sanitizeHostPaletteItems(
     if (rec['origin'] === 'default-agent') {
       item.origin = 'default-agent';
     }
+    applyHostExtras(rec, item, true);
     out.push(item);
   }
   return out;
@@ -56,11 +88,13 @@ export function sanitizeHostDefaultAgents(raw: readonly unknown[]): DefaultAgent
     if (!isNonEmptyString(rec['key']) || !isNonEmptyString(rec['label'])) {
       continue;
     }
-    out.push({
+    const card: DefaultAgentCard = {
       key: rec['key'].trim(),
       label: rec['label'].trim(),
       description: typeof rec['description'] === 'string' ? rec['description'] : '',
-    });
+    };
+    applyHostExtras(rec, card, false);
+    out.push(card);
   }
   return out;
 }
@@ -81,7 +115,7 @@ export function filterPaletteItemsByAllowList(
 }
 
 export function defaultAgentCardToPaletteItem(card: DefaultAgentCard): PaletteItem {
-  return {
+  const item: PaletteItem = {
     key: card.key,
     type: BLANK_AGENT_TYPE,
     label: card.label,
@@ -89,6 +123,29 @@ export function defaultAgentCardToPaletteItem(card: DefaultAgentCard): PaletteIt
     categoryId: 'logic',
     origin: 'default-agent',
   };
+  if (card.iconUrl) {
+    item.iconUrl = card.iconUrl;
+  }
+  if (card.iconPath) {
+    item.iconPath = card.iconPath;
+  }
+  if (card.metadata) {
+    item.metadata = { ...card.metadata };
+  }
+  return item;
+}
+
+/** Featured strip: first-of-type built-ins, or every remaining logic card when host palettes are present. */
+export function featuredLogicItems(
+  items: readonly PaletteItem[],
+  hostPalettesPresent: boolean,
+): PaletteItem[] {
+  const featured = new Set<string>(FEATURED_PALETTE_TYPES);
+  if (hostPalettesPresent) {
+    return items.filter((i) => featured.has(i.type));
+  }
+  const order: NodeType[] = ['Condition', 'Decision', 'Repeater'];
+  return order.map((t) => items.find((i) => i.type === t)).filter((i): i is PaletteItem => !!i);
 }
 
 export function resolveDefaultAgents(

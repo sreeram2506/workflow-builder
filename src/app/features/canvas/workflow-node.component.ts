@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import type { WorkflowNode } from '../../core/domain/workflow.models';
 import {
   accentTokenForType,
@@ -8,6 +8,7 @@ import {
   nodeSizeForType,
 } from '../../core/domain/node-visuals';
 import type { PortSide } from '../../core/domain/viewport.math';
+import { sanitizeIconUrl } from '../../core/domain/icon-url';
 
 @Component({
   selector: 'wb-workflow-node',
@@ -65,87 +66,116 @@ import type { PortSide } from '../../core/domain/viewport.math';
         <svg class="shape-svg" viewBox="0 0 100 100" aria-hidden="true">
           @switch (kind) {
             @case ('rhombus') {
-              <!-- Card-theme diamond (theme colors) -->
               <polygon
                 class="shape-fill"
                 points="50,6 94,50 50,94 6,50"
                 stroke-linejoin="round"
               />
-              <!-- Three-way branch: longer stems, up / left / right -->
-              <g
-                class="shape-glyph"
-                transform="translate(50 50)"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M0 10 L0 -17" />
-                <path d="M0 -17 l-3.6 4.2 M0 -17 l3.6 4.2" />
-                <path d="M0 0 L-17 0" />
-                <path d="M-17 0 l4.2 -3.2 M-17 0 l4.2 3.2" />
-                <path d="M0 0 L17 0" />
-                <path d="M17 0 l-4.2 -3.2 M17 0 l-4.2 3.2" />
-              </g>
             }
             @case ('router') {
-              <!--
-                Horizontal pointed hexagon (Router): left/right tips for routing,
-                distinct from Condition diamond + Repeater rounded square.
-              -->
               <polygon
                 class="shape-fill"
                 points="18,8 82,8 96,50 82,92 18,92 4,50"
                 stroke-linejoin="round"
               />
-              <g
-                class="shape-glyph"
-                transform="translate(50 50) scale(1.05)"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <!-- Stem + Y-fork; tip chevrons aligned to each branch (±45°) -->
-                <path d="M-13 0 H0" />
-                <path d="M0 0 L12 -11" />
-                <path d="M0 0 L12 11" />
-                <path d="M12 -11 l-5.2 0.7 M12 -11 l-0.7 5.2" />
-                <path d="M12 11 l-0.7 -5.2 M12 11 l-5.2 -0.7" />
-              </g>
             }
             @case ('repeater') {
-              <!-- Rounded square — flush to box so handles attach like Condition -->
               <rect class="shape-fill" x="4" y="4" width="92" height="92" rx="20" ry="20" />
-              <!--
-                Sync arrows: tip apex seated exactly on each arc end (Condition-style
-                right/left chevrons). Top tip → right; bottom → left via 180° rotate.
-              -->
-              <g
-                class="shape-glyph"
-                transform="translate(50 50) scale(1.05)"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
-                <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
-                <g transform="rotate(180)">
+            }
+          }
+          @if (!hasHostIcon()) {
+            @switch (kind) {
+              @case ('rhombus') {
+                <g
+                  class="shape-glyph"
+                  transform="translate(50 50)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M0 10 L0 -17" />
+                  <path d="M0 -17 l-3.6 4.2 M0 -17 l3.6 4.2" />
+                  <path d="M0 0 L-17 0" />
+                  <path d="M-17 0 l4.2 -3.2 M-17 0 l4.2 3.2" />
+                  <path d="M0 0 L17 0" />
+                  <path d="M17 0 l-4.2 -3.2 M17 0 l-4.2 3.2" />
+                </g>
+              }
+              @case ('router') {
+                <g
+                  class="shape-glyph"
+                  transform="translate(50 50) scale(1.05)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M-13 0 H0" />
+                  <path d="M0 0 L12 -11" />
+                  <path d="M0 0 L12 11" />
+                  <path d="M12 -11 l-5.2 0.7 M12 -11 l-0.7 5.2" />
+                  <path d="M12 11 l-0.7 -5.2 M12 11 l-5.2 -0.7" />
+                </g>
+              }
+              @case ('repeater') {
+                <g
+                  class="shape-glyph"
+                  transform="translate(50 50) scale(1.05)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
                   <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
+                  <g transform="rotate(180)">
+                    <path d="M-11 7 A13 13 0 0 1 7.5 -10.6" stroke-linecap="butt" />
+                    <path d="M7.5 -10.6 l-4.2 -3.2 M7.5 -10.6 l-4.2 3.2" />
+                  </g>
                 </g>
-              </g>
+              }
             }
           }
         </svg>
+        @if (showHostImg()) {
+          <img
+            class="shape-host-icon"
+            [src]="hostIconUrl() || ''"
+            alt=""
+            draggable="false"
+            data-testid="node-host-icon-img"
+            (error)="onHostIconError()"
+          />
+        } @else if (hostIconPath()) {
+          <svg class="shape-host-icon" viewBox="0 0 24 24" aria-hidden="true" data-testid="node-host-icon-path">
+            <path [attr.d]="hostIconPath()" fill="currentColor" />
+          </svg>
+        }
         <div class="shape-label">{{ node().label }}</div>
       } @else {
         <div class="accent" aria-hidden="true"></div>
-        <div class="avatar" aria-hidden="true">{{ initials() }}</div>
+        <div class="avatar" aria-hidden="true">
+          @if (showHostImg()) {
+            <img
+              class="card-host-icon"
+              [src]="hostIconUrl() || ''"
+              alt=""
+              draggable="false"
+              data-testid="node-host-icon-img"
+              (error)="onHostIconError()"
+            />
+          } @else if (hostIconPath()) {
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" data-testid="node-host-icon-path">
+              <path [attr.d]="hostIconPath()" />
+            </svg>
+          } @else {
+            {{ initials() }}
+          }
+        </div>
         <div class="body">
           <div class="label">{{ node().label }}</div>
           <div class="subtitle">{{ node().subtitle }}</div>
@@ -209,6 +239,25 @@ import type { PortSide } from '../../core/domain/viewport.math';
     }
     .shape-glyph {
       color: var(--accent);
+    }
+    .shape-host-icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 28px;
+      height: 28px;
+      transform: translate(-50%, -50%);
+      object-fit: contain;
+      pointer-events: none;
+      color: var(--accent);
+      z-index: 1;
+    }
+    .card-host-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
     }
     .shape-label {
       position: absolute;
@@ -379,6 +428,21 @@ export class WorkflowNodeComponent {
   readonly initials = computed(() => initialsFromLabel(this.node().label));
   readonly isShaped = computed(() => isShapedNodeType(this.node().type));
   readonly shapeKind = computed(() => logicShapeKind(this.node().type));
+  readonly hostIconUrl = computed(() => sanitizeIconUrl(this.node().data?.['iconUrl']));
+  readonly hostIconPath = computed(() => {
+    const path = this.node().data?.['iconPath'];
+    return typeof path === 'string' && path.trim().length > 0 ? path.trim() : undefined;
+  });
+  private readonly iconFailedUrl = signal<string | null>(null);
+  readonly showHostImg = computed(() => {
+    const url = this.hostIconUrl();
+    return !!url && this.iconFailedUrl() !== url;
+  });
+  readonly hasHostIcon = computed(() => this.showHostImg() || !!this.hostIconPath());
+
+  onHostIconError(): void {
+    this.iconFailedUrl.set(this.hostIconUrl() ?? null);
+  }
 
   onPointerDown(event: PointerEvent): void {
     this.pointerDown.emit({ event, nodeId: this.node().id });
