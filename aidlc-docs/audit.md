@@ -3124,3 +3124,19 @@ Pass — 56/56 unit tests
 **Context**: Hotfix — workflow badge dirty tracking after Save
 
 ---
+
+## More Changes R59 — Request Changes (clarification opened)
+**Timestamp**: 2026-08-17T06:40:31Z
+**User Input**: "Request Changes "
+**AI Response**: "Opened more-changes-r59-clarification-questions.md for next polish round (post Solution Workflow / R57–R58)."
+**Context**: User chose Request Changes — awaiting answers + freeform
+
+---
+
+## More Changes R59 — Answers + implement
+**Timestamp**: 2026-08-17T06:46:05Z
+**User Input**: "answered"
+**AI Response**: "Q1=H; Q2/Q3=A. Moved Save/Export/Import/Run/Reset from header into canvas overlay with undo/redo/zoom (per screenshots). Tests 131 passed."
+**Context**: R59 direct implement — workflow actions on diagram chrome bar
+
+---

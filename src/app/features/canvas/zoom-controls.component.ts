@@ -1,13 +1,98 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output, signal, viewChild } from '@angular/core';
 import type { LayoutMode } from '../../core/domain/layout.math';
+import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.component';
 
 @Component({
   selector: 'wb-zoom-controls',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, ImportWorkflowDialogComponent],
   template: `
     <div class="chrome-controls" role="group" aria-label="Canvas controls">
+      <div class="workflow-actions" role="group" aria-label="Workflow actions">
+        <button
+          type="button"
+          class="z-btn icon"
+          (click)="facade.saveDownload()"
+          title="Save"
+          aria-label="Save"
+        >
+          <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+            <path
+              d="M208,32H83.31A15.86,15.86,0,0,0,72,36.69L36.69,72A15.86,15.86,0,0,0,32,83.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM168,48v32H88V48Zm40,160H48V83.31L83.31,48H72v40a16,16,0,0,0,16,16h80a16,16,0,0,0,16-16V48h8ZM152,152a24,24,0,1,1-24-24A24,24,0,0,1,152,152Z"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="z-btn text"
+          (click)="facade.exportDownload()"
+          title="Export JSON"
+          aria-label="Export JSON"
+        >
+          <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+            <path
+              d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM88.69,104.69,120,73.37V176a8,8,0,0,0,16,0V73.37l31.31,31.32a8,8,0,0,0,11.32-11.32l-45-45a8,8,0,0,0-11.32,0l-45,45a8,8,0,0,0,11.32,11.32Z"
+            />
+          </svg>
+          <span>Export</span>
+        </button>
+        <button
+          type="button"
+          class="z-btn text"
+          [disabled]="viewMode()"
+          (click)="importOpen.set(true)"
+          title="Import JSON"
+          aria-label="Import JSON"
+        >
+          <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+            <path
+              d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L95.66,98.34a8,8,0,0,0-11.32,11.32Z"
+            />
+          </svg>
+          <span>Import</span>
+        </button>
+        @if (facade.runActive()) {
+          <button
+            type="button"
+            class="z-btn icon"
+            (click)="facade.stopRun()"
+            title="Stop run"
+            aria-label="Stop run"
+          >
+            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+              <path
+                d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8Z"
+              />
+            </svg>
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="z-btn icon"
+            (click)="facade.startRun()"
+            title="Run simulation"
+            aria-label="Run simulation"
+          >
+            <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+              <path
+                d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"
+              />
+            </svg>
+          </button>
+        }
+        <button
+          type="button"
+          class="z-btn text"
+          (click)="facade.resetStatuses()"
+          title="Reset node statuses"
+          aria-label="Reset node statuses"
+        >
+          Reset
+        </button>
+      </div>
+
       <div class="history-group" role="group" aria-label="History">
         <button
           type="button"
@@ -17,7 +102,6 @@ import type { LayoutMode } from '../../core/domain/layout.math';
           aria-label="Undo"
           title="Undo"
         >
-          <!-- Curved U-turn undo (reference screenshot) -->
           <svg
             width="16"
             height="16"
@@ -41,7 +125,6 @@ import type { LayoutMode } from '../../core/domain/layout.math';
           aria-label="Redo"
           title="Redo"
         >
-          <!-- Curved U-turn redo (mirror of undo) -->
           <svg
             width="16"
             height="16"
@@ -87,6 +170,13 @@ import type { LayoutMode } from '../../core/domain/layout.math';
         <span class="scale" aria-live="polite">{{ (scale() * 100) | number: '1.0-0' }}%</span>
       </div>
     </div>
+
+    @if (importOpen()) {
+      <wb-import-workflow-dialog
+        (cancel)="importOpen.set(false)"
+        (confirm)="onImportConfirm($event)"
+      />
+    }
   `,
   styles: `
     .chrome-controls {
@@ -101,6 +191,7 @@ import type { LayoutMode } from '../../core/domain/layout.math';
       box-shadow: var(--wb-shadow-soft);
       pointer-events: all;
     }
+    .workflow-actions,
     .history-group,
     .layout-group,
     .zoom-controls {
@@ -148,6 +239,12 @@ import type { LayoutMode } from '../../core/domain/layout.math';
     .z-btn.icon {
       padding: 0;
     }
+    .z-btn.text {
+      width: auto;
+      min-width: 0;
+      padding: 0 0.55rem;
+      gap: 0.3rem;
+    }
     .z-btn:hover:not(:disabled) {
       background: color-mix(in srgb, var(--wb-accent) 12%, transparent);
     }
@@ -161,6 +258,7 @@ import type { LayoutMode } from '../../core/domain/layout.math';
   `,
 })
 export class ZoomControlsComponent {
+  readonly facade = inject(WorkflowFacade);
   readonly scale = input(1);
   readonly viewMode = input(false);
   readonly canUndo = input(false);
@@ -172,6 +270,9 @@ export class ZoomControlsComponent {
   readonly undo = output<void>();
   readonly redo = output<void>();
 
+  readonly importOpen = signal(false);
+  readonly importDialog = viewChild(ImportWorkflowDialogComponent);
+
   onLayoutChange(event: Event): void {
     const el = event.target as HTMLSelectElement;
     const value = el.value as LayoutMode | '';
@@ -179,5 +280,14 @@ export class ZoomControlsComponent {
       this.applyLayout.emit(value);
     }
     el.value = '';
+  }
+
+  onImportConfirm(text: string): void {
+    const err = this.facade.importJson(text);
+    if (err) {
+      this.importDialog()?.setInlineError(err);
+      return;
+    }
+    this.importOpen.set(false);
   }
 }
