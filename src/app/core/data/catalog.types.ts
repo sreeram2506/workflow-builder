@@ -9,7 +9,7 @@ export interface CatalogLoadOptions {
   userCategories?: readonly string[];
   includeAgentId?: boolean;
   itemNodeType?: NodeType;
-  /** Present (including []) replaces Enso / provider adapter. */
+  /** Present (including []) replaces adapter catalog. Omit without adapter is empty-remote. */
   hostPalettes?: readonly unknown[];
   /** Present (including []) replaces JSON/provider defaultAgents. Ignored when host palettes is []. */
   hostDefaultAgents?: readonly DefaultAgentCard[] | readonly unknown[];
@@ -18,7 +18,7 @@ export interface CatalogLoadOptions {
 export interface PaletteCatalogLoad {
   categories: PaletteCategory[];
   items: PaletteItem[];
-  source: 'enso' | 'static' | 'adapter' | 'empty' | 'host';
+  source: 'static' | 'adapter' | 'empty' | 'host';
   error: string | null;
   emptyRemote: boolean;
 }

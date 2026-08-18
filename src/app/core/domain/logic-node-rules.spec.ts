@@ -6,7 +6,7 @@ import {
   readRepeaterData,
   repeaterAfterWorkflowChange,
 } from './logic-node-rules';
-import { REPEATER_MOCK_WORKFLOWS, versionsForWorkflow } from './repeater-mock.catalog';
+import { configurationFieldsFor } from './properties.schema';
 import type { WorkflowNode } from './workflow.models';
 
 function node(
@@ -109,12 +109,10 @@ describe('readRepeaterData', () => {
   });
 });
 
-describe('repeater mock catalog', () => {
-  it('exposes three workflows with dependent versions', () => {
-    expect(REPEATER_MOCK_WORKFLOWS).toHaveLength(3);
-    expect(versionsForWorkflow('wf-claims-intake')).toHaveLength(2);
-    expect(versionsForWorkflow('wf-policy-check')).toHaveLength(1);
-    expect(versionsForWorkflow('wf-notify-desk')).toHaveLength(2);
-    expect(versionsForWorkflow('missing')).toEqual([]);
+describe('repeater Properties catalog', () => {
+  it('has no dummy workflow options', () => {
+    expect(configurationFieldsFor('Repeater').find((f) => f.config_path === 'repeater.workflowId')?.options).toEqual(
+      [],
+    );
   });
 });

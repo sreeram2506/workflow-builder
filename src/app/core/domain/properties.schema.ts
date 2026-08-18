@@ -1,5 +1,4 @@
 import { ALLOWED_NODE_TYPES, type NodeStatus, type NodeType } from './workflow.models';
-import { REPEATER_MOCK_WORKFLOWS } from './repeater-mock.catalog';
 
 /** Locked Configuration mock path (under node.data). */
 export const LOCKED_CONFIG_PATH = 'config.data.ignore_keys_in_paragraph';
@@ -107,7 +106,7 @@ function repeaterSchema(): NodeTypeSchema {
         required: true,
         basic: true,
         placeholder: 'Select workflow',
-        options: REPEATER_MOCK_WORKFLOWS.map((workflow) => workflow.id),
+        options: [],
       },
       {
         name: 'Workflow/Agent Version',

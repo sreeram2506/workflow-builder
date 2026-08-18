@@ -4360,3 +4360,168 @@ Return a summary of files created/modified and any test failures you couldn't fi
 **Context**: OPERATIONS PLACEHOLDER — Host logic extras + agent metadata
 
 ---
+## Remove APIs and dummy data — new increment; Workspace Detection
+**Timestamp**: 2026-08-17T18:27:00Z
+**User Input**: "now remove the apis, and dummy data"
+**AI Response**: "Started new increment. Workspace: brownfield Angular SPA. Reverse Engineering SKIP (scoped cleanup; prior increments skipped RE). Opened RA questions Q1–Q7 (Enso HTTP vs token-only; mock skills/repeater; library when palettes omitted; nested skills; Security/Resiliency/PBT opt-in)."
+**Context**: INCEPTION Workspace Detection + Requirements Analysis — Remove APIs and dummy data
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/requirements/remove-apis-dummy-data-requirement-verification-questions.md, then reply answered."
+
+---
+## Remove APIs and dummy data — RA answers locked; requirements generated
+**Timestamp**: 2026-08-17T18:30:30Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=A Enso HTTP+proxy+credentials out; Q2=A mock skills+repeater mocks out; Q3=B omit palettes empty-remote; Q4=B nested skills from agent-shell palettes; Q5=A Security; Q6=A Resiliency; Q7=B PBT Partial. Wrote remove-apis-dummy-data-requirements.md. Requested Approve and Continue to User Stories or Request Changes."
+**Context**: INCEPTION Requirements Analysis — Remove APIs and dummy data
+**AI Prompt**: "Requirements Analysis Complete. Review aidlc-docs/inception/requirements/remove-apis-dummy-data-requirements.md. Request Changes or Approve and Continue to User Stories."
+
+---
+## Remove APIs and dummy data — RA approved; User Stories Part 1 opened
+**Timestamp**: 2026-08-17T18:32:30Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Assessment Execute=Yes (empty library, nested palettes, Repeater pickers). Opened remove-apis-dummy-data-story-generation-plan.md with Q1–Q5 (personas, granularity, breakdown, AC format, story file). Awaiting answers then plan approval."
+**Context**: INCEPTION User Stories Part 1 — Remove APIs and dummy data
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/remove-apis-dummy-data-story-generation-plan.md, then reply answered."
+
+---
+## Remove APIs and dummy data — story plan answers locked; generation approval requested
+**Timestamp**: 2026-08-17T18:34:30Z
+**User Input**: "answered"
+**AI Response**: "Locked US plan Q1–Q5 all A (P-HOST+P-AUTHOR; 4 stories; hybrid; Gherkin; new stories file). No ambiguities. Requested approval to generate stories."
+**Context**: INCEPTION User Stories Part 1 — Remove APIs and dummy data
+**AI Prompt**: "User story plan complete. Review aidlc-docs/inception/plans/remove-apis-dummy-data-story-generation-plan.md. Ready to proceed to generation?"
+
+---
+## Remove APIs and dummy data — user stories generated; approval requested
+**Timestamp**: 2026-08-17T18:36:00Z
+**User Input**: "proceed to generation"
+**AI Response**: "Generated US-RAD-01..04 in remove-apis-dummy-data-stories.md; additive personas.md. FR-RAD-01..06 traced. Requested Approve & Continue to Workflow Planning or Request Changes."
+**Context**: INCEPTION User Stories Part 2 — Remove APIs and dummy data
+**AI Prompt**: "REVIEW REQUIRED: Please examine the user stories and personas at: aidlc-docs/inception/user-stories/remove-apis-dummy-data-stories.md and aidlc-docs/inception/user-stories/personas.md. Request Changes or Approve & Continue to Workflow Planning."
+
+---
+## Remove APIs and dummy data — User Stories approved; Workflow Planning drafted
+**Timestamp**: 2026-08-17T18:38:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Stories approved. Drafted remove-apis-dummy-data-execution-plan.md: recommend App Design + 1 unit U-RAD-01; skip NFR/Infra; FD then CG then Build/Test. Awaiting Q1 then plan approval."
+**Context**: INCEPTION Workflow Planning — Remove APIs and dummy data
+**AI Prompt**: "REVIEW REQUIRED: Please examine the execution plan at: aidlc-docs/inception/plans/remove-apis-dummy-data-execution-plan.md. Fill Question 1. Request Changes, Add Skipped Stages, or Approve & Continue to Application Design."
+
+---
+## Remove APIs and dummy data — Workflow Planning approved; Application Design plan opened
+**Timestamp**: 2026-08-17T18:40:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Locked execution plan Q1=A (empty Answer tag treated as recommended A). Opened remove-apis-dummy-data-application-design-plan.md with Q1–Q5. Awaiting answers then design-plan approval. Artifacts not generated yet."
+**Context**: INCEPTION Application Design Part 1 — Remove APIs and dummy data
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/remove-apis-dummy-data-application-design-plan.md, then reply answered."
+
+---
+## Remove APIs and dummy data — Application Design answers locked; generation approval requested
+**Timestamp**: 2026-08-17T18:44:00Z
+**User Input**: "answered"
+**AI Response**: "Locked AD plan Q1–Q5 all A. Q3=A converts nested-skills-library (does not delete). No ambiguities. Requested approval to generate design artifacts."
+**Context**: INCEPTION Application Design Part 1 — Remove APIs and dummy data
+**AI Prompt**: "Application Design plan complete. Review aidlc-docs/inception/plans/remove-apis-dummy-data-application-design-plan.md. Ready to proceed to generation?"
+
+---
+## Remove APIs and dummy data — Application Design generated; approval requested
+**Timestamp**: 2026-08-17T18:45:00Z
+**User Input**: "proceed to generation"
+**AI Response**: "Generated remove-apis-dummy-data components, methods, services, dependency, and summary. FR-RAD-01..06 traced. Requested Approve & Continue to Units Generation or Request Changes."
+**Context**: INCEPTION Application Design Part 2 — Remove APIs and dummy data
+**AI Prompt**: "REVIEW REQUIRED: Please examine the application design artifacts at: aidlc-docs/inception/application-design/. Request Changes or Approve & Continue to Units Generation."
+
+---
+## Remove APIs and dummy data — Application Design approved; Units Generation plan opened
+**Timestamp**: 2026-08-17T18:48:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "App Design approved. Opened remove-apis-dummy-data-unit-of-work-plan.md with Q1–Q4 (grouping, construction stages, code org, ownership). Awaiting answers then plan approval. Unit artifacts not generated yet."
+**Context**: INCEPTION Units Generation Part 1 — Remove APIs and dummy data
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/remove-apis-dummy-data-unit-of-work-plan.md, then reply answered."
+
+---
+## Remove APIs and dummy data — Units plan answers locked; generation approval requested
+**Timestamp**: 2026-08-17T18:50:00Z
+**User Input**: "answered"
+**AI Response**: "Locked UOW plan Q1–Q4 all A (one unit U-RAD-01; FD then CG; change in place; same stream). No ambiguities. Requested approval to generate unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — Remove APIs and dummy data
+**AI Prompt**: "Unit of work plan complete. Review the plan in aidlc-docs/inception/plans/remove-apis-dummy-data-unit-of-work-plan.md. Ready to proceed to generation?"
+
+---
+## Remove APIs and dummy data — Units generated; approval requested
+**Timestamp**: 2026-08-17T18:51:00Z
+**User Input**: " proceed to generation"
+**AI Response**: "Generated U-RAD-01 unit-of-work, dependency, and story-map. All US-RAD-01..04 assigned. Requested Approve & Continue to CONSTRUCTION Functional Design or Request Changes."
+**Context**: INCEPTION Units Generation Part 2 — Remove APIs and dummy data
+**AI Prompt**: "REVIEW REQUIRED: Please examine the units generation artifacts at: aidlc-docs/inception/application-design/. Request Changes or Approve & Continue to CONSTRUCTION PHASE."
+
+---
+## Remove APIs and dummy data — Units approved; Functional Design plan opened
+**Timestamp**: 2026-08-17T18:52:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Units approved. Opened u-rad-01-remove-apis-dummy-data-functional-design-plan.md with Q1–Q7. Awaiting answers then FD plan approval. FD artifacts not generated yet."
+**Context**: CONSTRUCTION Functional Design Part 1 — U-RAD-01
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/construction/plans/u-rad-01-remove-apis-dummy-data-functional-design-plan.md, then reply answered."
+
+---
+## U-RAD-01 — Functional Design answers locked; generation approval requested
+**Timestamp**: 2026-08-17T18:54:00Z
+**User Input**: "answered"
+**AI Response**: "Locked FD Q1–Q7 all A. No ambiguities. Requested approval to generate functional design artifacts."
+**Context**: CONSTRUCTION Functional Design Part 1 — U-RAD-01
+**AI Prompt**: "Functional Design plan complete. Review aidlc-docs/construction/plans/u-rad-01-remove-apis-dummy-data-functional-design-plan.md. Ready to proceed to generation?"
+
+---
+## U-RAD-01 — Functional Design generated; approval requested
+**Timestamp**: 2026-08-17T18:55:00Z
+**User Input**: "proceed to generation"
+**AI Response**: "Generated FD business-logic-model, business-rules, domain-entities, frontend-components. P-RAD-01..03. Requested Request Changes or Continue to Next Stage (Code Generation)."
+**Context**: CONSTRUCTION Functional Design Part 2 — U-RAD-01
+**AI Prompt**: "REVIEW REQUIRED: Please examine the functional design artifacts at: aidlc-docs/construction/u-rad-01-remove-apis-dummy-data/functional-design/. Request Changes or Continue to Next Stage (Code Generation)."
+
+---
+## U-RAD-01 — Functional Design approved; Code Generation plan opened
+**Timestamp**: 2026-08-17T18:57:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "FD approved. NFR/Infra skipped. Opened u-rad-01-remove-apis-dummy-data-code-generation-plan.md (12 steps). Awaiting plan approval before Part 2."
+**Context**: CONSTRUCTION Code Generation Part 1 — U-RAD-01
+**AI Prompt**: "REVIEW REQUIRED: Please examine the code generation plan at: aidlc-docs/construction/plans/u-rad-01-remove-apis-dummy-data-code-generation-plan.md. Request Changes or Approve & Continue to generate code."
+
+---
+## U-RAD-01 — Code Generation Part 2 complete; approval requested
+**Timestamp**: 2026-08-17T19:04:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Executed CG plan steps 1–12. Stripped Enso HTTP/env/proxy/credentials; omit-without-adapter empty-remote; nested palettes; deleted MOCK_SKILLS and Repeater mocks; docs. npm test 258 passed; npm run build success. Requested Request Changes or Continue to Next Stage (Build and Test)."
+**Context**: CONSTRUCTION Code Generation Part 2 — U-RAD-01
+**AI Prompt**: "REVIEW REQUIRED: Please examine the generated code at Application Code workspace root and aidlc-docs/construction/u-rad-01-remove-apis-dummy-data/code/. Request Changes or Continue to Next Stage (Build and Test)."
+
+---
+## U-RAD-01 — Code Generation approved; Build and Test started
+**Timestamp**: 2026-08-17T19:05:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "CG approved. Generated Build and Test instruction files for U-RAD-01 (build, unit, integration, performance, security, summary). Awaiting approval before Operations placeholder."
+**Context**: CONSTRUCTION Code Generation approved → Build and Test — U-RAD-01
+
+---
+## Build and Test Stage
+**Timestamp**: 2026-08-17T19:06:00Z
+**Build Status**: Success
+**Test Status**: Pass (258 / 258; 35 files)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- security-test-instructions.md
+- build-and-test-summary.md
+**AI Prompt**: "REVIEW REQUIRED: Please examine the build and test summary at: aidlc-docs/construction/build-and-test/build-and-test-summary.md. Request Changes or Approve & Continue to Operations."
+
+---
+## U-RAD-01 — Build and Test approved; Operations placeholder complete
+**Timestamp**: 2026-08-17T19:07:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Build and Test approved. Wrote operations placeholder. Increment Remove APIs and dummy data (U-RAD-01) COMPLETE. Workflow ends (Operations not implemented in this AI-DLC version)."
+**Context**: OPERATIONS PLACEHOLDER — U-RAD-01 increment complete
+**Files**: aidlc-docs/operations/remove-apis-dummy-data-operations-placeholder.md
+
+---

@@ -77,7 +77,7 @@ Palette allow-lists are independent per canvas. `"Router"` is not a type key (us
 
 ## Catalog adapter (provider-only)
 
-Hosts can replace Enso `pipeline/list` / `task/list` with an adapter per canvas. Adapters are **not** JSON — only `provideWorkflowBuilderUi({ catalog })`.
+Hosts can inject a catalog adapter per canvas. Adapters are **not** JSON — only `provideWorkflowBuilderUi({ catalog })`. This SPA does **not** call Enso `pipeline/list` / `task/list`.
 
 ```typescript
 provideWorkflowBuilderUi({
@@ -90,12 +90,12 @@ provideWorkflowBuilderUi({
     solution: {
       load: () => Promise.resolve({ items: hostAgents }),
     },
-    // omit agent → Enso task/list for Skills Library
+    // omit agent → empty-remote for Skills Library unless that canvas binds [palettes]
   },
 });
 ```
 
-Omit `catalog.solution` / `catalog.agent` to keep Enso for that canvas. One adapter per canvas.
+Omit `catalog.solution` / `catalog.agent` and omit `[palettes]` → empty-remote for that canvas. One adapter per canvas.
 
 | Remote outcome | Library |
 |---|---|
@@ -195,14 +195,17 @@ If an image fails to load, that card falls back to `iconPath` or the type glyph.
 
 | Binding | Library |
 |---|---|
-| Omit `[palettes]` | Enso or `provideWorkflowBuilderUi({ catalog })` (U-PAL-02). Featured strip is the first Condition, Router, and Repeater. |
+| Omit `[palettes]` (no adapter) | Empty-state only (`palette-empty-remote`). Featured and default agents hidden. Same as `[]`. |
+| Omit `[palettes]` (adapter configured) | Adapter rows (U-PAL-02). Featured strip is the first Condition, Router, and Repeater unless host palettes are present. |
 | `[palettes]="[]"` | Empty-state only (`palette-empty-remote`). Featured and default agents hidden. |
-| `[palettes]="items"` (non-empty after sanitize) | Parent owns the remote list. Built-in featured three are **replaced**: the strip lists every remaining Condition / Router / Repeater from the host catalog (zero or more). Default agents stay. Enso and the catalog adapter are not called. |
+| `[palettes]="items"` (non-empty after sanitize) | Parent owns the remote list. Built-in featured three are **replaced**: the strip lists every remaining Condition / Router / Repeater from the host catalog (zero or more). Default agents stay. The catalog adapter is not called. |
 | Omit `[defaultAgents]` | JSON / provider `palette.solution.defaultAgents` (Blank Agent if omitted there) |
 | `[defaultAgents]="[]"` | No default-agent cards (unless `[palettes]="[]"`, which already hides them) |
 | Unknown `type` (e.g. `"Stream"`) | Row dropped. Canvas cannot create unknown node types. |
 
 Do not put access tokens in palette items, `metadata`, or embed examples.
+
+Optional `wb-nested-skills-library` accepts the same `[palettes]` overlay (search + Add via palette item). It is not mounted in `wb-agent-skills-shell`; the agent-shell left sidebar is the visible nested Skills Library.
 
 ## Load status banner
 

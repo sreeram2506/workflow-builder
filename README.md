@@ -54,8 +54,8 @@ npm run build
 - Connection (edge) Properties: read-only id/source/target + editable label
 - Explicit **Save** → `patchNode` / `patchEdge`; unsaved edits discarded on focus change
 - View mode: form disabled (US-6.2 readiness)
-- Nodes Library: static Flow/Logic blocks **plus** enso-suite `task/list` categories when authenticated
-- **Exception (change request):** live enso catalog via Bearer token (`environment.ensoAccessToken` or `localStorage.currentUser.accesstoken`). Dev server proxies `/enso-api` → enso-suite-be. Without auth, static catalog only.
+- Nodes Library: host `[palettes]` overlay, optional catalog adapter, or empty-remote when omitted
+- Omit `[palettes]` with no adapter: empty Agents / Skills library (`palette-empty-remote`). Nested Developed-skills uses the same `[palettes]` when composed. Repeater Properties has no dummy workflow catalog.
 
 ## Phases 7–8 scope (U6)
 - **Layout ▾**: Vertical / Horizontal / Layered (hand-rolled; no layout libs)
@@ -82,12 +82,12 @@ npm run build
 - Condition Properties: General + required expression; outgoing edges labeled `true`/`false` (max 2, silent reject)
 - Router (`Decision`) Properties: General only; unique label vs other Routers/Repeaters
 - Router connectors: Name + required condition on the edge; new edges start as `Blank Condition`
-- Repeater: mock Workflow/Agent + dependent Version + Pause (no HTTP)
+- Repeater: Workflow/Agent and Version pickers (empty until a host source exists); Pause; no dummy catalog
 - Ignore Keys hidden on Condition / Router / Repeater
 - Save-only persist (`patchNode` / `patchEdge`); view mode inspect-only
 
 ## Explicit limitations
-- **No localStorage persistence of workflows** (auth token may be read from enso `currentUser` for palette only)
+- **No localStorage persistence of workflows**
 - No real workflow engine / branch evaluation / backend run API
 
 ## UI configurability (embed)

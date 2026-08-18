@@ -31,10 +31,8 @@ import {
   controlKeyForPath,
   type XpmsFieldDescriptor,
 } from '../../core/domain/properties.schema';
-import { REPEATER_MOCK_WORKFLOWS, versionsForWorkflow } from '../../core/domain/repeater-mock.catalog';
 import {
   isRouterRepeaterLabelUnique,
-  readRepeaterData,
 } from '../../core/domain/logic-node-rules';
 import {
   SIDEBAR_WIDTH_RIGHT_DEFAULT,
@@ -529,8 +527,8 @@ export class RightSidebarComponent {
   ensoFields: DynamicFieldSpec[] = [];
   headerSubtitle = 'Select a node or connection';
   canSave = false;
-  readonly repeaterWorkflows = REPEATER_MOCK_WORKFLOWS;
-  repeaterVersionOptions = versionsForWorkflow('');
+  readonly repeaterWorkflows: readonly { id: string; name: string }[] = [];
+  repeaterVersionOptions: { id: string; name: string }[] = [];
 
   private boundNodeId: string | null = null;
   private boundEdgeId: string | null = null;
@@ -685,7 +683,7 @@ export class RightSidebarComponent {
     this.boundEdgeId = null;
     this.boundNodeType = null;
     this.edgeKind = 'connection';
-    this.repeaterVersionOptions = versionsForWorkflow('');
+    this.repeaterVersionOptions = [];
     this.boundMode = editorMode;
     this.canSave = false;
     if (!this.collapsed()) {
@@ -817,11 +815,7 @@ export class RightSidebarComponent {
       if (node.type === 'Decision' || node.type === 'Repeater') {
         labelValidators.push(routerRepeaterUniqueValidator(this.facade, node.id));
       }
-      if (node.type === 'Repeater') {
-        this.repeaterVersionOptions = versionsForWorkflow(readRepeaterData(node.data).workflowId);
-      } else {
-        this.repeaterVersionOptions = versionsForWorkflow('');
-      }
+      this.repeaterVersionOptions = [];
       this.form = this.fb.group({
         label: [node.label, labelValidators],
         subtitle: [node.subtitle],
@@ -852,7 +846,7 @@ export class RightSidebarComponent {
           if (this.suppressDraftWrite || !this.form) {
             return;
           }
-          this.repeaterVersionOptions = versionsForWorkflow(String(workflowId ?? ''));
+          this.repeaterVersionOptions = [];
           const versionCtrl = this.form.get(['configuration', 'repeater_versionId']);
           if (versionCtrl && String(versionCtrl.value ?? '') !== '') {
             versionCtrl.setValue('', { emitEvent: true });

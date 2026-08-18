@@ -37,7 +37,6 @@ import {
   toAgentEditableDocument,
   withNestedWorkflow,
 } from '../domain/agent-graph';
-import { findMockSkill } from '../domain/mock-skills.catalog';
 import { nextTheme } from '../domain/theme.utils';
 import {
   clampZoom,
@@ -633,20 +632,8 @@ export class WorkflowFacade {
     return ensureSkillsArray(node?.data);
   }
 
-  addSkillToAgent(agentNodeId: string, skillId: string): boolean {
-    if (this.ui.editorMode() === 'view') {
-      return false;
-    }
-    const node = this.nodes().find((n) => n.id === agentNodeId);
-    const mock = findMockSkill(skillId);
-    if (!node || node.type !== 'AIAgent' || !mock) {
-      return false;
-    }
-    return this.addSkillRef(agentNodeId, {
-      skillId: mock.skillId,
-      name: mock.name,
-      description: mock.description,
-    });
+  addSkillToAgent(_agentNodeId: string, _skillId: string): boolean {
+    return false;
   }
 
   /** Add a Nodes Library palette item as an agent skill (nested agent view). */

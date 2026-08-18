@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { environment } from '../../../environments/environment';
 import type { PaletteItem } from '../domain/palette.catalog';
+import { FEATURED_PALETTE_TYPES, PALETTE_ITEMS } from '../domain/palette.catalog';
 import { provideWorkflowBuilderUi } from '../ui-config';
 import { UiConfigService } from '../ui-config/ui-config.service';
 import { EnsoTaskCatalogService } from './enso-task-catalog.service';
@@ -17,25 +16,26 @@ const hostAgent: PaletteItem = {
   categoryId: 'agents',
 };
 
+const staticFeaturedKeys = PALETTE_ITEMS.filter((item) =>
+  (FEATURED_PALETTE_TYPES as readonly string[]).includes(item.type),
+).map((item) => item.key);
+
 describe('EnsoTaskCatalogService (U-PAL-02)', () => {
   afterEach(() => {
     TestBed.resetTestingModule();
   });
 
-  it('uses solution adapter and does not call Enso HTTP', async () => {
+  it('uses solution adapter', async () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [hostAgent] }) } },
         }),
       ],
     });
-    const http = TestBed.inject(HttpTestingController);
     const svc = TestBed.inject(EnsoTaskCatalogService);
     const result = await firstValueFrom(svc.loadCatalog({ mode: 'solution-agents' }));
-    http.verify();
     expect(result.source).toBe('adapter');
     expect(result.emptyRemote).toBe(false);
     expect(result.error).toBeNull();
@@ -48,16 +48,13 @@ describe('EnsoTaskCatalogService (U-PAL-02)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [] }) } },
         }),
       ],
     });
-    const http = TestBed.inject(HttpTestingController);
     const svc = TestBed.inject(EnsoTaskCatalogService);
     const result = await firstValueFrom(svc.loadCatalog({ mode: 'solution-agents' }));
-    http.verify();
     expect(result.source).toBe('empty');
     expect(result.emptyRemote).toBe(true);
     expect(result.error).toBeNull();
@@ -68,7 +65,6 @@ describe('EnsoTaskCatalogService (U-PAL-02)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: {
             solution: {
@@ -89,51 +85,23 @@ describe('EnsoTaskCatalogService (U-PAL-02)', () => {
     expect(result.items.some((i) => i.key.startsWith('mock-agent'))).toBe(false);
   });
 
-  it('HTTP error uses static defaults and a banner without mock agents', async () => {
+  it('omit without adapter is empty-remote (no static featured)', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
-    const http = TestBed.inject(HttpTestingController);
     const svc = TestBed.inject(EnsoTaskCatalogService);
-    const pending = firstValueFrom(svc.loadCatalog({ mode: 'solution-agents' }));
-    http.expectOne(environment.ensoPipelineListUrl).flush('fail', {
-      status: 500,
-      statusText: 'Server Error',
-    });
-    const result = await pending;
-    http.verify();
-    expect(result.source).toBe('static');
-    expect(result.emptyRemote).toBe(false);
-    expect(result.error).toContain('HTTP 500');
-    expect(result.error).toContain('Showing built-in types only');
-    expect(result.error).not.toMatch(/mock agents/i);
-    expect(result.items.some((i) => i.key === 'Claims Intake Agent' || i.key === 'mock-agent-claims')).toBe(
-      false,
-    );
-    expect(result.items.some((i) => i.origin === 'default-agent')).toBe(true);
-  });
-
-  it('Enso 200 with zero pipelines is empty-remote', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
-    const http = TestBed.inject(HttpTestingController);
-    const svc = TestBed.inject(EnsoTaskCatalogService);
-    const pending = firstValueFrom(svc.loadCatalog({ mode: 'solution-agents' }));
-    http.expectOne(environment.ensoPipelineListUrl).flush({ result: { metadata: { results: [] } } });
-    const result = await pending;
-    http.verify();
+    const result = await firstValueFrom(svc.loadCatalog({ mode: 'solution-agents' }));
     expect(result.source).toBe('empty');
     expect(result.emptyRemote).toBe(true);
     expect(result.error).toBeNull();
     expect(result.items).toEqual([]);
+    expect(result.items.some((i) => staticFeaturedKeys.includes(i.key))).toBe(false);
   });
 
   it('allow-list filters static featured types and remote rows; remaining static still compose', async () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [hostAgent] }) } },
         }),
@@ -155,7 +123,6 @@ describe('EnsoTaskCatalogService (U-PAL-02)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [hostAgent] }) } },
         }),
@@ -202,51 +169,44 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [hostAgent] }) } },
         }),
       ],
     });
-    const http = TestBed.inject(HttpTestingController);
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({ mode: 'solution-agents' }),
     );
-    http.verify();
     expect(result.source).toBe('adapter');
     expect(result.items.some((i) => i.key === 'host-a')).toBe(true);
   });
 
-  it('hostPalettes [] is empty-remote source host and does not call Enso', async () => {
+  it('hostPalettes [] is empty-remote source host', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
-    const http = TestBed.inject(HttpTestingController);
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({
         mode: 'solution-agents',
         hostPalettes: [],
       }),
     );
-    http.verify();
     expect(result.source).toBe('host');
     expect(result.emptyRemote).toBe(true);
     expect(result.items).toEqual([]);
     expect(result.error).toBeNull();
   });
 
-  it('present hostPalettes skips Enso, omits static featured, keeps defaults', async () => {
+  it('present hostPalettes omits static featured, keeps defaults', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
-    const http = TestBed.inject(HttpTestingController);
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({
         mode: 'solution-agents',
         hostPalettes: [hostB],
       }),
     );
-    http.verify();
     expect(result.source).toBe('host');
     expect(result.emptyRemote).toBe(false);
     expect(result.items.some((i) => i.key === 'host-b')).toBe(true);
@@ -256,7 +216,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
 
   it('present hostPalettes keeps host logic extras and not the static Condition key', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
     const extra: PaletteItem = {
       key: 'extra-c',
@@ -277,7 +237,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
 
   it('agent-skills host palettes omit static featured', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({
@@ -295,7 +255,6 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: adapterLoad } },
         }),
@@ -315,7 +274,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
 
   it('drops unknown Stream type and keeps a valid sibling', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({
@@ -329,7 +288,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
 
   it('non-empty all-unknown host palettes is not empty-remote', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({
@@ -348,7 +307,6 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting(),
         provideWorkflowBuilderUi({
           catalog: { solution: { load: () => of({ items: [hostAgent] }) } },
         }),
@@ -380,7 +338,7 @@ describe('EnsoTaskCatalogService (U-HPI-01 host overlay)', () => {
 
   it('hostPalettes [] ignores hostDefaultAgents', async () => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient()],
     });
     const result = await firstValueFrom(
       TestBed.inject(EnsoTaskCatalogService).loadCatalog({

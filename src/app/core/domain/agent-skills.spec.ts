@@ -6,7 +6,12 @@ import {
   removeSkill,
   withSkillsData,
 } from './agent-skills';
-import { MOCK_SKILLS, filterMockSkills } from './mock-skills.catalog';
+
+const sampleSkill = {
+  skillId: 'skill-extract-fields',
+  name: 'Extract Fields',
+  description: 'Pull structured fields from inbound documents',
+};
 
 describe('agent-skills', () => {
   it('ensureSkillsArray normalizes missing and junk', () => {
@@ -21,18 +26,16 @@ describe('agent-skills', () => {
   });
 
   it('appendSkill dedupes by skillId', () => {
-    const mock = MOCK_SKILLS[0]!;
-    const once = appendSkill([], mock);
+    const once = appendSkill([], sampleSkill);
     expect(once.added).toBe(true);
-    const twice = appendSkill(once.skills, mock);
+    const twice = appendSkill(once.skills, sampleSkill);
     expect(twice.added).toBe(false);
     expect(twice.skills).toHaveLength(1);
   });
 
   it('removeSkill drops matching id', () => {
-    const mock = MOCK_SKILLS[0]!;
-    const { skills } = appendSkill([], mock);
-    expect(removeSkill(skills, mock.skillId)).toEqual([]);
+    const { skills } = appendSkill([], sampleSkill);
+    expect(removeSkill(skills, sampleSkill.skillId)).toEqual([]);
   });
 
   it('withSkillsData writes skills path', () => {
@@ -41,25 +44,19 @@ describe('agent-skills', () => {
       skills: [{ skillId: 'a', name: 'A', description: '' }],
     });
   });
-
-  it('filterMockSkills filters catalog', () => {
-    expect(filterMockSkills(MOCK_SKILLS, 'policy').some((s) => s.skillId === 'skill-validate-policy')).toBe(
-      true,
-    );
-    expect(filterMockSkills(MOCK_SKILLS, '')).toHaveLength(5);
-  });
 });
 
 describe('agent-skills PBT', () => {
   it('append is idempotent for the same skillId', () => {
     fc.assert(
-      fc.property(fc.constantFrom(...MOCK_SKILLS), (mock) => {
-        const a = appendSkill([], mock);
-        const b = appendSkill(a.skills, mock);
+      fc.property(fc.string({ minLength: 1, maxLength: 12 }), (skillId) => {
+        const skill = { skillId, name: skillId, description: '' };
+        const a = appendSkill([], skill);
+        const b = appendSkill(a.skills, skill);
         expect(b.skills).toHaveLength(1);
         expect(b.added).toBe(false);
       }),
-      { numRuns: 20 },
+      { numRuns: 20, seed: 20260817 },
     );
   });
 });

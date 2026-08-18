@@ -1,14 +1,14 @@
 # Performance Test Instructions
 
 ## Purpose
-No load/stress suite for this increment. U-LIM-01 is in-process sanitize/map plus library and canvas icon rendering.
+No load/stress suite for this increment. U-RAD-01 removes HTTP and dummy catalogs; remaining catalog work is in-process compose.
 
 ## Performance Requirements
-N/A — NFR Design skipped.
+N/A — NFR Design skipped. No response-time, throughput, or concurrent-user targets for this SPA increment.
 
 ## Setup / Run
 N/A.
 
-Optional: `npm test` (PBT Partial — P-LIM-01..05).
+Optional: `npm test` (PBT Partial — P-RAD-01..03, seed `20260817`).
 
-Bundle budget warning (~590 kB vs 500 kB) is accepted as a warning, not a test failure.
+Bundle budget warning (~583 kB vs 500 kB) is accepted as a warning, not a test failure.

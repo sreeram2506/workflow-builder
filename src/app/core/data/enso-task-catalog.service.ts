@@ -1,4 +1,3 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
   Observable,
@@ -9,9 +8,6 @@ import {
   of,
   throwError,
 } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { extractEnsoPipelines, mapEnsoPipelinesToAgents } from '../domain/enso-pipeline.mapper';
-import { extractEnsoTasks, mapEnsoTasksToPalette } from '../domain/enso-task.mapper';
 import {
   applySolutionDefaultAgents,
   aiAgentAllowed,
@@ -46,13 +42,21 @@ import type {
 export type { CatalogLoadMode, CatalogLoadOptions, PaletteCatalogLoad } from './catalog.types';
 
 type CatalogCanvas = 'solution' | 'skills';
-type CatalogErrorOrigin = 'enso-solution' | 'enso-skills' | 'adapter';
 
 const BUILTIN_SUFFIX = 'Showing built-in types only.';
 
+function emptyRemoteLoad(): PaletteCatalogLoad {
+  return {
+    categories: [],
+    items: [],
+    source: 'empty',
+    error: null,
+    emptyRemote: true,
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class EnsoTaskCatalogService {
-  private readonly http = inject(HttpClient);
   private readonly uiConfig = inject(UiConfigService);
   private readonly solutionAdapter = inject(WORKFLOW_BUILDER_CATALOG_SOLUTION, { optional: true });
   private readonly agentAdapter = inject(WORKFLOW_BUILDER_CATALOG_AGENT, { optional: true });
@@ -111,57 +115,38 @@ export class EnsoTaskCatalogService {
     const defaults = this.hostDefaultAgentsState(options);
     if (this.solutionAdapter) {
       return this.readAdapter(this.solutionAdapter, options).pipe(
-        map((remote) => this.classifyAndCompose('solution', remote, 'adapter', defaults)),
+        map((remote) => this.classifyAndCompose('solution', remote, defaults)),
         catchError((err: unknown) =>
-          of(this.errorLoad('solution', this.safeErrorMessage(err, 'adapter'), defaults)),
+          of(this.errorLoad('solution', this.safeErrorMessage(err), defaults)),
         ),
       );
     }
-    return this.loadEnsoPipelines().pipe(
-      map((remote) => this.classifyAndCompose('solution', remote, 'enso', defaults)),
-      catchError((err: unknown) =>
-        of(this.errorLoad('solution', this.safeErrorMessage(err, 'enso-solution'), defaults)),
-      ),
-    );
+    return of(emptyRemoteLoad());
   }
 
   private loadAgentSkills(options: CatalogLoadOptions): Observable<PaletteCatalogLoad> {
     if (this.agentAdapter) {
       return this.readAdapter(this.agentAdapter, options).pipe(
-        map((remote) => this.classifyAndCompose('skills', remote, 'adapter')),
-        catchError((err: unknown) =>
-          of(this.errorLoad('skills', this.safeErrorMessage(err, 'adapter'))),
-        ),
+        map((remote) => this.classifyAndCompose('skills', remote)),
+        catchError((err: unknown) => of(this.errorLoad('skills', this.safeErrorMessage(err)))),
       );
     }
-    return this.loadEnsoTasks(options).pipe(
-      map((remote) => this.classifyAndCompose('skills', remote, 'enso')),
-      catchError((err: unknown) =>
-        of(this.errorLoad('skills', this.safeErrorMessage(err, 'enso-skills'))),
-      ),
-    );
+    return of(emptyRemoteLoad());
   }
 
   private classifyAndCompose(
     canvas: CatalogCanvas,
     remote: CatalogAdapterResult,
-    source: 'enso' | 'adapter',
     defaultAgentsOverride?: DefaultAgentsState,
   ): PaletteCatalogLoad {
     if (remote.items.length === 0) {
-      return {
-        categories: [],
-        items: [],
-        source: 'empty',
-        error: null,
-        emptyRemote: true,
-      };
+      return emptyRemoteLoad();
     }
     if (canvas === 'solution') {
       const composed = this.composeSolution(remote.items, remote.categories, defaultAgentsOverride);
       return {
         ...composed,
-        source,
+        source: 'adapter',
         error: null,
         emptyRemote: false,
       };
@@ -169,7 +154,7 @@ export class EnsoTaskCatalogService {
     const composed = this.composeSkills(remote.items, remote.categories);
     return {
       ...composed,
-      source,
+      source: 'adapter',
       error: null,
       emptyRemote: false,
     };
@@ -274,123 +259,7 @@ export class EnsoTaskCatalogService {
     );
   }
 
-  private loadEnsoPipelines(): Observable<CatalogAdapterResult> {
-    const token = this.resolveAccessToken();
-    if (!token) {
-      return throwError(() => ({ status: 0, code: 'auth' as const }));
-    }
-    const payload = {
-      data: {
-        pipeline_type: 'agent',
-        agg_version_info: true,
-        workflow_id: environment.ensoWorkflowId,
-        workflow_version_id: environment.ensoWorkflowVersionId,
-      },
-      solution_id: environment.ensoSolutionId,
-      user_id: this.resolveUserId(),
-    };
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-    return this.http.post<unknown>(environment.ensoPipelineListUrl, payload, { headers }).pipe(
-      map((body) => {
-        const mapped = mapEnsoPipelinesToAgents(extractEnsoPipelines(body));
-        return { items: mapped.items, categories: mapped.categories };
-      }),
-    );
-  }
-
-  private loadEnsoTasks(options: CatalogLoadOptions): Observable<CatalogAdapterResult> {
-    const token = this.resolveAccessToken();
-    if (!token) {
-      return throwError(() => ({ status: 0, code: 'auth' as const }));
-    }
-    const userCategories = options.userCategories ?? environment.ensoUserCategories;
-    const includeAgentId = options.includeAgentId ?? true;
-    const itemNodeType: NodeType = options.itemNodeType ?? 'Action';
-    const payload: Record<string, unknown> = {
-      data: { user_category: [...userCategories] },
-      solution_id: environment.ensoSolutionId,
-      user_id: this.resolveUserId(),
-    };
-    if (includeAgentId) {
-      payload['agent_id'] = environment.ensoAgentId;
-    }
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-    return this.http.post<unknown>(environment.ensoTaskListUrl, payload, { headers }).pipe(
-      map((body) => {
-        const mapped = mapEnsoTasksToPalette(extractEnsoTasks(body), { nodeType: itemNodeType });
-        return { items: mapped.items, categories: mapped.categories };
-      }),
-    );
-  }
-
-  private safeErrorMessage(err: unknown, origin: CatalogErrorOrigin): string {
-    if (origin === 'adapter') {
-      return `Catalog adapter failed. ${BUILTIN_SUFFIX}`;
-    }
-    if (this.isAuthError(err)) {
-      return `Enso auth missing. ${BUILTIN_SUFFIX}`;
-    }
-    const status = this.httpStatus(err);
-    if (origin === 'enso-solution') {
-      return status != null
-        ? `Enso pipeline/list failed (HTTP ${status}). ${BUILTIN_SUFFIX}`
-        : `Enso pipeline/list failed. ${BUILTIN_SUFFIX}`;
-    }
-    return status != null
-      ? `Enso task/list failed (HTTP ${status}). ${BUILTIN_SUFFIX}`
-      : `Enso task/list failed. ${BUILTIN_SUFFIX}`;
-  }
-
-  private isAuthError(err: unknown): boolean {
-    return !!err && typeof err === 'object' && 'code' in err && (err as { code: string }).code === 'auth';
-  }
-
-  private httpStatus(err: unknown): number | null {
-    if (err && typeof err === 'object' && 'status' in err) {
-      const status = (err as { status: unknown }).status;
-      return typeof status === 'number' ? status : null;
-    }
-    return null;
-  }
-
-  private resolveAccessToken(): string | null {
-    let token = environment.ensoAccessToken.trim();
-    if (!token) {
-      try {
-        const raw = localStorage.getItem('currentUser');
-        if (!raw) {
-          return null;
-        }
-        const user = JSON.parse(raw) as { accesstoken?: string };
-        token = user.accesstoken?.trim() || '';
-      } catch {
-        return null;
-      }
-    }
-    if (!token) {
-      return null;
-    }
-    return token.replace(/^Bearer\s+/i, '');
-  }
-
-  private resolveUserId(): string {
-    try {
-      const raw = localStorage.getItem('currentUser');
-      if (raw) {
-        const user = JSON.parse(raw) as { id?: string | number };
-        if (user.id != null) {
-          return String(user.id);
-        }
-      }
-    } catch {
-      /* fall through */
-    }
-    return environment.ensoUserId;
+  private safeErrorMessage(_err: unknown): string {
+    return `Catalog adapter failed. ${BUILTIN_SUFFIX}`;
   }
 }

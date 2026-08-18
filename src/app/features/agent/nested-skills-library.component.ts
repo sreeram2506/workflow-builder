@@ -1,7 +1,21 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MOCK_SKILLS, filterMockSkills } from '../../core/domain/mock-skills.catalog';
+import { sanitizeHostPaletteItems } from '../../core/domain/palette-host.helpers';
+import type { PaletteItem } from '../../core/domain/palette.catalog';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+
+function filterPaletteSkills(items: readonly PaletteItem[], query: string): PaletteItem[] {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    return [...items];
+  }
+  return items.filter(
+    (item) =>
+      item.label.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q) ||
+      item.key.toLowerCase().includes(q),
+  );
+}
 
 @Component({
   selector: 'wb-nested-skills-library',
@@ -17,20 +31,21 @@ import { WorkflowFacade } from '../../core/facade/workflow.facade';
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
         [disabled]="facade.editorMode() === 'view'"
+        data-testid="nested-skills-search"
       />
       <ul class="list" role="list">
-        @for (skill of filtered(); track skill.skillId) {
+        @for (skill of filtered(); track skill.key) {
           <li class="card">
             <div class="text">
-              <div class="name">{{ skill.name }}</div>
+              <div class="name">{{ skill.label }}</div>
               <div class="desc">{{ skill.description }}</div>
             </div>
             <button
               type="button"
               class="add"
               [disabled]="facade.editorMode() === 'view'"
-              (click)="facade.addSkillToAgent(agentNodeId(), skill.skillId)"
-              [attr.data-testid]="'add-skill-' + skill.skillId"
+              (click)="add(skill)"
+              [attr.data-testid]="'nested-skill-add-' + skill.key"
             >
               Add
             </button>
@@ -112,6 +127,23 @@ import { WorkflowFacade } from '../../core/facade/workflow.facade';
 export class NestedSkillsLibraryComponent {
   readonly facade = inject(WorkflowFacade);
   readonly agentNodeId = input.required<string>();
+  readonly palettes = input<PaletteItem[] | undefined>();
   readonly query = signal('');
-  readonly filtered = computed(() => filterMockSkills(MOCK_SKILLS, this.query()));
+  readonly filtered = computed(() => {
+    const raw = this.palettes();
+    if (raw === undefined || raw.length === 0) {
+      return [];
+    }
+    const sanitized = sanitizeHostPaletteItems(raw, 'flow');
+    return filterPaletteSkills(sanitized, this.query());
+  });
+
+  add(skill: PaletteItem): void {
+    this.facade.addSkillFromPaletteItem(this.agentNodeId(), {
+      key: skill.key,
+      label: skill.label,
+      description: skill.description,
+      taskId: skill.taskId,
+    });
+  }
 }

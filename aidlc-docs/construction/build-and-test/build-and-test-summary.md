@@ -1,6 +1,6 @@
 # Build and Test Summary
 
-SPA increment **Host logic extras + agent metadata** (U-LIM-01).
+SPA increment **Remove APIs and dummy data** (U-RAD-01).
 
 **Date**: 2026-08-17  
 **Status**: APPROVED
@@ -9,21 +9,21 @@ SPA increment **Host logic extras + agent metadata** (U-LIM-01).
 - **Build Tool**: Angular 20 / `npm run build`
 - **Build Status**: Success
 - **Build Artifacts**: `dist/workflow-builder`
-- **Build Time**: ~11 s `npm test` plus ~5 s `ng build`
-- **Warnings**: initial bundle 590.36 kB (warn 500 kB); left-sidebar CSS 6.14 kB (warn 4 kB)
+- **Build Time**: verified during Code Generation (`npm test` + `ng build`)
+- **Warnings**: initial bundle ~583 kB (warn 500 kB); accepted
 
 ## Test Execution Summary
 
 ### Unit Tests
-- **Total Tests**: 259
-- **Passed**: 259
+- **Total Tests**: 258
+- **Passed**: 258
 - **Failed**: 0
 - **Coverage**: not enforced
 - **Status**: Pass
 
 ### Integration Tests
-- **Test Scenarios**: catalog featured replace; drop metadata/icon; canvas host icon (automated). Manual `/try-ui` Extra If documented.
-- **Passed**: included in the 259
+- **Test Scenarios**: omit-without-adapter empty-remote; nested palettes overlay; Repeater empty options; adapter-when-omit / adapter-failure unchanged (automated). Manual default SPA empty library documented.
+- **Passed**: included in the 258
 - **Failed**: 0
 - **Status**: Pass (automated)
 
@@ -31,9 +31,10 @@ SPA increment **Host logic extras + agent metadata** (U-LIM-01).
 - **Status**: N/A (no NFR targets; NFR Design skipped)
 
 ### Additional Tests
-- **Contract Tests**: N/A (no new service contracts)
-- **Security Tests**: Pass via unit specs (`icon-url`, factory drop of unsafe URLs); no separate scanner job in this stage
+- **Contract Tests**: N/A (Enso catalog HTTP removed; no new service contracts)
+- **Security Tests**: Pass via env strip + no catalog HTTP; `security-test-instructions.md`; no separate scanner job in this stage
 - **E2E Tests**: N/A (no Playwright/Cypress suite in `package.json`)
+- **PBT (Partial)**: P-RAD-01..03 in `enso-task-catalog.service.pbt.spec.ts` (seed `20260817`)
 
 ## Overall Status
 - **Build**: Success
@@ -41,4 +42,4 @@ SPA increment **Host logic extras + agent metadata** (U-LIM-01).
 - **Ready for Operations**: Yes (placeholder stage)
 
 ## Next Steps
-Build and Test approved. Operations is a placeholder; see `aidlc-docs/operations/logic-icons-metadata-operations-placeholder.md`.
+Build and Test approved. Operations is a placeholder; see `aidlc-docs/operations/remove-apis-dummy-data-operations-placeholder.md`.

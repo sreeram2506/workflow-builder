@@ -3,11 +3,11 @@
 ## Project Information
 - **Project Name**: Angular Workflow Builder
 - **Project Type**: Greenfield origin; brownfield increment
-- **Start Date**: 2026-08-17T17:33:00Z
-- **Current Stage**: OPERATIONS — PLACEHOLDER (increment complete)
-- **Current Phase**: OPERATIONS
-- **Current Unit**: U-LIM-01
-- **Active Increment**: Host logic extras + agent metadata (icons + metadata) — COMPLETE
+- **Start Date**: 2026-08-17T18:27:00Z
+- **Current Stage**: COMPLETE — Operations placeholder
+- **Current Phase**: OPERATIONS (placeholder)
+- **Current Unit**: U-RAD-01 (`u-rad-01-remove-apis-dummy-data`)
+- **Active Increment**: Remove APIs and dummy data — COMPLETE
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -15,19 +15,21 @@
 - **Build System**: npm / Angular CLI / Vitest
 - **Project Structure**: Monolith SPA (workflow canvas + embeddable shells)
 - **Workspace Root**: `/Users/sreeram/ofcwork/workflow-builder`
-- **Reverse Engineering Needed**: No (skipped)
-- **Prior Increment**: Host UI chrome inputs (`[ui]`) — COMPLETE
+- **Reverse Engineering Needed**: No (skipped — scoped brownfield; prior increments skipped RE)
+- **Prior Increment**: Host logic extras + agent metadata (U-LIM-01) — COMPLETE
 
 ## Extension Configuration
 | Extension | Enabled | Mode | Decided At |
 |---|---|---|---|
-| Security Baseline | Yes | New-code scoped (Q10=A) | Logic-icons-metadata RA |
-| Resiliency Baseline | Yes | Directional; DR/CAB N/A (SPA increment) | Logic-icons-metadata RA |
-| Property-Based Testing | Yes | Partial — sanitizers / mapping (Q12=B) | Logic-icons-metadata RA |
+| Security Baseline | Yes | New-code scoped (Q5=A) | Remove-APIs RA |
+| Resiliency Baseline | Yes | Directional; DR N/A (SPA increment) | Remove-APIs RA |
+| Property-Based Testing | Yes | Partial (Q7=B) | Remove-APIs RA |
 
 ## Execution Plan Summary
-- **Approved**: Q1=A — App Design + Units (U-LIM-01) + FD + CG + BT; skip NFR/Infra
-- **Plan file**: `aidlc-docs/inception/plans/logic-icons-metadata-execution-plan.md`
+- **Approved**: Yes (Q1=A)
+- **Plan file**: `aidlc-docs/inception/plans/remove-apis-dummy-data-execution-plan.md`
+- **Execute**: none remaining
+- **Skip**: NFR Requirements, NFR Design, Infrastructure Design
 
 ## Code Location Rules
 - **Application Code**: Workspace root (NEVER in aidlc-docs/)
@@ -35,28 +37,28 @@
 
 ## Stage Progress
 
-### INCEPTION — Host logic extras + agent metadata
+### INCEPTION — Remove APIs and dummy data
 - [x] Workspace Detection
 - [x] Reverse Engineering — SKIP
 - [x] Requirements Analysis — approved
 - [x] User Stories — approved
 - [x] Workflow Planning — approved (Q1=A)
 - [x] Application Design — approved
-- [x] Units Generation — approved
+- [x] Units Generation — approved (U-RAD-01)
 
-### CONSTRUCTION — U-LIM-01
+### CONSTRUCTION — U-RAD-01
 - [x] Functional Design — approved
-- [ ] NFR Requirements — SKIP
-- [ ] NFR Design — SKIP
-- [ ] Infrastructure Design — SKIP
+- [x] NFR Requirements — SKIP
+- [x] NFR Design — SKIP
+- [x] Infrastructure Design — SKIP
 - [x] Code Generation — approved
 - [x] Build and Test — approved
 
 ### OPERATIONS
-- [x] Operations — PLACEHOLDER (complete for this increment)
+- [x] Operations — PLACEHOLDER (complete)
 
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS
-- **Current Stage**: Placeholder — increment complete
-- **Blocked On**: None
-- **Timestamp**: 2026-08-17T18:25:30Z
+- **Lifecycle Phase**: COMPLETE
+- **Current Stage**: Operations placeholder
+- **Blocked On**: none
+- **Timestamp**: 2026-08-17T19:07:00Z

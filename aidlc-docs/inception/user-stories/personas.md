@@ -21,6 +21,9 @@
 - Assemble a workflow from the palette types the host allows
 - See named default agents when the host replaced Blank Agent
 - See extra host Condition / Router / Repeater cards (with icons) in the featured strip when the host supplies them
+- See an empty Agents / Skills library when the host did not bind `[palettes]` and did not inject a catalog adapter
+- See nested Skills Library cards that match the agent-shell `[palettes]` (or empty when those palettes are omitted / `[]`)
+- Configure Repeater Properties without dummy Claims / Policy / Notify workflow options
 - Drop a host card and keep its metadata on the node for the host product to read
 - Connect steps correctly and configure node properties
 - Validate flow with simulated Run
@@ -31,6 +34,7 @@
 - Losing work unexpectedly (must understand in-memory auto-save does not survive refresh)
 - Opaque connection rules
 - Types in the library that their host product does not use
+- Dummy nested skills or Repeater workflow names that are not real catalog data
 - Blank Agent label that does not match the host product’s language
 
 ### Success looks like
@@ -74,18 +78,21 @@
 - Turn chrome regions and actions on/off without forking Workflow Builder
 - Restrict Condition / Router / Repeater / Blank Agent (and other types) per canvas via allow-lists
 - Replace Blank Agent with one or more named default agent cards
-- Inject a catalog adapter so extra APIs fill Agents or Skills lists
+- Inject a catalog adapter so extra APIs fill Agents or Skills lists (no built-in Enso HTTP)
+- Omit `[palettes]` (and no adapter) so the library is empty-remote; bind `[palettes]` when authors should see cards
+- Pass the same `[palettes]` on `wb-agent-skills-shell` so nested Skills Library matches the agent shell
 - Bind `[palettes]`, `[defaultAgents]`, and **`[ui]`** on `wb-shell-layout` / `wb-agent-skills-shell` like Syncfusion instance props
 - Supply extra Condition / Router / Repeater cards (with `iconUrl` / `iconPath` and `metadata`) so the featured strip shows host logic shapes
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
 - Chrome flags via JSON / `provideWorkflowBuilderUi` **and** per-instance `[ui]` override
-- Keep full chrome and today’s palette when no config is supplied (safe default)
+- Keep full chrome when no UI config is supplied (safe default); omitted `[palettes]` with no adapter is empty-remote, not a built-in catalog
 - Document embed API for other teams
 
 ### Frustrations
 - Having to fork UI to hide Save / libraries / properties / unused logic nodes
 - Unclear merge precedence between JSON, provider, and `[ui]`
-- Secrets accidentally committed in demo config
+- Secrets accidentally committed in demo config or SPA `environment.ts`
+- Built-in Enso catalog HTTP, proxy, or stored credentials in this SPA
 - Mock agents appearing when a real catalog API fails
 - Having to use bootstrap DI only, with no instance inputs on the host tag
 
@@ -94,7 +101,9 @@
 - Authors only see enabled chrome; shortcuts follow the same flags
 - Invalid JSON soft-fails to full defaults with a non-blocking status
 - Allow-lists and defaultAgents are predictable; adapters are provider-only
-- Catalog failure shows static defaults and a banner, not mock agents
+- Catalog adapter failure shows static defaults and a banner, not mock agents (no Enso HTTP path)
+- Default SPA with omitted `[palettes]` and no adapter shows empty-remote, not Enso or static featured catalog
+- Nested Skills Library uses agent-shell `[palettes]`, not a dummy skills catalog
 - Parent `[palettes]` / `[defaultAgents]` / `[ui]` work like Syncfusion instance props
 - Extra logic cards replace the three built-in featured shapes when `[palettes]` is present
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
@@ -120,4 +129,7 @@
 | Catalog adapter (agents/skills APIs) | Sees adapter rows | Sees result | Primary |
 | Host `[palettes]` / `[defaultAgents]` / `[ui]` inputs | Sees parent cards / chrome | Sees result | Primary |
 | Extra logic cards + library icons + drop metadata | Sees host strip / icons / node.data | Sees result | Primary |
+| Empty-when-omit library (no Enso HTTP) | Sees empty-remote or host/adapter cards | Sees result | Primary |
+| Nested skills from agent-shell `[palettes]` | Sees matching nested list | Sees result | Primary |
+| Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

@@ -1,29 +1,45 @@
 # Integration Test Instructions
 
 ## Purpose
-U-LIM-01 overlay compose, library featured strip, drop mapping, and canvas icon.
+U-RAD-01 catalog omit-without-adapter empty-remote, nested palettes overlay, Repeater empty pickers, and adapter-when-omit still working.
+
+This SPA has one construction unit. Automated checks live in the Vitest suite (`npm test`). There is no separate multi-service integration runner.
 
 ## Test Scenarios
 
-### Scenario 1: Host palettes replace featured and keep extras
-- **Description**: Non-empty sanitized `[palettes]` omits static Condition/Decision/Repeater and lists host logic cards
+### Scenario 1: Omit palettes without adapter is empty-remote
+- **Description**: `loadCatalog` with no host palettes and no adapter returns empty-remote (not static featured, not Enso HTTP)
 - **Setup**: `npm test`
-- **Test Steps**: `enso-task-catalog.service.spec.ts` (omit static featured; host extras); `left-sidebar.palette.spec.ts` (two Conditions when palettes present)
-- **Expected Results**: AIAgent-only host list has no static Condition; Extra If appears when catalog has two Conditions and palettes are bound
+- **Test Steps**: `enso-task-catalog.service.spec.ts`; `enso-task-catalog.service.pbt.spec.ts`
+- **Expected Results**: `emptyRemote === true`, `source === 'empty'`, `items` / `categories` empty, `error` null; no `Condition` / `Decision` / `Repeater` static featured keys
 - **Cleanup**: none
 
-### Scenario 2: Drop copies metadata and icon onto the canvas node
-- **Description**: Palette item extras persist on `node.data` and render on `wb-workflow-node`
+### Scenario 2: Nested Skills Library uses the same palettes overlay
+- **Description**: `[palettes]` drives nested skill rows; omit or `[]` shows an empty list; Add uses the facade overlay path
 - **Setup**: `npm test`
-- **Test Steps**: `node.factory.spec.ts`; `workflow-node.component.spec.ts`
-- **Expected Results**: `data.metadata` / `data.iconUrl` / `data.iconPath` copied; canvas shows path or img inside the logic frame
+- **Test Steps**: `nested-skills-library.component.spec.ts`; `workflow.facade.spec.ts`
+- **Expected Results**: empty list when palettes omitted or `[]`; listed items Add via `addSkillFromPaletteItem`; `addSkillToAgent` does not look up deleted mock skills
 - **Cleanup**: none
 
-### Scenario 3: Try host Extra If (manual)
-- **Description**: Local try harness (gitignored `src/app/try/`; do not commit the try route)
-- **Setup**: `npm start`; open `/try-ui` if the local try route is enabled
-- **Test Steps**: Catalog preset with Extra If; drag Extra If to the canvas
-- **Expected Results**: Featured strip shows Extra If with its icon; dropped Condition keeps that icon inside the diamond
+### Scenario 3: Repeater pickers have no dummy workflows
+- **Description**: Workflow/version option lists are empty; existing `repeater.workflowId` / `versionId` on a node are not cleared by the catalog deletion
+- **Setup**: `npm test`
+- **Test Steps**: `logic-node-rules.spec.ts`; right-sidebar Repeater option lists in `right-sidebar.component.ts`
+- **Expected Results**: no dummy workflow names in options; schema `options: []`
+- **Cleanup**: none
+
+### Scenario 4: Adapter-when-omit still works (U-PAL-02)
+- **Description**: Host adapters on omit still load; adapter **failure** still uses static fallback plus banner (not empty-remote)
+- **Setup**: `npm test`
+- **Test Steps**: existing adapter success / empty / failure cases in `enso-task-catalog.service.spec.ts`
+- **Expected Results**: success maps adapter items; failure is `errorLoad` + static catalog, not `source: 'empty'`
+- **Cleanup**: none
+
+### Scenario 5: Default SPA empty library (manual)
+- **Description**: Serve without `[palettes]` and without adapters
+- **Setup**: `npm start` (no `/enso-api` proxy)
+- **Test Steps**: Open the default app; inspect left library / featured strip
+- **Expected Results**: empty-remote UI (`palette-empty-remote`); featured strip hidden; no Enso network calls
 - **Cleanup**: stop `ng serve` if started only for this stage
 
 ## Setup Integration Test Environment
@@ -33,8 +49,10 @@ U-LIM-01 overlay compose, library featured strip, drop mapping, and canvas icon.
 npm start
 ```
 
+No backend, proxy, or catalog token is required.
+
 ### 2. Configure Service Endpoints
-None. Host overlay skips Enso when `[palettes]` is bound.
+None. Catalog HTTP URLs were removed.
 
 ## Run Integration Tests
 
@@ -44,7 +62,7 @@ npm test
 ```
 
 ### 2. Verify Service Interactions
-See `docs/workflow-builder-ui-embed.md`.
+See `docs/workflow-builder-ui-embed.md` (omit without adapter = empty-remote; adapter-when-omit kept).
 
 ### 3. Cleanup
 Stop `ng serve` if started only for this stage.

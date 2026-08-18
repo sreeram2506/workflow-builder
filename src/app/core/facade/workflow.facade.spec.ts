@@ -439,11 +439,29 @@ describe('WorkflowFacade.agentTabs', () => {
 
   it('adds and removes skills with dedupe', () => {
     const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
-    expect(facade.addSkillToAgent(id, 'skill-extract-fields')).toBe(true);
+    expect(
+      facade.addSkillFromPaletteItem(id, {
+        key: 'skill-extract-fields',
+        label: 'Extract Fields',
+        description: 'Pull fields',
+      }),
+    ).toBe(true);
     expect(facade.agentSkills(id)).toHaveLength(1);
-    expect(facade.addSkillToAgent(id, 'skill-extract-fields')).toBe(false);
+    expect(
+      facade.addSkillFromPaletteItem(id, {
+        key: 'skill-extract-fields',
+        label: 'Extract Fields',
+        description: 'Pull fields',
+      }),
+    ).toBe(false);
     expect(facade.agentSkills(id)).toHaveLength(1);
     expect(facade.removeSkillFromAgent(id, 'skill-extract-fields')).toBe(true);
+    expect(facade.agentSkills(id)).toHaveLength(0);
+  });
+
+  it('addSkillToAgent returns false without mock catalog', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(facade.addSkillToAgent(id, 'skill-extract-fields')).toBe(false);
     expect(facade.agentSkills(id)).toHaveLength(0);
   });
 
