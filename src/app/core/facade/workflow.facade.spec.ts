@@ -425,6 +425,52 @@ describe('WorkflowFacade.agentTabs', () => {
     expect(router.url).toBe(`/agent/${id}`);
   });
 
+  it('does not add chips when agent tab chrome is off', () => {
+    facade.setAgentTabsChromeEnabled(false);
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    facade.openAgentTab(id);
+    expect(facade.agentTabs()).toHaveLength(0);
+    const item = blankAgentPaletteItem()!;
+    facade.createNodeFromPaletteItem(item, { x: 80, y: 80 });
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('selectAgentTab still navigates when agent tab chrome is off', async () => {
+    facade.setAgentTabsChromeEnabled(false);
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    const router = TestBed.inject(Router);
+    facade.selectAgentTab(id);
+    await Promise.resolve();
+    expect(facade.agentTabs()).toHaveLength(0);
+    expect(router.url).toBe(`/agent/${id}`);
+  });
+
+  it('selectAgentTab still navigates in view mode when chrome is off', async () => {
+    const id = facade.createNode('AIAgent', { x: 40, y: 40 })!;
+    facade.setEditorMode('view');
+    facade.setAgentTabsChromeEnabled(false);
+    const router = TestBed.inject(Router);
+    facade.selectAgentTab(id);
+    await Promise.resolve();
+    expect(router.url).toBe(`/agent/${id}`);
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('enterAgentCanvas loads nested graph without chips when chrome is off', () => {
+    facade.setAgentTabsChromeEnabled(false);
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(facade.enterAgentCanvas(id)).toBe(true);
+    expect(facade.editingAgentNodeId()).toBe(id);
+    expect(facade.agentTabs()).toHaveLength(0);
+  });
+
+  it('ensureAgentRoute redirects home when the agent is missing', async () => {
+    const router = TestBed.inject(Router);
+    expect(facade.ensureAgentRoute('missing-agent')).toBe(false);
+    await Promise.resolve();
+    expect(router.url).toBe('/');
+  });
+
   it('adds skill from palette item', () => {
     const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
     expect(

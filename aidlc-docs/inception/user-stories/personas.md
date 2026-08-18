@@ -29,6 +29,8 @@
 - See General only (no Ignore Keys, no flattened blob) on Action/Trigger when the host did not supply a schema
 - Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema
 - Connect steps correctly and configure node properties
+- Double-click a Blank Agent / AIAgent to open its nested canvas even when the host hid the agent tab bar
+- Return from nested canvas via tab Solution chip (bar on) or nested Back / Solution (bar off)
 - Validate flow with simulated Run
 - Export/import JSON for sharing within the team
 - Undo mistakes and copy/paste nodes while editing
@@ -58,6 +60,7 @@
 - Open/view an existing in-memory workflow state
 - Pan/zoom/inspect nodes and edges safely
 - Confirm configuration via properties panel in read-only presentation (including host schema fields)
+- Open a nested agent in view via double-click (read nested canvas; no structural edits)
 - Optionally observe a simulated Run if enabled in view mode (if Run remains available; must not mutate structure)
 
 ### Frustrations
@@ -88,6 +91,7 @@
 - Supply extra Condition / Router / Repeater cards (with `iconUrl` / `iconPath` and `metadata`) so the featured strip shows host logic shapes
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
 - Pass optional `propertiesSchema` on palette items (copied onto the node) and/or `provideWorkflowBuilderUi({ properties })` so Properties is host-driven
+- Hide the agent tab strip (`agentTabs.enabled`) without blocking double-click enter or nested Back
 - Keep host blobs opaque (`taskMeta`); this package must not flatten them into a fake form
 - Chrome flags via JSON / `provideWorkflowBuilderUi` **and** per-instance `[ui]` override
 - Keep full chrome when no UI config is supplied (safe default); omitted `[palettes]` with no adapter is empty-remote, not a built-in catalog
@@ -113,6 +117,7 @@
 - Extra logic cards replace the three built-in featured shapes when `[palettes]` is present
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
 - Properties schema on palettes / adapter renders generic fields; no Enso-named public API; blobs stay uninterpreted
+- `agentTabs.enabled` false hides the strip; double-click still opens `/agent/:id`; nested Back still returns
 
 ---
 
@@ -139,4 +144,5 @@
 | Nested skills from agent-shell `[palettes]` | Sees matching nested list | Sees result | Primary |
 | Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
 | Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
+| Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`) |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

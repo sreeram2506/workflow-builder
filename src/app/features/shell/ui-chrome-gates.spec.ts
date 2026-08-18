@@ -125,4 +125,16 @@ describe('UI chrome gates (ShellLayout)', () => {
     expect(props).toBeTruthy();
     expect(Number.parseInt(props?.style.top ?? '', 10)).toBe(16);
   });
+
+  it('hides the agent tab strip when agentTabs.enabled is false', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    facade.openAgentTab(id);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeTruthy();
+
+    ui.applyLayers({ agentTabs: { enabled: false } }, { kind: 'ok', message: null });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="nodes-library-root"]')).toBeTruthy();
+  });
 });

@@ -1,14 +1,14 @@
 # Performance Test Instructions
 
 ## Purpose
-No load/stress suite for this increment. U-HP-01 schema resolve and form bind are in-process on the selected node.
+No load/stress suite for this increment. U-AE-01 is chrome vs routing (chip gate + nested Back).
 
 ## Performance Requirements
-N/A — NFR Requirements/Design skipped. No response-time, throughput, or concurrent-user targets for this SPA increment.
+N/A — NFR Requirements/Design skipped. No response-time, throughput, or concurrent-user targets for this SPA increment. DR N/A.
 
 ## Setup / Run
 N/A.
 
-Optional: `npm test` (PBT Partial — P-HP-01..03, seed `20260817`).
+Optional: `npm test` (example gating tests in `workflow.facade.spec.ts`; PBT Partial not added — no new pure transform).
 
-Bundle budget warning (~583 kB vs 500 kB) is accepted as a warning, not a test failure.
+Bundle budget warning (~600 kB vs 500 kB) is accepted as a warning, not a test failure.

@@ -4721,3 +4721,103 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 - aidlc-docs/operations/host-properties-operations-placeholder.md
 
 ---
+## Workspace Detection + RA OPEN — Enter agent without tab bar
+**Timestamp**: 2026-08-18T09:50:00Z
+**User Input**: "i wnat to do one more chamges on dobule cllick agent also whitout that agent toolbar we should be able to go inside agent two possible ways 1. a=that agent bar that we have currenltu and secons one is this methon these also should support without agent bar"
+**AI Response**: "New increment. Workspace Detection: brownfield SPA; RE skipped (scoped, same as prior). Current: dblclick already calls selectAgentTab; tab bar is chrome. Nested Solution chip also hides with the bar. Opened RA questions Q1–Q7."
+**Context**: INCEPTION Workspace Detection + Requirements Analysis — Enter agent without tab bar
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/requirements/agent-enter-without-tabs-requirement-verification-questions.md then reply in chat (e.g. answered)."
+
+---
+## Requirements Analysis — artifacts generated; awaiting approval
+**Timestamp**: 2026-08-18T09:56:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q7: A A A A A A B. Wrote agent-enter-without-tabs-requirements.md. Extensions: Security Yes; Resiliency Yes; PBT Partial. Awaiting Approve & Continue to User Stories."
+**Context**: INCEPTION Requirements Analysis — Enter agent without tab bar
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A · Q6=A · Q7=B
+**AI Prompt**: "REVIEW REQUIRED: Please examine the requirements document at: aidlc-docs/inception/requirements/agent-enter-without-tabs-requirements.md. Request Changes or Approve & Continue to User Stories."
+
+---
+## User Stories Part 1 — plan OPEN
+**Timestamp**: 2026-08-18T10:04:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Requirements approved. Assessment: execute stories (user-facing enter/exit). Opened agent-enter-without-tabs-story-generation-plan.md (5 questions). No story artifacts yet."
+**Context**: INCEPTION User Stories Part 1 — Enter agent without tab bar
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/agent-enter-without-tabs-story-generation-plan.md then reply in chat (e.g. answered)."
+
+---
+## User Stories Part 2 — generated; awaiting approval
+**Timestamp**: 2026-08-18T10:06:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q5 all A. Generated agent-enter-without-tabs-stories.md (US-AE-01..04); personas.md additive. Awaiting Approve & Continue to Workflow Planning."
+**Context**: INCEPTION User Stories Part 2 — Enter agent without tab bar
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the user stories and personas at: aidlc-docs/inception/user-stories/agent-enter-without-tabs-stories.md and aidlc-docs/inception/user-stories/personas.md. Request Changes or Approve & Continue to Workflow Planning."
+
+---
+## Workflow Planning — plan OPEN
+**Timestamp**: 2026-08-18T10:08:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Stories approved. Opened agent-enter-without-tabs-execution-plan.md. Recommended Q1=A: skip AD/FD/NFR/Infra; 1 unit then CG. Awaiting answers."
+**Context**: INCEPTION Workflow Planning — Enter agent without tab bar
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/agent-enter-without-tabs-execution-plan.md then reply in chat (e.g. answered)."
+
+---
+## Workflow Planning — Approved; Units Generation planning
+**Timestamp**: 2026-08-18T10:10:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Execution plan approved as Q1=A (skip AD/FD/NFR/Infra; 1 unit then CG). Opened agent-enter-without-tabs-unit-of-work-plan.md (Q1–Q4). No unit artifacts yet. No code."
+**Context**: INCEPTION Units Generation Part 1 — Enter agent without tab bar
+**Answers**: Execution plan Q1=A
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/agent-enter-without-tabs-unit-of-work-plan.md then reply in chat (e.g. answered)."
+
+---
+## Units Generation — artifacts generated; awaiting approval
+**Timestamp**: 2026-08-18T10:12:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q4 all A. Generated agent-enter-without-tabs-unit-of-work.md, dependency.md, story-map.md. Single unit U-AE-01 maps US-AE-01..04. Awaiting Approve & Continue to CONSTRUCTION (Code Generation)."
+**Context**: INCEPTION Units Generation Part 2 — Enter agent without tab bar
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the units generation artifacts at: aidlc-docs/inception/application-design/agent-enter-without-tabs-unit-of-work.md (and dependency / story-map). Request Changes or Approve & Continue to CONSTRUCTION PHASE."
+
+---
+## Units Generation — Approved; Code Generation planning
+**Timestamp**: 2026-08-18T10:15:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Units approved. FD/NFR/Infra skipped. Opened u-ae-01-enter-agent-without-tabs-code-generation-plan.md (10 steps). Key: publish effective agentTabs.enabled from shells so root facade can gate chips; nested Back on agent-skills-shell. No code yet."
+**Context**: CONSTRUCTION U-AE-01 Code Generation Part 1 — Enter agent without tab bar
+**AI Prompt**: "Ready to proceed with this plan? Review aidlc-docs/construction/plans/u-ae-01-enter-agent-without-tabs-code-generation-plan.md. Request Changes or Approve & Continue to generate code."
+
+---
+## Code Generation — Plan approved; Part 2 executed
+**Timestamp**: 2026-08-18T10:22:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Executed U-AE-01 CG Part 2 (all 10 plan steps). Gated openAgentTab on published agentTabsChromeEnabled; nested Solution Back when strip off; embed docs. npm test 280 passed; npm run build succeeded. Stopped for code review."
+**AI Prompt**: "Review generated code. Continue to Next Stage for Build and Test, or Request Changes?"
+
+---
+## Build and Test Stage
+**Timestamp**: 2026-08-18T14:58:00Z
+**User Input**: "Continue to Next Stage "
+**Build Status**: Success
+**Test Status**: Pass (280 unit tests / 39 files)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- security-test-instructions.md
+- build-and-test-summary.md
+**AI Response**: "Recorded Code Generation approval. Regenerated build-and-test instructions for U-AE-01 (280 tests; ~600 kB initial). Awaiting Approve & Continue to Operations or Request Changes."
+**Context**: CONSTRUCTION Build and Test complete — awaiting approval
+**AI Prompt**: "Review aidlc-docs/construction/build-and-test/build-and-test-summary.md. Approve & Continue to Operations, or Request Changes?"
+
+---
+## Build and Test — Approved → Operations Placeholder
+**Timestamp**: 2026-08-18T15:00:00Z
+**User Input**: " Approve & Continue "
+**AI Response**: "Recorded Build and Test approval. Operations remains placeholder for U-AE-01. Wrote agent-enter-without-tabs-operations-placeholder.md. AI-DLC construction workflow complete for this increment; no deploy/monitor artifacts."
+**Context**: OPERATIONS placeholder acknowledged — Enter agent without tab bar complete
+**AI Prompt**: "Increment complete. Operations is a placeholder. Wait for an explicit new request before starting another increment."
+
+---

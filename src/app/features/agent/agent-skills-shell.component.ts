@@ -58,7 +58,7 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
       }
       <div class="stage">
         <wb-canvas-host />
-        @if (effectiveUi.is('topBar.enabled') || (effectiveUi.is('agentTabs.enabled') && facade.agentTabs().length > 0)) {
+        @if (headerOverlayShown()) {
           <div
             class="header-overlay"
             [class.compact]="!effectiveUi.is('topBar.enabled')"
@@ -69,6 +69,16 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
             }
             @if (effectiveUi.is('agentTabs.enabled')) {
               <wb-agent-tabs />
+            }
+            @if (!effectiveUi.is('agentTabs.enabled')) {
+              <button
+                type="button"
+                class="nested-back"
+                data-testid="nested-back-to-solution"
+                (click)="onNestedBack()"
+              >
+                Solution
+              </button>
             }
           </div>
         }
@@ -143,6 +153,26 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
     .header-overlay.compact {
       padding: 0.5rem 1rem;
     }
+    .nested-back {
+      align-self: flex-start;
+      min-height: 1.85rem;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid var(--wb-border);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--wb-bg-app) 82%, #000);
+      color: var(--wb-text);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      pointer-events: all;
+      box-shadow: var(--wb-shadow-soft);
+    }
+    .nested-back:hover {
+      border-color: color-mix(in srgb, var(--wb-accent) 50%, var(--wb-border));
+      background: color-mix(in srgb, var(--wb-accent) 38%, var(--wb-bg-elevated));
+    }
   `,
 })
 export class AgentSkillsShellComponent implements OnInit, OnDestroy {
@@ -159,23 +189,36 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
     mergeInstanceUiFeatures(this.uiConfig.features(), this.ui()),
   );
   readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
+  /** Top bar, tab strip, or nested Back when the strip is not mounted. */
+  readonly headerOverlayShown = computed(() => {
+    const features = this.effectiveFeatures();
+    return (
+      features.topBar.enabled ||
+      !features.agentTabs.enabled ||
+      this.facade.agentTabs().length > 0
+    );
+  });
 
   constructor() {
     effect(() => {
       const features = this.effectiveFeatures();
-      const overlayShown =
-        features.topBar.enabled || (features.agentTabs.enabled && this.facade.agentTabs().length > 0);
-      if (!overlayShown) {
+      this.facade.setAgentTabsChromeEnabled(features.agentTabs.enabled);
+      if (!this.headerOverlayShown()) {
         this.facade.setChromeInsetTop(16);
       }
     });
   }
 
   ngOnInit(): void {
+    this.facade.setAgentTabsChromeEnabled(this.effectiveFeatures().agentTabs.enabled);
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.nodeId = params.get('nodeId') ?? '';
       this.facade.ensureAgentRoute(this.nodeId);
     });
+  }
+
+  onNestedBack(): void {
+    this.facade.navigateBackToSolution(this.facade.editingAgentNodeId());
   }
 
   ngOnDestroy(): void {

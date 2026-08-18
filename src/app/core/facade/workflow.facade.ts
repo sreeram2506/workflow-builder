@@ -125,6 +125,7 @@ export class WorkflowFacade {
   readonly selectedSkillId = this.ui.selectedSkillId;
   readonly editingAgentNodeId = this.ui.editingAgentNodeId;
   readonly chromeInsetTop = this.ui.chromeInsetTop;
+  readonly agentTabsChromeEnabled = this.ui.agentTabsChromeEnabled;
   readonly canUndo = this.history.canUndo;
   readonly canRedo = this.history.canRedo;
   readonly autoSaveDirty = this.autoSave.dirty;
@@ -159,6 +160,10 @@ export class WorkflowFacade {
 
   setChromeInsetTop(px: number): void {
     this.ui.setChromeInsetTop(px);
+  }
+
+  setAgentTabsChromeEnabled(enabled: boolean): void {
+    this.ui.setAgentTabsChromeEnabled(enabled);
   }
 
   setRightCollapsed(collapsed: boolean): void {
@@ -498,6 +503,9 @@ export class WorkflowFacade {
   openAgentTab(nodeId: string): void {
     const node = this.findSolutionAgent(nodeId);
     if (!node) {
+      return;
+    }
+    if (!this.ui.agentTabsChromeEnabled()) {
       return;
     }
     const result = openAgentTab(this.ui.agentTabs(), nodeId);

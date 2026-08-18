@@ -1,45 +1,45 @@
 # Integration Test Instructions
 
 ## Purpose
-U-HP-01 first-win Properties schema (palette copy → adapter → logic built-in → General only), Save along field `path`s, and no flatten of opaque blobs.
+U-AE-01 enter/exit nested agent when the tab strip is hidden, without accumulating chips, while keeping chip enter when the strip is on.
 
-This SPA has one construction unit. Automated checks live in the Vitest suite (`npm test`). There is no separate multi-service integration runner.
+This SPA has one construction unit for this increment. Automated checks live in the Vitest suite (`npm test`). There is no separate multi-service integration runner.
 
 ## Test Scenarios
 
-### Scenario 1: Palette schema copy → Properties render → Save
-- **Description**: Dropped node with `propertiesSchema` shows those fields; Save writes the value at `path` on `node.data`
+### Scenario 1: Bar off — double-click enters; no chips
+- **Description**: `agentTabsChromeEnabled` false; `openAgentTab` / palette drop do not add chips; `selectAgentTab` still routes to `/agent/:id`
 - **Setup**: `npm test`
-- **Test Steps**: `node.factory.spec.ts`; `palette-host.helpers.spec.ts`; `right-sidebar.component.spec.ts` (schema Save)
-- **Expected Results**: schema on `data.propertiesSchema`; form control for the field; Save updates the path (e.g. `timeout`)
+- **Test Steps**: `workflow.facade.spec.ts` (chrome off cases)
+- **Expected Results**: `agentTabs()` empty; router URL `/agent/:id`
 - **Cleanup**: none
 
-### Scenario 2: First-win order
-- **Description**: Plain-object `data.propertiesSchema` (including `{}`) wins; adapter throw is skipped; omit schema uses Condition/Repeater built-ins; Action with no schema is General only
+### Scenario 2: Bar on — chips still enter
+- **Description**: Default chrome on; `selectAgentTab` opens a chip and navigates; Solution chip still returns (existing `wb-agent-tabs`)
 - **Setup**: `npm test`
-- **Test Steps**: `host-properties.resolve.spec.ts`; `host-properties.resolve.pbt.spec.ts`; `right-sidebar.component.spec.ts`
-- **Expected Results**: `{}` is not Condition built-in; adapter throw still has Condition expression; Action + `taskMeta` has empty `configFields`
+- **Test Steps**: `workflow.facade.spec.ts` `selectAgentTab opens tab and navigates`; `ui-chrome-gates.spec.ts` strip visible when tabs exist and flag is on
+- **Expected Results**: one chip; `/agent/:id`; strip present
 - **Cleanup**: none
 
-### Scenario 3: Opaque blobs are not flattened
-- **Description**: `taskMeta` and leftover `ensoTask` are not walked into form fields
+### Scenario 3: Nested Back without the strip
+- **Description**: Nested shell shows **Solution** when `agentTabs.enabled` is false; click calls `navigateBackToSolution` without requiring chips
 - **Setup**: `npm test`
-- **Test Steps**: `right-sidebar.component.spec.ts`; `host-properties.resolve.pbt.spec.ts` (P-HP-03)
-- **Expected Results**: no `enso` form group; no controls for nested blob keys
+- **Test Steps**: `agent-skills-shell.nested-back.spec.ts`
+- **Expected Results**: `nested-back-to-solution` present when bar off; absent when bar on (strip present)
 - **Cleanup**: none
 
-### Scenario 4: Logic chrome unchanged
-- **Description**: Condition true/false edges, Router connectors, Repeater existing ids still bind
+### Scenario 4: Nested no re-enter; View still enters
+- **Description**: Canvas dblclick no-ops when `editingAgentNodeId` is set (unchanged). View mode `selectAgentTab` still navigates with chrome off
 - **Setup**: `npm test`
-- **Test Steps**: `right-sidebar.component.spec.ts` logic-nodes describe; `logic-node-rules.spec.ts`
-- **Expected Results**: Condition expression present when schema omitted; Repeater keeps `wf-claims-intake` / `v1`; connector name/condition required; condition-out label read-only
+- **Test Steps**: `workflow.facade.spec.ts` view-mode chrome-off case; canvas `onNodeDblClick` early-return (source confirmed, no extra spec)
+- **Expected Results**: `/agent/:id` in view; nested edits still blocked by existing view guards
 - **Cleanup**: none
 
-### Scenario 5: Embed Properties supply (manual)
-- **Description**: Host supplies palette `propertiesSchema` and/or `provideWorkflowBuilderUi({ properties: { schemaFor } })`
-- **Setup**: `npm start`; see `docs/workflow-builder-ui-embed.md`
-- **Test Steps**: Drop a host Action with schema; select it; edit a field; Save. Repeat with adapter-only schema (no `propertiesSchema` on the node).
-- **Expected Results**: General always visible; host fields render; Save persists on `node.data`; unknown `ui_component` is disabled text
+### Scenario 5: Manual embed / try (optional)
+- **Description**: Instance `[ui]="{ agentTabs: { enabled: false } }"` — dblclick Blank Agent enters; nested **Solution** returns; no tab strip
+- **Setup**: `npm start`; local try harness if present (`/try-ui`). Do not commit `src/app/try/`
+- **Test Steps**: See `docs/workflow-builder-ui-embed.md` (Nested agent enter / exit)
+- **Expected Results**: strip hidden; dblclick enters; Back works; chips not accumulated from select/drop
 - **Cleanup**: stop `ng serve` if started only for this stage
 
 ## Setup Integration Test Environment
@@ -52,7 +52,7 @@ npm start
 No backend is required.
 
 ### 2. Configure Service Endpoints
-None. Properties adapter is in-process (`schemaFor`).
+None. Nested routing is in-process Angular Router.
 
 ## Run Integration Tests
 
@@ -62,7 +62,7 @@ npm test
 ```
 
 ### 2. Verify Service Interactions
-See `docs/workflow-builder-ui-embed.md` (first-win; paths on `node.data`; opaque `taskMeta`).
+See `docs/workflow-builder-ui-embed.md` (`agentTabs.enabled` is strip chrome, not a routing block).
 
 ### 3. Cleanup
 Stop `ng serve` if started only for this stage.

@@ -3,11 +3,11 @@
 ## Project Information
 - **Project Name**: Angular Workflow Builder
 - **Project Type**: Greenfield origin; brownfield increment
-- **Start Date**: 2026-08-18T03:00:00Z
-- **Current Stage**: OPERATIONS — PLACEHOLDER (increment COMPLETE)
+- **Start Date**: 2026-08-18T09:50:00Z
+- **Current Stage**: OPERATIONS — PLACEHOLDER (increment complete)
 - **Current Phase**: OPERATIONS
-- **Current Unit**: U-HP-01 (`u-hp-01-host-properties`)
-- **Active Increment**: Generic host-driven Properties — COMPLETE
+- **Current Unit**: U-AE-01 (COMPLETE)
+- **Active Increment**: Enter agent without tab bar (double-click + tabs)
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -16,20 +16,20 @@
 - **Project Structure**: Monolith SPA (workflow canvas + embeddable shells)
 - **Workspace Root**: `/Users/sreeram/ofcwork/workflow-builder`
 - **Reverse Engineering Needed**: No (skipped — scoped brownfield; prior increments skipped RE)
-- **Prior Increment**: Remove APIs and dummy data (U-RAD-01) — COMPLETE
+- **Prior Increment**: Generic host-driven Properties (U-HP-01) — COMPLETE
 
 ## Extension Configuration
 | Extension | Enabled | Mode | Decided At |
 |---|---|---|---|
-| Security Baseline | Yes | New-code scoped (Q7=A) | Host-properties RA |
-| Resiliency Baseline | Yes | Directional; DR N/A (SPA increment) | Host-properties RA |
-| Property-Based Testing | Yes | Partial (Q9=B) | Host-properties RA |
+| Security Baseline | Yes | New-code scoped (Q5=A) | Enter-agent-without-tabs RA |
+| Resiliency Baseline | Yes | Directional; DR N/A (SPA increment) | Enter-agent-without-tabs RA |
+| Property-Based Testing | Yes | Partial (Q7=B) | Enter-agent-without-tabs RA |
 
 ## Execution Plan Summary
 - **Approved**: Yes (Q1=A)
-- **Plan file**: `aidlc-docs/inception/plans/host-properties-execution-plan.md`
-- **Execute**: CG, Build/Test, Operations placeholder
-- **Skip**: NFR Requirements, NFR Design, Infrastructure Design
+- **Plan file**: `aidlc-docs/inception/plans/agent-enter-without-tabs-execution-plan.md`
+- **Execute**: Units Generation (1× U-AE-01), Code Generation, Build and Test, Operations placeholder
+- **Skip**: Application Design, Functional Design, NFR Requirements/Design, Infrastructure Design
 
 ## Code Location Rules
 - **Application Code**: Workspace root (NEVER in aidlc-docs/)
@@ -37,17 +37,17 @@
 
 ## Stage Progress
 
-### INCEPTION — Generic host-driven Properties
+### INCEPTION — Enter agent without tab bar
 - [x] Workspace Detection
 - [x] Reverse Engineering — SKIP
 - [x] Requirements Analysis — approved
 - [x] User Stories — approved
 - [x] Workflow Planning — approved (Q1=A)
-- [x] Application Design — approved
-- [x] Units Generation — approved (U-HP-01)
+- [x] Application Design — SKIP
+- [x] Units Generation — approved
 
-### CONSTRUCTION — U-HP-01
-- [x] Functional Design — approved
+### CONSTRUCTION — U-AE-01
+- [x] Functional Design — SKIP
 - [x] NFR Requirements — SKIP
 - [x] NFR Design — SKIP
 - [x] Infrastructure Design — SKIP
@@ -55,10 +55,10 @@
 - [x] Build and Test — approved
 
 ### OPERATIONS
-- [x] Operations — PLACEHOLDER (increment complete)
+- [x] Operations — PLACEHOLDER (acknowledged)
 
 ## Current Status
 - **Lifecycle Phase**: OPERATIONS (placeholder)
-- **Current Stage**: Complete
-- **Blocked On**: None — increment finished
-- **Timestamp**: 2026-08-18T04:15:00Z
+- **Current Stage**: Increment complete — Operations placeholder
+- **Blocked On**: None — wait for an explicit new request before starting another increment
+- **Timestamp**: 2026-08-18T15:00:00Z

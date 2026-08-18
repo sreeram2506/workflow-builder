@@ -151,6 +151,7 @@ export class ShellLayoutComponent {
   constructor() {
     effect(() => {
       const features = this.effectiveFeatures();
+      this.facade.setAgentTabsChromeEnabled(features.agentTabs.enabled);
       const overlayShown =
         features.topBar.enabled || (features.agentTabs.enabled && this.facade.agentTabs().length > 0);
       if (!overlayShown) {

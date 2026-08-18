@@ -1,7 +1,7 @@
 # Security Test Instructions
 
 ## Purpose
-Security Baseline is enabled (new-code scoped). This increment must not put host secrets in schema, `taskMeta`, or embed examples; must not HTML-render unknown widgets; must skip unsafe field paths.
+Security Baseline is enabled (new-code scoped). This increment must not add secrets, must keep invalid `/agent/:id` fail-safe, and must not put tokens in embed examples.
 
 ## Automated
 ```bash
@@ -9,15 +9,14 @@ npm test
 ```
 
 Covered in this increment:
-- `sanitizeHostPropertiesSchema` drops empty path and paths containing `..` (P-HP-01)
-- Unknown `ui_component` is a disabled text control (not a live widget / innerHTML)
-- Public adapter / embed docs do not use host-specific secret field names or tokens
-- `sanitizeHostPaletteItems` still sanitizes `iconUrl` and copies only a plain-object schema
+- `ensureAgentRoute('missing-agent')` redirects home (`workflow.facade.spec.ts`)
+- `openAgentTab` still requires a solution AIAgent (non-AIAgent ignored)
+- Embed docs (`docs/workflow-builder-ui-embed.md`) do not add secrets
 
 ## Checks (manual / review)
-1. Confirm `docs/workflow-builder-ui-embed.md` has no access tokens in `propertiesSchema` / `taskMeta` examples
-2. Confirm unknown widgets are not bound as dynamic Angular components
-3. Confirm leftover `ensoTask` is not a form source
+1. Confirm invalid nested agent URL still returns to the solution canvas
+2. Confirm `docs/workflow-builder-ui-embed.md` nested-agent section has no access tokens
+3. Confirm `src/app/try/` is not committed
 
 ## Not in this increment
 - Dependency CVE scanners / pentest jobs (repo CI, not this unit)

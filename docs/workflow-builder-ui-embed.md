@@ -55,7 +55,7 @@ Try steps: [workflow-builder-ui-config-try.md](./workflow-builder-ui-config-try.
 | `topBar.status` | Draft/saved pill |
 | `topBar.theme` | Theme toggle |
 | `topBar.editView` | Edit / View toggle |
-| `agentTabs.enabled` | Agent tabs strip (independent of top bar). Clicking the same library agent focuses the existing node/tab instead of duplicating it. |
+| `agentTabs.enabled` | Agent tabs **strip** (independent of top bar). Hides chips only — it does **not** block `/agent/:id`. Double-click a Blank Agent / AIAgent on the **solution** canvas still enters. When the strip is not mounted, the nested shell shows a **Solution** Back control. Clicking the same library agent still focuses the existing node instead of duplicating it (when the strip is on). |
 | `agentsLibrary.enabled` | Solution left library |
 | `skillsLibrary.enabled` | Nested agent left library |
 | `propertiesPanel.enabled` | Right properties panel |
@@ -74,6 +74,16 @@ Try steps: [workflow-builder-ui-config-try.md](./workflow-builder-ui-config-try.
 | `palette.agent.types` | Allow-list of node types on the nested Skills Library. Omit = all; `[]` = none. |
 
 Palette allow-lists are independent per canvas. `"Router"` is not a type key (use `"Decision"`). Unknown type strings are dropped.
+
+### Nested agent enter / exit
+
+`agentTabs.enabled` is tab-strip chrome. It does not gate `/agent/:id`.
+
+- **Enter:** double-click a Blank Agent / AIAgent on the solution canvas, or click a chip when the strip is on.
+- **Exit without the strip:** nested shell **Solution** control (`navigateBackToSolution`). It does not require open chips.
+- Nested canvas double-click does not enter another agent. View mode still enters; nested graph edits stay blocked.
+
+Do not put secrets in UI config, palette items, or embed examples.
 
 ## Catalog adapter (provider-only)
 

@@ -1,6 +1,6 @@
 # Build and Test Summary
 
-SPA increment **Generic host-driven Properties** (U-HP-01).
+SPA increment **Enter agent without tab bar** (U-AE-01).
 
 **Date**: 2026-08-18  
 **Status**: APPROVED
@@ -10,20 +10,20 @@ SPA increment **Generic host-driven Properties** (U-HP-01).
 - **Build Status**: Success
 - **Build Artifacts**: `dist/workflow-builder`
 - **Build Time**: verified during Code Generation (`npm test` + `ng build`)
-- **Warnings**: initial bundle ~583 kB (warn 500 kB); accepted
+- **Warnings**: initial bundle ~600 kB (warn 500 kB); left-sidebar CSS budget; accepted
 
 ## Test Execution Summary
 
 ### Unit Tests
-- **Total Tests**: 272
-- **Passed**: 272
+- **Total Tests**: 280
+- **Passed**: 280
 - **Failed**: 0
 - **Coverage**: not enforced
 - **Status**: Pass
 
 ### Integration Tests
-- **Test Scenarios**: schema copy → render → Save; first-win (`{}` / adapter throw / built-in / General only); no flatten of `taskMeta` / leftover `ensoTask`; Condition/Repeater/connector chrome unchanged (automated). Manual embed `schemaFor` / palette schema documented.
-- **Passed**: included in the 272
+- **Test Scenarios**: bar off enter without chips; bar on chips; nested Back; view enter + nested no re-enter (automated). Manual embed/try documented.
+- **Passed**: included in the 280
 - **Failed**: 0
 - **Status**: Pass (automated)
 
@@ -32,9 +32,9 @@ SPA increment **Generic host-driven Properties** (U-HP-01).
 
 ### Additional Tests
 - **Contract Tests**: N/A (client SPA; no new service contracts)
-- **Security Tests**: Pass via path sanitize + disabled unknown widgets + no secrets in embed examples; `security-test-instructions.md`; no separate scanner job in this stage
+- **Security Tests**: Pass via missing-agent redirect + no secrets in docs; `security-test-instructions.md`; no separate scanner job in this stage
 - **E2E Tests**: N/A (no Playwright/Cypress suite in `package.json`)
-- **PBT (Partial)**: P-HP-01..03 (seed `20260817`)
+- **PBT (Partial)**: N/A this increment (no new pure transform; example gating tests instead)
 
 ## Overall Status
 - **Build**: Success
@@ -42,14 +42,14 @@ SPA increment **Generic host-driven Properties** (U-HP-01).
 - **Ready for Operations**: Yes (placeholder stage)
 
 ## Next Steps
-Build and Test approved. Operations is a placeholder; see `aidlc-docs/operations/host-properties-operations-placeholder.md`.
+Build and Test approved. Operations is a placeholder; see `aidlc-docs/operations/agent-enter-without-tabs-operations-placeholder.md`.
 
 ## Extension compliance (this stage)
 
 | Extension / rule | Status | Rationale |
 |---|---|---|
-| Security Baseline (new-code) | Compliant | Path sanitize; unknown widgets not HTML-rendered; no tokens in schema/docs |
+| Security Baseline (new-code) | Compliant | Invalid `/agent/:id` redirects; no tokens in docs/code |
 | SECURITY-01..04, 06..10, 12..14 | N/A | No new stores, intermediaries, headers, IAM, or auth surfaces |
-| SECURITY-05 / 11 / 15 | Compliant | Unsafe paths dropped; fail-safe adapter throw; sanitize never throws |
-| Resiliency Baseline | Directional / N/A | Adapter throw skipped; DR N/A (SPA increment) |
-| PBT Partial | Compliant | P-HP-01, P-HP-02, P-HP-03 present and passing |
+| SECURITY-05 / 11 / 15 | Compliant | Missing agent fail-safe; no throw on unknown node type for `openAgentTab` |
+| Resiliency Baseline | Directional / N/A | Fail-safe missing agent; DR N/A (SPA increment) |
+| PBT Partial | N/A | No new pure transform this increment |

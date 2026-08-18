@@ -50,6 +50,11 @@ export class UiStore {
   readonly editingAgentNodeId = signal<string | null>(null);
   /** Distance from stage top to clear header chrome (sidebars). */
   readonly chromeInsetTop = signal(88);
+  /**
+   * Effective `agentTabs.enabled` from the mounted shell (instance `[ui]` overlay).
+   * Root facade cannot inject shell `UI_EFFECTIVE_FEATURES`.
+   */
+  readonly agentTabsChromeEnabled = signal(true);
 
   resetSessionDefaults(): void {
     this.theme.set('dark');
@@ -74,6 +79,7 @@ export class UiStore {
     this.selectedSkillId.set(null);
     this.editingAgentNodeId.set(null);
     this.chromeInsetTop.set(88);
+    this.agentTabsChromeEnabled.set(true);
   }
 
   setTheme(theme: Theme): void {
@@ -172,5 +178,9 @@ export class UiStore {
   setChromeInsetTop(px: number): void {
     const next = Number.isFinite(px) ? Math.max(0, Math.round(px)) : 16;
     this.chromeInsetTop.set(next);
+  }
+
+  setAgentTabsChromeEnabled(enabled: boolean): void {
+    this.agentTabsChromeEnabled.set(enabled);
   }
 }
