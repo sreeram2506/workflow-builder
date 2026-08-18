@@ -141,6 +141,9 @@ describe('palette-host.helpers', () => {
         iconPath: ' M1 1 ',
         metadata: { owner: 'host' },
         taskMeta: { task_id: 't1' },
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'timeout', label: 'Timeout' }] }],
+        },
       },
       {
         key: 'url',
@@ -161,6 +164,9 @@ describe('palette-host.helpers', () => {
         iconPath: 'M1 1',
         metadata: { owner: 'host' },
         taskMeta: { task_id: 't1' },
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'timeout', label: 'Timeout' }] }],
+        },
       },
       {
         key: 'url',

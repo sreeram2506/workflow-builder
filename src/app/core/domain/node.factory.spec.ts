@@ -44,9 +44,22 @@ describe('createWorkflowNodeFromPaletteItem metadata', () => {
     };
     const node = createWorkflowNodeFromPaletteItem(item, { x: 1, y: 2 })!;
     expect(node.data['metadata']).toEqual({ owner: 'host' });
-    expect(node.data['ensoTask']).toEqual({ task_id: 't1' });
+    expect(node.data['taskMeta']).toEqual({ task_id: 't1' });
+    expect(node.data['ensoTask']).toBeUndefined();
     (node.data['metadata'] as Record<string, unknown>)['owner'] = 'mutated';
     expect(item.metadata['owner']).toBe('host');
+  });
+
+  it('copies propertiesSchema onto node.data', () => {
+    const base = PALETTE_ITEMS.find((i) => i.type === 'Action')!;
+    const schema = {
+      sections: [{ fields: [{ type: 'text' as const, path: 'timeout', label: 'Timeout' }] }],
+    };
+    const node = createWorkflowNodeFromPaletteItem(
+      { ...base, propertiesSchema: schema },
+      { x: 0, y: 0 },
+    )!;
+    expect(node.data['propertiesSchema']).toEqual(schema);
   });
 
   it('omits metadata when absent', () => {

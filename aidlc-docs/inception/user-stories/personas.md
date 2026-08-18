@@ -25,6 +25,9 @@
 - See nested Skills Library cards that match the agent-shell `[palettes]` (or empty when those palettes are omitted / `[]`)
 - Configure Repeater Properties without dummy Claims / Policy / Notify workflow options
 - Drop a host card and keep its metadata on the node for the host product to read
+- Configure host `propertiesSchema` fields in Properties (Save writes `node.data` paths)
+- See General only (no Ignore Keys, no flattened blob) on Action/Trigger when the host did not supply a schema
+- Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema
 - Connect steps correctly and configure node properties
 - Validate flow with simulated Run
 - Export/import JSON for sharing within the team
@@ -54,7 +57,7 @@
 ### Goals
 - Open/view an existing in-memory workflow state
 - Pan/zoom/inspect nodes and edges safely
-- Confirm configuration via properties panel in read-only presentation
+- Confirm configuration via properties panel in read-only presentation (including host schema fields)
 - Optionally observe a simulated Run if enabled in view mode (if Run remains available; must not mutate structure)
 
 ### Frustrations
@@ -84,6 +87,8 @@
 - Bind `[palettes]`, `[defaultAgents]`, and **`[ui]`** on `wb-shell-layout` / `wb-agent-skills-shell` like Syncfusion instance props
 - Supply extra Condition / Router / Repeater cards (with `iconUrl` / `iconPath` and `metadata`) so the featured strip shows host logic shapes
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
+- Pass optional `propertiesSchema` on palette items (copied onto the node) and/or `provideWorkflowBuilderUi({ properties })` so Properties is host-driven
+- Keep host blobs opaque (`taskMeta`); this package must not flatten them into a fake form
 - Chrome flags via JSON / `provideWorkflowBuilderUi` **and** per-instance `[ui]` override
 - Keep full chrome when no UI config is supplied (safe default); omitted `[palettes]` with no adapter is empty-remote, not a built-in catalog
 - Document embed API for other teams
@@ -107,6 +112,7 @@
 - Parent `[palettes]` / `[defaultAgents]` / `[ui]` work like Syncfusion instance props
 - Extra logic cards replace the three built-in featured shapes when `[palettes]` is present
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
+- Properties schema on palettes / adapter renders generic fields; no Enso-named public API; blobs stay uninterpreted
 
 ---
 
@@ -132,4 +138,5 @@
 | Empty-when-omit library (no Enso HTTP) | Sees empty-remote or host/adapter cards | Sees result | Primary |
 | Nested skills from agent-shell `[palettes]` | Sees matching nested list | Sees result | Primary |
 | Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
+| Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

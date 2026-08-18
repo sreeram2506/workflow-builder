@@ -6,7 +6,7 @@ import {
   readRepeaterData,
   repeaterAfterWorkflowChange,
 } from './logic-node-rules';
-import { configurationFieldsFor } from './properties.schema';
+import { logicBuiltinPropertiesSchema } from './host-properties.schema';
 import type { WorkflowNode } from './workflow.models';
 
 function node(
@@ -111,8 +111,9 @@ describe('readRepeaterData', () => {
 
 describe('repeater Properties catalog', () => {
   it('has no dummy workflow options', () => {
-    expect(configurationFieldsFor('Repeater').find((f) => f.config_path === 'repeater.workflowId')?.options).toEqual(
-      [],
-    );
+    expect(
+      logicBuiltinPropertiesSchema('Repeater')!.sections[0]!.fields.find((f) => f.path === 'repeater.workflowId')
+        ?.options,
+    ).toEqual([]);
   });
 });

@@ -34,7 +34,7 @@ describe('RightSidebarComponent logic nodes', () => {
     facade.selectNodes(['n-condition']);
     const cmp = createExpanded();
     expect(cmp.form?.get('configuration.condition')?.value).toBe('payload.needsDelay === true');
-    expect(cmp.configFields.some((f) => f.config_path.includes('ignore_keys'))).toBe(false);
+    expect(cmp.configFields.some((f) => f.path.includes('ignore_keys'))).toBe(false);
     expect(cmp.boundNodeType).toBe('Condition');
   });
 
@@ -69,5 +69,99 @@ describe('RightSidebarComponent logic nodes', () => {
     expect(cmp.form?.get('label')?.disabled).toBe(true);
     expect(cmp.form?.get('label')?.value).toBe('true');
     expect(cmp.canSave).toBe(false);
+  });
+});
+
+describe('RightSidebarComponent host properties', () => {
+  let facade: WorkflowFacade;
+  let store: GraphStore;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [RightSidebarComponent],
+      providers: [provideRouter(routes)],
+    });
+    facade = TestBed.inject(WorkflowFacade);
+    facade.initialize();
+    store = TestBed.inject(GraphStore);
+    store.setDocument(TestBed.inject(MockWorkflowRepository).getSampleWorkflow(), {
+      skipHistory: true,
+      skipAutosave: true,
+    });
+  });
+
+  function createExpanded(): RightSidebarComponent {
+    const fixture = TestBed.createComponent(RightSidebarComponent);
+    fixture.componentRef.setInput('collapsed', false);
+    fixture.detectChanges();
+    return fixture.componentInstance;
+  }
+
+  it('renders host schema and Saves to path', () => {
+    store.patchNode('n-action', {
+      data: {
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'timeout', label: 'Timeout' }] }],
+        },
+        timeout: '5',
+      },
+    });
+    facade.selectNodes(['n-action']);
+    const cmp = createExpanded();
+    expect(cmp.form?.get('configuration.timeout')?.value).toBe('5');
+    cmp.form?.get('configuration.timeout')?.setValue('30');
+    cmp.form?.markAsDirty();
+    cmp.canSave = true;
+    cmp.onSaveNode();
+    expect(facade.nodes().find((n) => n.id === 'n-action')?.data['timeout']).toBe('30');
+  });
+
+  it('does not flatten taskMeta on Action without a schema', () => {
+    store.patchNode('n-action', {
+      data: { taskMeta: { foo: 1, nested: { a: true } } },
+    });
+    facade.selectNodes(['n-action']);
+    const cmp = createExpanded();
+    expect(cmp.configFields).toEqual([]);
+    expect(cmp.form?.get('configuration.foo')).toBeNull();
+    expect(cmp.form?.get('configuration.nested_a')).toBeNull();
+  });
+
+  it('leaves leftover ensoTask unused as a form source', () => {
+    store.patchNode('n-action', {
+      data: { ensoTask: { skill: 'x', nested: { a: 1 } } },
+    });
+    facade.selectNodes(['n-action']);
+    const cmp = createExpanded();
+    expect(cmp.configFields).toEqual([]);
+    expect(cmp.form?.get('enso')).toBeNull();
+    expect(cmp.form?.get('configuration.skill')).toBeNull();
+  });
+
+  it('unknown ui_component is a disabled text control', () => {
+    store.patchNode('n-action', {
+      data: {
+        propertiesSchema: {
+          sections: [
+            {
+              fields: [
+                {
+                  type: 'text',
+                  path: 'custom',
+                  label: 'Custom',
+                  ui_component: 'HostCustomWidget',
+                },
+              ],
+            },
+          ],
+        },
+        custom: 'opaque',
+      },
+    });
+    facade.selectNodes(['n-action']);
+    const cmp = createExpanded();
+    const ctrl = cmp.form?.get('configuration.custom');
+    expect(ctrl?.value).toBe('opaque');
+    expect(ctrl?.disabled).toBe(true);
   });
 });

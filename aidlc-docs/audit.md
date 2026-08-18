@@ -4525,3 +4525,199 @@ Return a summary of files created/modified and any test failures you couldn't fi
 **Files**: aidlc-docs/operations/remove-apis-dummy-data-operations-placeholder.md
 
 ---
+## Workspace Detection — Generic host-driven Properties
+**Timestamp**: 2026-08-18T03:00:00Z
+**User Input**: "Work only in the workflow-builder repo.
+
+Start a new brownfield increment: generic host-driven Properties (not Enso-specific).
+
+## Why
+wb-right-sidebar is the only properties UI. Hosts (Enso and others) must configure dropped nodes without this package knowing Enso skillconfig, x_config, PlatformApi*, or configurations.
+
+Today (gaps):
+- If node.data.ensoTask exists, right-sidebar flattens it via collectEnsoTaskFields (enso-task-form.ts). That is Enso-shaped and not a real skill form.
+- Else it uses hardcoded NODE_TYPE_SCHEMAS in properties.schema.ts (Ignore Keys mock; Condition/Router/Repeater built-ins).
+- PaletteItem has taskMeta only; createWorkflowNodeFromPaletteItem copies it to data.ensoTask. There is no propertiesSchema on the palette item or node.
+- provideWorkflowBuilderUi already has features + catalog adapters. There is no properties/schema adapter.
+
+Follow existing embed style: host passes data in (like [palettes] / catalog). Package only renders and writes node.data.
+
+## Do this
+1. Add generic schema types (new domain file, not Enso names), e.g. sections[] + fields[] with:
+   type: text | number | boolean | select | multiselect | textarea
+   path, label, required, hidden, options, placeholder
+2. Host supply order (first win):
+   a) node.data.propertiesSchema (copied from palette on drop)
+   b) optional provideWorkflowBuilderUi({ properties }) adapter: given node → schema
+   c) fallback: current built-in Condition / Decision / Repeater schemas
+   d) Action/Trigger/etc with no schema: General only (label/subtitle/status). Do NOT show Ignore Keys mock. Do NOT flatten any blob.
+3. Extend PaletteItem + node.factory so optional propertiesSchema (and optional opaque metadata/taskMeta) copy onto the node on drop. Opaque blobs stay uninterpreted.
+4. wb-right-sidebar: if host schema present, render sections + fields with existing reactive forms + getAtPath/setAtPath. Save still patchNode. View mode still disables.
+5. Optional custom widgets: host can register ui_component id → renderer via provideWorkflowBuilderUi. Unknown widget: skip field or show disabled text; never crash; never special-case Enso types.
+6. Delete the flatten path: stop using collectEnsoTaskFields for the form. Rename/stop treating ensoTask as a form source. Keep storing host blob under a generic key if needed (e.g. data.taskMeta) but do not walk it.
+7. Update docs/workflow-builder-ui-embed.md with the properties schema + adapter (same tone as [palettes]/catalog). No Enso field names in the public API.
+
+## Constraints
+- Do not add Enso HTTP, x_config, skillconfig, configurations, PlatformApi widgets.
+- Do not ng-packagr, document I/O outputs, or change 100vh in this increment.
+- Do not break chrome flags, [palettes], Condition true/false edges, Router connector conditions.
+- Tests: schema render + save to path; omit schema → logic built-ins; Action with taskMeta blob does not flatten; unknown widget safe.
+- npm test / npm run build green.
+
+## Files to start from
+- src/app/features/shell/right-sidebar.component.ts
+- src/app/core/domain/properties.schema.ts
+- src/app/core/domain/enso-task-form.ts
+- src/app/core/domain/palette.catalog.ts
+- src/app/core/domain/node.factory.ts
+- src/app/core/ui-config/provide-workflow-builder-ui.ts
+- docs/workflow-builder-ui-embed.md"
+**AI Response**: "New increment. Workspace Detection: brownfield SPA; skip RE (scoped, no RE artifacts). Opened 9 RA questions. Awaiting answers. No application code."
+**Context**: INCEPTION Workspace Detection + Requirements Analysis questions — Generic host-driven Properties
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/requirements/host-properties-requirement-verification-questions.md then reply in chat (e.g. answered)."
+
+---
+## Requirements Analysis — Generic host-driven Properties (awaiting approval)
+**Timestamp**: 2026-08-18T03:16:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q9 (A,A,A,B,A,A,A,A,B). No contradictions. Wrote host-properties-requirements.md. Next stage User Stories. Awaiting Approve & Continue."
+**Context**: INCEPTION Requirements Analysis — Generic host-driven Properties
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=B · Q5=A · Q6=A · Q7=A · Q8=A · Q9=B
+**AI Prompt**: "REVIEW REQUIRED: Please examine the requirements document at: aidlc-docs/inception/requirements/host-properties-requirements.md. Request Changes or Approve & Continue to User Stories."
+
+---
+## User Stories Part 1 — Generic host-driven Properties (plan OPEN)
+**Timestamp**: 2026-08-18T03:20:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "RA approved. Assessment: Execute User Stories (Yes). Opened host-properties-story-generation-plan.md (5 questions). Awaiting answers then plan approval. No stories generated yet."
+**Context**: INCEPTION User Stories Part 1 — Generic host-driven Properties
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/host-properties-story-generation-plan.md then reply in chat (e.g. answered)."
+
+---
+## User Stories Part 1 — plan answers locked; awaiting approval
+**Timestamp**: 2026-08-18T03:23:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q5 all A. No contradictions. Locked hybrid 4 Gherkin stories in host-properties-stories.md. Awaiting Approve & Continue to generate stories."
+**Context**: INCEPTION User Stories Part 1 — Generic host-driven Properties
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the story generation plan at: aidlc-docs/inception/plans/host-properties-story-generation-plan.md. Request Changes or Approve & Continue to generate stories."
+
+---
+## User Stories Part 2 — generated; awaiting approval
+**Timestamp**: 2026-08-18T03:24:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Generated US-HP-01..04 and additive personas.md. Awaiting Approve & Continue to Workflow Planning."
+**Context**: INCEPTION User Stories Part 2 — Generic host-driven Properties
+**AI Prompt**: "REVIEW REQUIRED: Please examine the user stories and personas at: aidlc-docs/inception/user-stories/host-properties-stories.md and aidlc-docs/inception/user-stories/personas.md. Request Changes or Approve & Continue to Workflow Planning."
+
+---
+## Workflow Planning — Generic host-driven Properties (awaiting Q1)
+**Timestamp**: 2026-08-18T03:27:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "User Stories approved. Wrote host-properties-execution-plan.md. Recommend App Design + 1 unit U-HP-01; skip NFR/Infra; FD then CG then Build/Test. Awaiting Q1."
+**Context**: INCEPTION Workflow Planning — Generic host-driven Properties
+**AI Prompt**: "REVIEW REQUIRED: Please examine the execution plan at: aidlc-docs/inception/plans/host-properties-execution-plan.md. Fill Q1 then Approve & Continue, Request Changes, or Add Skipped Stages."
+
+---
+## Workflow Planning approved; Application Design Part 1 OPEN
+**Timestamp**: 2026-08-18T03:32:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Recorded execution plan Q1=A. Opened host-properties-application-design-plan.md (5 questions). Awaiting answers. No design artifacts yet."
+**Context**: INCEPTION Application Design Part 1 — Generic host-driven Properties
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/host-properties-application-design-plan.md then reply in chat (e.g. answered)."
+
+---
+## Application Design — artifacts generated; awaiting approval
+**Timestamp**: 2026-08-18T03:34:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q5 all A. Generated host-properties components, methods, services, dependency, summary. Awaiting Approve & Continue to Units Generation."
+**Context**: INCEPTION Application Design Part 2 — Generic host-driven Properties
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the application design artifacts at: aidlc-docs/inception/application-design/. Request Changes or Approve & Continue to Units Generation."
+
+---
+## Units Generation Part 1 — Generic host-driven Properties (plan OPEN)
+**Timestamp**: 2026-08-18T03:36:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Application Design approved. Opened host-properties-unit-of-work-plan.md (4 questions). Proposed 1 unit U-HP-01. Awaiting answers. No unit artifacts yet."
+**Context**: INCEPTION Units Generation Part 1 — Generic host-driven Properties
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/host-properties-unit-of-work-plan.md then reply in chat (e.g. answered)."
+
+---
+## Units Generation Part 1 — plan answers locked; awaiting approval
+**Timestamp**: 2026-08-18T03:38:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q4 all A. One unit U-HP-01; FD then CG then Build/Test; change in place; same stream. Awaiting Approve & Continue to generate unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — Generic host-driven Properties
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A
+**AI Prompt**: "Unit of work plan complete. Review the plan in aidlc-docs/inception/plans/host-properties-unit-of-work-plan.md. Ready to proceed to generation?"
+
+---
+## Units Generation Part 2 — generated; awaiting approval
+**Timestamp**: 2026-08-18T03:40:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Generated host-properties-unit-of-work.md, dependency, story-map. Single unit U-HP-01. Awaiting Approve & Continue to CONSTRUCTION Functional Design."
+**Context**: INCEPTION Units Generation Part 2 — Generic host-driven Properties
+**AI Prompt**: "REVIEW REQUIRED: Please examine the units generation artifacts at: aidlc-docs/inception/application-design/. Request Changes or Approve & Continue to CONSTRUCTION PHASE."
+
+---
+## U-HP-01 Functional Design Part 1 — plan OPEN
+**Timestamp**: 2026-08-18T03:41:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Units approved. Opened u-hp-01-host-properties-functional-design-plan.md (7 questions). NFR/Infra skipped. Awaiting answers. No FD artifacts yet."
+**Context**: CONSTRUCTION Functional Design Part 1 — U-HP-01
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/construction/plans/u-hp-01-host-properties-functional-design-plan.md then reply in chat (e.g. answered)."
+
+---
+## U-HP-01 Functional Design — artifacts generated; awaiting approval
+**Timestamp**: 2026-08-18T03:44:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q7 all A. Wrote FD artifacts (logic, rules, entities, frontend, P-HP-01..03). NFR/Infra skipped. Awaiting Continue to Next Stage (Code Generation)."
+**Context**: CONSTRUCTION Functional Design Part 2 — U-HP-01
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A · Q6=A · Q7=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the functional design artifacts at: aidlc-docs/construction/u-hp-01-host-properties/functional-design/. Request Changes or Continue to Next Stage (Code Generation)."
+
+---
+## U-HP-01 Code Generation Part 1 — plan OPEN
+**Timestamp**: 2026-08-18T03:46:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "FD approved. NFR/Infra skipped. Opened u-hp-01-host-properties-code-generation-plan.md (12 steps). Awaiting plan approval before Part 2."
+**Context**: CONSTRUCTION Code Generation Part 1 — U-HP-01
+**AI Prompt**: "REVIEW REQUIRED: Please examine the code generation plan at: aidlc-docs/construction/plans/u-hp-01-host-properties-code-generation-plan.md. Request Changes or Approve & Continue to generate code."
+
+---
+## U-HP-01 Code Generation Part 2 — generated; awaiting approval
+**Timestamp**: 2026-08-18T04:10:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "CG plan approved. Executed 12-step Part 2: generic schema + resolver, palette/factory taskMeta copy, properties adapter, sidebar render/Save, deleted flatten, embed docs. npm test 272 passed; npm run build success (budget warnings). Awaiting Approve & Continue to Build and Test."
+**Context**: CONSTRUCTION Code Generation Part 2 — U-HP-01
+**Verification**: npm test 272 passed / 38 files; npm run build success (existing budget warnings)
+**AI Prompt**: "REVIEW REQUIRED: Please examine the generated code at workspace root and aidlc-docs/construction/u-hp-01-host-properties/code/. Request Changes or Continue to Next Stage (Build and Test)."
+
+---
+## U-HP-01 Build and Test — instructions generated; awaiting approval
+**Timestamp**: 2026-08-18T04:12:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "CG approved. Wrote build/unit/integration/performance/security instructions and summary for U-HP-01. Build success; 272 unit tests passed. Awaiting Approve & Continue to Operations placeholder."
+**Context**: CONSTRUCTION Build and Test — U-HP-01
+**Build Status**: Success
+**Test Status**: Pass (272 / 38 files)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- security-test-instructions.md
+- build-and-test-summary.md
+**AI Prompt**: "REVIEW REQUIRED: Please examine the build and test summary at: aidlc-docs/construction/build-and-test/build-and-test-summary.md. Request Changes or Approve & Continue to Operations."
+
+---
+## Operations placeholder — Generic host-driven Properties COMPLETE
+**Timestamp**: 2026-08-18T04:15:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Build and Test approved. Wrote aidlc-docs/operations/host-properties-operations-placeholder.md. Increment U-HP-01 complete. Workflow ends (Operations not implemented in this AI-DLC version)."
+**Context**: OPERATIONS placeholder — Generic host-driven Properties
+**Files Generated**:
+- aidlc-docs/operations/host-properties-operations-placeholder.md
+
+---

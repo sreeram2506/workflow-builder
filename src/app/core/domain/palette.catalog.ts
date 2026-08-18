@@ -1,3 +1,4 @@
+import type { HostPropertiesSchema } from './host-properties.schema';
 import type { NodeType } from './workflow.models';
 
 /** Category id is a stable slug (static: flow|logic|… or enso user_category slug). */
@@ -21,6 +22,8 @@ export interface PaletteItem {
   iconPath?: string;
   /** Host extras copied onto the dropped node. */
   metadata?: Record<string, unknown>;
+  /** Host properties schema copied onto the dropped node as `data.propertiesSchema`. */
+  propertiesSchema?: HostPropertiesSchema;
 }
 
 export interface PaletteCategory {

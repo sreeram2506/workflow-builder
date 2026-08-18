@@ -105,6 +105,60 @@ Omit `catalog.solution` / `catalog.agent` and omit `[palettes]` → empty-remote
 
 Error copy never includes access tokens or the phrase “mock agents”.
 
+## Properties schema (provider + palette)
+
+Hosts configure dropped-node Properties with a generic schema. This package only renders and writes `node.data`. It does not know host-specific config layouts.
+
+First-win order:
+
+1. **`node.data.propertiesSchema`** — a plain object (including `{}`) copied from the palette item on drop. `{}` still wins; it is not a fall-through to built-ins.
+2. **`provideWorkflowBuilderUi({ properties: { schemaFor } })`** — sync adapter. Throw or a non-object return is treated as no adapter.
+3. **Built-ins** — Condition expression, Repeater workflow/version/pause (empty option lists), Decision empty.
+4. **Else** — General only (label, subtitle, status).
+
+There is no instance `[properties]` input.
+
+```typescript
+provideWorkflowBuilderUi({
+  properties: {
+    schemaFor: (node) => {
+      const fromHost = hostSchemaFor(node);
+      return fromHost ?? null;
+    },
+  },
+});
+```
+
+```typescript
+const palettes: PaletteItem[] = [
+  {
+    key: 'timeout-action',
+    type: 'Action',
+    label: 'Timeout Action',
+    description: 'Host-supplied action',
+    categoryId: 'flow',
+    taskMeta: { taskId: 't-1' },
+    propertiesSchema: {
+      sections: [
+        {
+          title: 'Limits',
+          fields: [
+            { type: 'number', path: 'timeout', label: 'Timeout', required: true },
+            { type: 'text', path: 'taskMeta.note', label: 'Note' },
+          ],
+        },
+      ],
+    },
+  },
+];
+```
+
+Field `path` is relative to `node.data` (hosts may use `taskMeta.foo`). Built-in field types: `text`, `number`, `boolean`, `select`, `multiselect`, `textarea`. Unknown `ui_component` values render as disabled text — this package does not load host widgets.
+
+Optional `taskMeta` on a palette item is copied onto `node.data.taskMeta` as an opaque blob. Properties does not walk it into fields.
+
+Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed examples.
+
 ## Parent template inputs (Syncfusion-style)
 
 ### Chrome — `[ui]`
@@ -190,6 +244,8 @@ Optional library fields on palette items and default-agent cards:
 - `iconUrl` — `https:`, `/…`, `./…`, or raster `data:image/png|jpeg|gif|webp`. Rejected values (`javascript:`, `http:`, `file:`, `../`, SVG data) are dropped. URL wins over `iconPath`.
 - `iconPath` — SVG path `d` (viewBox `0 0 24 24`) when there is no usable URL.
 - `metadata` — plain object copied onto the dropped node as `data.metadata`. Not shown in the library or Properties.
+- `taskMeta` — opaque object copied onto the dropped node as `data.taskMeta`. Not flattened into Properties fields.
+- `propertiesSchema` — plain object copied onto the dropped node as `data.propertiesSchema`. Wins for that node’s Properties form (see Properties schema above).
 
 If an image fails to load, that card falls back to `iconPath` or the type glyph. On drop, the same `iconUrl` / `iconPath` are copied onto `node.data` so the canvas node shows the same icon (inside the Condition / Router / Repeater frame, or in the agent avatar).
 

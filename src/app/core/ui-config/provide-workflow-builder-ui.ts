@@ -6,6 +6,10 @@ import {
   WORKFLOW_BUILDER_CATALOG_SOLUTION,
   type WorkflowBuilderCatalogAdapter,
 } from './catalog-adapter';
+import {
+  WORKFLOW_BUILDER_PROPERTIES,
+  type WorkflowBuilderPropertiesAdapter,
+} from './properties-adapter';
 
 export interface ProvideWorkflowBuilderUiOptions {
   features?: UiFeaturesPartial;
@@ -13,6 +17,7 @@ export interface ProvideWorkflowBuilderUiOptions {
     solution?: WorkflowBuilderCatalogAdapter;
     agent?: WorkflowBuilderCatalogAdapter;
   };
+  properties?: WorkflowBuilderPropertiesAdapter;
 }
 
 /** Host override layer — wins over JSON/defaults (FR-UI-02). Catalog tokens are provider-only. */
@@ -35,6 +40,12 @@ export function provideWorkflowBuilderUi(
     providers.push({
       provide: WORKFLOW_BUILDER_CATALOG_AGENT,
       useValue: options.catalog.agent,
+    });
+  }
+  if (options.properties) {
+    providers.push({
+      provide: WORKFLOW_BUILDER_PROPERTIES,
+      useValue: options.properties,
     });
   }
   return makeEnvironmentProviders(providers);

@@ -19,21 +19,18 @@ import {
 import { Subscription } from 'rxjs';
 import { getAtPath, setAtPath } from '../../core/domain/config-path';
 import {
-  coerceDynamicValue,
-  collectEnsoTaskFields,
-  displayDynamicValue,
-  writeEnsoFieldValue,
-  type DynamicFieldSpec,
-} from '../../core/domain/enso-task-form';
-import {
-  NODE_STATUS_OPTIONS,
-  configurationFieldsFor,
-  controlKeyForPath,
-  type XpmsFieldDescriptor,
-} from '../../core/domain/properties.schema';
-import {
-  isRouterRepeaterLabelUnique,
-} from '../../core/domain/logic-node-rules';
+  coerceHostFieldValue,
+  displayHostFieldValue,
+  isKnownUiComponent,
+  optionLabel,
+  optionValue,
+  visibleHostSections,
+  type HostPropertiesField,
+  type HostPropertiesSection,
+} from '../../core/domain/host-properties.schema';
+import { resolveHostPropertiesSchema } from '../../core/domain/host-properties.resolve';
+import { NODE_STATUS_OPTIONS, controlKeyForPath } from '../../core/domain/properties.schema';
+import { isRouterRepeaterLabelUnique } from '../../core/domain/logic-node-rules';
 import {
   SIDEBAR_WIDTH_RIGHT_DEFAULT,
   clampSidebarWidth,
@@ -46,6 +43,7 @@ import type {
   WorkflowNode,
 } from '../../core/domain/workflow.models';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { WORKFLOW_BUILDER_PROPERTIES } from '../../core/ui-config/properties-adapter';
 
 type PanelMode = 'empty' | 'node' | 'edge';
 type EdgeKind = 'connection' | 'connector' | 'condition-out';
@@ -244,98 +242,80 @@ function routerRepeaterUniqueValidator(facade: WorkflowFacade, excludeId: string
                   </label>
                 </section>
 
-                @if (ensoFields.length > 0) {
-                  <section class="section" formGroupName="enso">
-                    <h3>Configuration</h3>
-                    @for (field of ensoFields; track field.path) {
-                      <label class="field">
-                        <span class="field-label">{{ field.label }}</span>
-                        @if (field.kind === 'textarea' || field.kind === 'json') {
-                          <textarea rows="4" [formControlName]="ensoControlKey(field)"></textarea>
-                        } @else if (field.kind === 'boolean') {
-                          <select [formControlName]="ensoControlKey(field)">
-                            <option value="true">true</option>
-                            <option value="false">false</option>
-                          </select>
-                        } @else {
-                          <input type="text" [formControlName]="ensoControlKey(field)" />
-                        }
-                      </label>
-                    }
-                  </section>
-                } @else if (boundNodeType === 'Condition') {
+                @for (section of hostSections; track $index) {
                   <section class="section" formGroupName="configuration">
-                    <h3>Condition</h3>
-                    <label class="field">
-                      <span class="field-label">Condition</span>
-                      <textarea
-                        rows="3"
-                        formControlName="condition"
-                        placeholder="Enter Condition"
-                        data-testid="properties-condition-input"
-                      ></textarea>
-                      @if (form.get('configuration.condition')?.invalid && form.get('configuration.condition')?.touched) {
-                        <span class="field-error">Condition is required</span>
-                      }
-                    </label>
-                  </section>
-                } @else if (boundNodeType === 'Repeater') {
-                  <section class="section" formGroupName="configuration">
-                    <h3>Repeater</h3>
-                    <label class="field">
-                      <span class="field-label">Workflow/Agent</span>
-                      <select formControlName="repeater_workflowId" data-testid="properties-repeater-workflow">
-                        <option value="">Select workflow</option>
-                        @for (wf of repeaterWorkflows; track wf.id) {
-                          <option [value]="wf.id">{{ wf.name }}</option>
-                        }
-                      </select>
-                      @if (
-                        form.get('configuration.repeater_workflowId')?.invalid &&
-                        form.get('configuration.repeater_workflowId')?.touched
-                      ) {
-                        <span class="field-error">Workflow/Agent is required</span>
-                      }
-                    </label>
-                    <label class="field">
-                      <span class="field-label">Workflow/Agent Version</span>
-                      <select formControlName="repeater_versionId" data-testid="properties-repeater-version">
-                        <option value="">Select version</option>
-                        @for (ver of repeaterVersionOptions; track ver.id) {
-                          <option [value]="ver.id">{{ ver.name }}</option>
-                        }
-                      </select>
-                      @if (
-                        form.get('configuration.repeater_versionId')?.invalid &&
-                        form.get('configuration.repeater_versionId')?.touched
-                      ) {
-                        <span class="field-error">Version is required</span>
-                      }
-                    </label>
-                    <label class="check-field">
-                      <input
-                        type="checkbox"
-                        formControlName="repeater_is_paused"
-                        data-testid="properties-repeater-paused"
-                      />
-                      <span class="field-label">Pause</span>
-                    </label>
-                  </section>
-                } @else if (configFields.length > 0) {
-                  <section class="section" formGroupName="configuration">
-                    <h3>Configuration</h3>
-                    @for (field of configFields; track field.config_path) {
-                      <label class="field">
-                        <span class="field-label">{{ field.name }}</span>
-                        @if (field.description) {
-                          <span class="field-help">{{ field.description }}</span>
-                        }
-                        <select [formControlName]="controlKey(field)">
-                          @for (opt of field.options; track $index) {
-                            <option [value]="stringOption(opt)">{{ stringOption(opt) }}</option>
+                    <h3>{{ section.title || 'Configuration' }}</h3>
+                    @for (field of section.fields; track field.path) {
+                      @if (field.type === 'boolean' && !usesUnknownWidget(field)) {
+                        <label class="check-field">
+                          <input
+                            type="checkbox"
+                            [formControlName]="controlKey(field)"
+                            [attr.data-testid]="fieldTestId(field)"
+                          />
+                          <span class="field-label">{{ field.label }}</span>
+                        </label>
+                      } @else {
+                        <label class="field">
+                          <span class="field-label">{{ field.label }}</span>
+                          @if (usesUnknownWidget(field)) {
+                            <input
+                              type="text"
+                              [formControlName]="controlKey(field)"
+                              [attr.data-testid]="fieldTestId(field)"
+                            />
+                          } @else if (field.type === 'textarea') {
+                            <textarea
+                              rows="3"
+                              [formControlName]="controlKey(field)"
+                              [placeholder]="field.placeholder ?? ''"
+                              [attr.data-testid]="fieldTestId(field)"
+                            ></textarea>
+                          } @else if (field.type === 'select') {
+                            <select
+                              [formControlName]="controlKey(field)"
+                              [attr.data-testid]="fieldTestId(field)"
+                            >
+                              @if (field.placeholder) {
+                                <option value="">{{ field.placeholder }}</option>
+                              }
+                              @for (opt of field.options ?? []; track optionValue(opt)) {
+                                <option [value]="optionValue(opt)">{{ optionLabel(opt) }}</option>
+                              }
+                            </select>
+                          } @else if (field.type === 'multiselect') {
+                            <select
+                              multiple
+                              [formControlName]="controlKey(field)"
+                              [attr.data-testid]="fieldTestId(field)"
+                            >
+                              @for (opt of field.options ?? []; track optionValue(opt)) {
+                                <option [value]="optionValue(opt)">{{ optionLabel(opt) }}</option>
+                              }
+                            </select>
+                          } @else if (field.type === 'number') {
+                            <input
+                              type="number"
+                              [formControlName]="controlKey(field)"
+                              [placeholder]="field.placeholder ?? ''"
+                              [attr.data-testid]="fieldTestId(field)"
+                            />
+                          } @else {
+                            <input
+                              type="text"
+                              [formControlName]="controlKey(field)"
+                              [placeholder]="field.placeholder ?? ''"
+                              [attr.data-testid]="fieldTestId(field)"
+                            />
                           }
-                        </select>
-                      </label>
+                          @if (
+                            form.get('configuration.' + controlKey(field))?.invalid &&
+                            form.get('configuration.' + controlKey(field))?.touched
+                          ) {
+                            <span class="field-error">{{ field.label }} is required</span>
+                          }
+                        </label>
+                      }
                     }
                   </section>
                 }
@@ -516,19 +496,20 @@ export class RightSidebarComponent {
   readonly facade = inject(WorkflowFacade);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly propertiesAdapter = inject(WORKFLOW_BUILDER_PROPERTIES, { optional: true });
 
   readonly statusOptions = NODE_STATUS_OPTIONS;
+  readonly optionValue = optionValue;
+  readonly optionLabel = optionLabel;
 
   mode: PanelMode = 'empty';
   edgeKind: EdgeKind = 'connection';
   boundNodeType: NodeType | null = null;
   form: FormGroup | null = null;
-  configFields: XpmsFieldDescriptor[] = [];
-  ensoFields: DynamicFieldSpec[] = [];
+  hostSections: HostPropertiesSection[] = [];
+  configFields: HostPropertiesField[] = [];
   headerSubtitle = 'Select a node or connection';
   canSave = false;
-  readonly repeaterWorkflows: readonly { id: string; name: string }[] = [];
-  repeaterVersionOptions: { id: string; name: string }[] = [];
 
   private boundNodeId: string | null = null;
   private boundEdgeId: string | null = null;
@@ -606,16 +587,28 @@ export class RightSidebarComponent {
     });
   }
 
-  controlKey(field: XpmsFieldDescriptor): string {
-    return controlKeyForPath(field.config_path);
-  }
-
-  ensoControlKey(field: DynamicFieldSpec): string {
+  controlKey(field: HostPropertiesField): string {
     return controlKeyForPath(field.path);
   }
 
-  stringOption(opt: unknown): string {
-    return String(opt);
+  usesUnknownWidget(field: HostPropertiesField): boolean {
+    return !isKnownUiComponent(field.ui_component);
+  }
+
+  fieldTestId(field: HostPropertiesField): string {
+    if (field.path === 'condition') {
+      return 'properties-condition-input';
+    }
+    if (field.path === 'repeater.workflowId') {
+      return 'properties-repeater-workflow';
+    }
+    if (field.path === 'repeater.versionId') {
+      return 'properties-repeater-version';
+    }
+    if (field.path === 'repeater.is_paused') {
+      return 'properties-repeater-paused';
+    }
+    return `properties-field-${controlKeyForPath(field.path)}`;
   }
 
   onSaveNode(): void {
@@ -677,13 +670,12 @@ export class RightSidebarComponent {
     this.form = null;
     this.mode = 'empty';
     this.configFields = [];
-    this.ensoFields = [];
+    this.hostSections = [];
     this.headerSubtitle = 'Select a node or connection';
     this.boundNodeId = null;
     this.boundEdgeId = null;
     this.boundNodeType = null;
     this.edgeKind = 'connection';
-    this.repeaterVersionOptions = [];
     this.boundMode = editorMode;
     this.canSave = false;
     if (!this.collapsed()) {
@@ -703,7 +695,7 @@ export class RightSidebarComponent {
     this.boundNodeId = null;
     this.boundNodeType = null;
     this.boundMode = editorMode;
-    this.ensoFields = [];
+    this.hostSections = [];
     this.configFields = [];
 
     const sourceType = this.facade.nodes().find((n) => n.id === edge.source)?.type;
@@ -775,59 +767,43 @@ export class RightSidebarComponent {
     const typeLabel = node.type === 'Decision' ? 'Router' : node.type;
     this.headerSubtitle = `${node.label} · ${typeLabel}`;
 
-    const ensoTask = node.data['ensoTask'];
-    const hasEnso =
-      ensoTask != null && typeof ensoTask === 'object' && !Array.isArray(ensoTask);
+    const schema = resolveHostPropertiesSchema(node, this.propertiesAdapter);
+    this.hostSections = schema ? visibleHostSections(schema) : [];
+    this.configFields = this.hostSections.flatMap((section) => section.fields);
 
     this.suppressDraftWrite = true;
-    if (hasEnso) {
-      const task = ensoTask as Record<string, unknown>;
-      this.ensoFields = collectEnsoTaskFields(task);
-      this.configFields = [];
-      const ensoGroup: Record<string, unknown> = {};
-      for (const field of this.ensoFields) {
-        const key = controlKeyForPath(field.path);
-        const value = getAtPath(task, field.path);
-        ensoGroup[key] = [displayDynamicValue(field.kind, value)];
+    const configGroup: Record<string, unknown> = {};
+    for (const field of this.configFields) {
+      const key = controlKeyForPath(field.path);
+      const raw = getAtPath(node.data, field.path);
+      const value = displayHostFieldValue(field, raw);
+      const validators = field.required && field.type !== 'boolean' ? [requiredTrimmed()] : [];
+      if (this.usesUnknownWidget(field)) {
+        configGroup[key] = [{ value, disabled: true }, validators];
+      } else {
+        configGroup[key] = [value, validators];
       }
-      this.form = this.fb.group({
-        label: [node.label, Validators.required],
-        subtitle: [node.subtitle],
-        status: [node.status as NodeStatus, Validators.required],
-        enso: this.fb.group(ensoGroup),
-      });
-    } else {
-      this.ensoFields = [];
-      this.configFields = configurationFieldsFor(node.type);
-      const configGroup: Record<string, unknown> = {};
-      for (const field of this.configFields) {
-        const key = controlKeyForPath(field.config_path);
-        const raw = getAtPath(node.data, field.config_path);
-        const value = raw === undefined ? field.value : raw;
-        const validators = field.required ? [requiredTrimmed()] : [];
-        if (field.data_type === 'boolean' && field.ui_component === 'checkbox') {
-          configGroup[key] = [value === true, validators];
-        } else {
-          configGroup[key] = [value == null ? '' : String(value), validators];
-        }
-      }
-      const labelValidators = [Validators.required];
-      if (node.type === 'Decision' || node.type === 'Repeater') {
-        labelValidators.push(routerRepeaterUniqueValidator(this.facade, node.id));
-      }
-      this.repeaterVersionOptions = [];
-      this.form = this.fb.group({
-        label: [node.label, labelValidators],
-        subtitle: [node.subtitle],
-        status: [node.status as NodeStatus, Validators.required],
-        configuration: this.fb.group(configGroup),
-      });
     }
+    const labelValidators = [Validators.required];
+    if (node.type === 'Decision' || node.type === 'Repeater') {
+      labelValidators.push(routerRepeaterUniqueValidator(this.facade, node.id));
+    }
+    this.form = this.fb.group({
+      label: [node.label, labelValidators],
+      subtitle: [node.subtitle],
+      status: [node.status as NodeStatus, Validators.required],
+      configuration: this.fb.group(configGroup),
+    });
 
     if (editorMode === 'view') {
       this.form.disable({ emitEvent: false });
     } else {
       this.form.enable({ emitEvent: false });
+      for (const field of this.configFields) {
+        if (this.usesUnknownWidget(field)) {
+          this.form.get(['configuration', controlKeyForPath(field.path)])?.disable({ emitEvent: false });
+        }
+      }
     }
     this.form.markAsPristine();
     this.canSave = false;
@@ -842,11 +818,10 @@ export class RightSidebarComponent {
     this.formSubs.add(this.form.statusChanges.subscribe(() => this.refreshCanSave(editorMode)));
     if (node.type === 'Repeater') {
       this.formSubs.add(
-        this.form.get(['configuration', 'repeater_workflowId'])?.valueChanges.subscribe((workflowId) => {
+        this.form.get(['configuration', 'repeater_workflowId'])?.valueChanges.subscribe(() => {
           if (this.suppressDraftWrite || !this.form) {
             return;
           }
-          this.repeaterVersionOptions = [];
           const versionCtrl = this.form.get(['configuration', 'repeater_versionId']);
           if (versionCtrl && String(versionCtrl.value ?? '') !== '') {
             versionCtrl.setValue('', { emitEvent: true });
@@ -894,34 +869,20 @@ export class RightSidebarComponent {
       label: string;
       subtitle: string;
       status: NodeStatus;
-      configuration?: Record<string, string | boolean>;
-      enso?: Record<string, string>;
+      configuration?: Record<string, string | boolean | string[] | number>;
     };
 
     let data: Record<string, unknown> = { ...baseline.data };
-    if (this.ensoFields.length > 0) {
-      let task =
-        data['ensoTask'] && typeof data['ensoTask'] === 'object' && !Array.isArray(data['ensoTask'])
-          ? { ...(data['ensoTask'] as Record<string, unknown>) }
-          : {};
-      for (const field of this.ensoFields) {
-        const key = controlKeyForPath(field.path);
-        const str = raw.enso?.[key] ?? '';
-        task = writeEnsoFieldValue(task, field.path, coerceDynamicValue(field.kind, str));
+    for (const field of this.configFields) {
+      if (field.hidden === true) {
+        continue;
       }
-      data = { ...data, ensoTask: task };
-    } else {
-      for (const field of this.configFields) {
-        const key = controlKeyForPath(field.config_path);
-        const str = raw.configuration?.[key];
-        const coerced =
-          field.data_type === 'boolean'
-            ? str === true || str === 'true'
-            : field.data_type === 'number'
-              ? Number(str)
-              : (str ?? field.value);
-        data = setAtPath(data, field.config_path, coerced);
+      const key = controlKeyForPath(field.path);
+      const str = raw.configuration?.[key];
+      if (field.type === 'number' && (str === '' || str == null)) {
+        continue;
       }
+      data = setAtPath(data, field.path, coerceHostFieldValue(field, str));
     }
 
     this.facade.setPropertiesDraft({

@@ -3,25 +3,25 @@ import { describe, expect, it } from 'vitest';
 import { getAtPath, setAtPath } from './config-path';
 import { ALLOWED_NODE_TYPES } from './workflow.models';
 import {
-  LOCKED_CONFIG_PATH,
   LOGIC_NODE_TYPES,
-  assertRegistryV1Invariant,
-  configurationFieldsFor,
+  configurationFieldPathsFor,
   isLogicNodeType,
 } from './properties.schema';
 
+const NESTED_PATH = 'config.data.flag';
+
 describe('config-path', () => {
   it('getAtPath reads nested values', () => {
-    const data = { config: { data: { ignore_keys_in_paragraph: true } } };
-    expect(getAtPath(data, LOCKED_CONFIG_PATH)).toBe(true);
+    const data = { config: { data: { flag: true } } };
+    expect(getAtPath(data, NESTED_PATH)).toBe(true);
     expect(getAtPath(data, 'missing.path')).toBeUndefined();
   });
 
   it('setAtPath writes immutably', () => {
     const data = { other: 1 };
-    const next = setAtPath(data, LOCKED_CONFIG_PATH, false);
+    const next = setAtPath(data, NESTED_PATH, false);
     expect(data).toEqual({ other: 1 });
-    expect(getAtPath(next, LOCKED_CONFIG_PATH)).toBe(false);
+    expect(getAtPath(next, NESTED_PATH)).toBe(false);
     expect(next['other']).toBe(1);
   });
 
@@ -42,21 +42,17 @@ describe('config-path', () => {
 });
 
 describe('properties.schema registry', () => {
-  it('non-logic types keep exactly one Configuration boolean at locked path', () => {
-    expect(assertRegistryV1Invariant()).toBe(true);
+  it('non-logic types have no built-in configuration fields', () => {
     for (const type of ALLOWED_NODE_TYPES.filter((t) => !isLogicNodeType(t))) {
-      const fields = configurationFieldsFor(type);
-      expect(fields).toHaveLength(1);
-      expect(fields[0]!.data_type).toBe('boolean');
-      expect(fields[0]!.config_path).toBe(LOCKED_CONFIG_PATH);
+      expect(configurationFieldPathsFor(type)).toEqual([]);
     }
   });
 
   it('logic types have type-specific configuration fields', () => {
     expect(LOGIC_NODE_TYPES).toEqual(['Condition', 'Decision', 'Repeater']);
-    expect(configurationFieldsFor('Condition').map((f) => f.config_path)).toEqual(['condition']);
-    expect(configurationFieldsFor('Decision')).toEqual([]);
-    expect(configurationFieldsFor('Repeater').map((f) => f.config_path)).toEqual([
+    expect(configurationFieldPathsFor('Condition')).toEqual(['condition']);
+    expect(configurationFieldPathsFor('Decision')).toEqual([]);
+    expect(configurationFieldPathsFor('Repeater')).toEqual([
       'repeater.workflowId',
       'repeater.versionId',
       'repeater.is_paused',

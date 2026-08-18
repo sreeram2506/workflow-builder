@@ -3,6 +3,7 @@ import { findPaletteItem, type PaletteItem } from './palette.catalog';
 import type { NodeType, WorkflowNode } from './workflow.models';
 import type { Point } from './viewport.math';
 import { sanitizeIconUrl } from './icon-url';
+import { isPlainObject, sanitizeHostPropertiesSchema } from './host-properties.schema';
 
 const ID_PATTERN = /^n-[A-Za-z]+-[a-z0-9]+$/;
 
@@ -46,10 +47,13 @@ export function createWorkflowNodeFromPaletteItem(
     paletteKey: item.key,
   };
   if (item.taskMeta) {
-    data['ensoTask'] = { ...item.taskMeta };
+    data['taskMeta'] = { ...item.taskMeta };
   }
   if (item.metadata) {
     data['metadata'] = { ...item.metadata };
+  }
+  if (isPlainObject(item.propertiesSchema)) {
+    data['propertiesSchema'] = sanitizeHostPropertiesSchema(item.propertiesSchema);
   }
   const iconUrl = sanitizeIconUrl(item.iconUrl);
   if (iconUrl) {

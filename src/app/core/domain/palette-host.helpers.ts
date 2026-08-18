@@ -1,4 +1,9 @@
 import {
+  isPlainObject,
+  sanitizeHostPropertiesSchema,
+  type HostPropertiesSchema,
+} from './host-properties.schema';
+import {
   BLANK_AGENT_TYPE,
   FEATURED_PALETTE_TYPES,
   blankAgentPaletteItem,
@@ -12,10 +17,6 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
 function isAllowedNodeType(value: unknown): value is NodeType {
   return typeof value === 'string' && (ALLOWED_NODE_TYPES as readonly string[]).includes(value);
 }
@@ -27,6 +28,7 @@ function applyHostExtras(
     iconPath?: string;
     metadata?: Record<string, unknown>;
     taskMeta?: Record<string, unknown>;
+    propertiesSchema?: HostPropertiesSchema;
   },
   copyTaskMeta: boolean,
 ): void {
@@ -42,6 +44,9 @@ function applyHostExtras(
   }
   if (copyTaskMeta && isPlainObject(rec['taskMeta'])) {
     target.taskMeta = { ...rec['taskMeta'] };
+  }
+  if (copyTaskMeta && isPlainObject(rec['propertiesSchema'])) {
+    target.propertiesSchema = sanitizeHostPropertiesSchema(rec['propertiesSchema']);
   }
 }
 

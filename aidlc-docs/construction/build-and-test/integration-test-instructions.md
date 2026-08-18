@@ -1,45 +1,45 @@
 # Integration Test Instructions
 
 ## Purpose
-U-RAD-01 catalog omit-without-adapter empty-remote, nested palettes overlay, Repeater empty pickers, and adapter-when-omit still working.
+U-HP-01 first-win Properties schema (palette copy → adapter → logic built-in → General only), Save along field `path`s, and no flatten of opaque blobs.
 
 This SPA has one construction unit. Automated checks live in the Vitest suite (`npm test`). There is no separate multi-service integration runner.
 
 ## Test Scenarios
 
-### Scenario 1: Omit palettes without adapter is empty-remote
-- **Description**: `loadCatalog` with no host palettes and no adapter returns empty-remote (not static featured, not Enso HTTP)
+### Scenario 1: Palette schema copy → Properties render → Save
+- **Description**: Dropped node with `propertiesSchema` shows those fields; Save writes the value at `path` on `node.data`
 - **Setup**: `npm test`
-- **Test Steps**: `enso-task-catalog.service.spec.ts`; `enso-task-catalog.service.pbt.spec.ts`
-- **Expected Results**: `emptyRemote === true`, `source === 'empty'`, `items` / `categories` empty, `error` null; no `Condition` / `Decision` / `Repeater` static featured keys
+- **Test Steps**: `node.factory.spec.ts`; `palette-host.helpers.spec.ts`; `right-sidebar.component.spec.ts` (schema Save)
+- **Expected Results**: schema on `data.propertiesSchema`; form control for the field; Save updates the path (e.g. `timeout`)
 - **Cleanup**: none
 
-### Scenario 2: Nested Skills Library uses the same palettes overlay
-- **Description**: `[palettes]` drives nested skill rows; omit or `[]` shows an empty list; Add uses the facade overlay path
+### Scenario 2: First-win order
+- **Description**: Plain-object `data.propertiesSchema` (including `{}`) wins; adapter throw is skipped; omit schema uses Condition/Repeater built-ins; Action with no schema is General only
 - **Setup**: `npm test`
-- **Test Steps**: `nested-skills-library.component.spec.ts`; `workflow.facade.spec.ts`
-- **Expected Results**: empty list when palettes omitted or `[]`; listed items Add via `addSkillFromPaletteItem`; `addSkillToAgent` does not look up deleted mock skills
+- **Test Steps**: `host-properties.resolve.spec.ts`; `host-properties.resolve.pbt.spec.ts`; `right-sidebar.component.spec.ts`
+- **Expected Results**: `{}` is not Condition built-in; adapter throw still has Condition expression; Action + `taskMeta` has empty `configFields`
 - **Cleanup**: none
 
-### Scenario 3: Repeater pickers have no dummy workflows
-- **Description**: Workflow/version option lists are empty; existing `repeater.workflowId` / `versionId` on a node are not cleared by the catalog deletion
+### Scenario 3: Opaque blobs are not flattened
+- **Description**: `taskMeta` and leftover `ensoTask` are not walked into form fields
 - **Setup**: `npm test`
-- **Test Steps**: `logic-node-rules.spec.ts`; right-sidebar Repeater option lists in `right-sidebar.component.ts`
-- **Expected Results**: no dummy workflow names in options; schema `options: []`
+- **Test Steps**: `right-sidebar.component.spec.ts`; `host-properties.resolve.pbt.spec.ts` (P-HP-03)
+- **Expected Results**: no `enso` form group; no controls for nested blob keys
 - **Cleanup**: none
 
-### Scenario 4: Adapter-when-omit still works (U-PAL-02)
-- **Description**: Host adapters on omit still load; adapter **failure** still uses static fallback plus banner (not empty-remote)
+### Scenario 4: Logic chrome unchanged
+- **Description**: Condition true/false edges, Router connectors, Repeater existing ids still bind
 - **Setup**: `npm test`
-- **Test Steps**: existing adapter success / empty / failure cases in `enso-task-catalog.service.spec.ts`
-- **Expected Results**: success maps adapter items; failure is `errorLoad` + static catalog, not `source: 'empty'`
+- **Test Steps**: `right-sidebar.component.spec.ts` logic-nodes describe; `logic-node-rules.spec.ts`
+- **Expected Results**: Condition expression present when schema omitted; Repeater keeps `wf-claims-intake` / `v1`; connector name/condition required; condition-out label read-only
 - **Cleanup**: none
 
-### Scenario 5: Default SPA empty library (manual)
-- **Description**: Serve without `[palettes]` and without adapters
-- **Setup**: `npm start` (no `/enso-api` proxy)
-- **Test Steps**: Open the default app; inspect left library / featured strip
-- **Expected Results**: empty-remote UI (`palette-empty-remote`); featured strip hidden; no Enso network calls
+### Scenario 5: Embed Properties supply (manual)
+- **Description**: Host supplies palette `propertiesSchema` and/or `provideWorkflowBuilderUi({ properties: { schemaFor } })`
+- **Setup**: `npm start`; see `docs/workflow-builder-ui-embed.md`
+- **Test Steps**: Drop a host Action with schema; select it; edit a field; Save. Repeat with adapter-only schema (no `propertiesSchema` on the node).
+- **Expected Results**: General always visible; host fields render; Save persists on `node.data`; unknown `ui_component` is disabled text
 - **Cleanup**: stop `ng serve` if started only for this stage
 
 ## Setup Integration Test Environment
@@ -49,10 +49,10 @@ This SPA has one construction unit. Automated checks live in the Vitest suite (`
 npm start
 ```
 
-No backend, proxy, or catalog token is required.
+No backend is required.
 
 ### 2. Configure Service Endpoints
-None. Catalog HTTP URLs were removed.
+None. Properties adapter is in-process (`schemaFor`).
 
 ## Run Integration Tests
 
@@ -62,7 +62,7 @@ npm test
 ```
 
 ### 2. Verify Service Interactions
-See `docs/workflow-builder-ui-embed.md` (omit without adapter = empty-remote; adapter-when-omit kept).
+See `docs/workflow-builder-ui-embed.md` (first-win; paths on `node.data`; opaque `taskMeta`).
 
 ### 3. Cleanup
 Stop `ng serve` if started only for this stage.

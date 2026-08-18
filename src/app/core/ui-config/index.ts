@@ -43,6 +43,10 @@ export {
   type WorkflowBuilderCatalogAdapter,
 } from './catalog-adapter';
 export {
+  WORKFLOW_BUILDER_PROPERTIES,
+  type WorkflowBuilderPropertiesAdapter,
+} from './properties-adapter';
+export {
   provideWorkflowBuilderUi,
   type ProvideWorkflowBuilderUiOptions,
 } from './provide-workflow-builder-ui';
