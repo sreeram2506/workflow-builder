@@ -1,4 +1,17 @@
-import { Component, computed, effect, inject, input } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  OnDestroy,
+  Output,
+  computed,
+  effect,
+  inject,
+  input,
+  untracked,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, debounceTime } from 'rxjs';
 import {
   createEffectiveUiReader,
   mergeInstanceUiFeatures,
@@ -8,6 +21,7 @@ import {
 } from '../../core/ui-config';
 import type { DefaultAgentCard } from '../../core/ui-config/ui-features.types';
 import type { PaletteItem } from '../../core/domain/palette.catalog';
+import type { WorkflowDocument } from '../../core/domain/workflow.models';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { AgentTabsComponent } from './agent-tabs.component';
 import { ChromeShortcutsDirective } from './chrome-shortcuts.directive';
@@ -85,10 +99,16 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
     </div>
   `,
   styles: `
+    :host {
+      display: block;
+      height: 100%;
+      min-height: 0;
+    }
     .shell {
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      height: 100%;
+      min-height: 0;
       background: var(--wb-bg-app);
     }
     .error-banner {
@@ -135,13 +155,21 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
     }
   `,
 })
-export class ShellLayoutComponent {
+export class ShellLayoutComponent implements OnDestroy {
   readonly facade = inject(WorkflowFacade);
   readonly uiConfig = inject(UiConfigService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changeTicks = new Subject<void>();
   /** Instance chrome overlay (omit = no overlay). */
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
   readonly defaultAgents = input<DefaultAgentCard[] | undefined>();
+  /** Host document to load. Omit/undefined keeps SPA initialize(). */
+  readonly document = input<unknown>(undefined);
+
+  @Output() readonly documentChange = new EventEmitter<WorkflowDocument>();
+  @Output() readonly save = new EventEmitter<WorkflowDocument>();
+  @Output() readonly run = new EventEmitter<WorkflowDocument>();
 
   readonly effectiveFeatures = computed(() =>
     mergeInstanceUiFeatures(this.uiConfig.features(), this.ui()),
@@ -149,6 +177,15 @@ export class ShellLayoutComponent {
   readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
 
   constructor() {
+    this.facade.registerInstancePersist({
+      saveObserved: () => this.save.observed,
+      emitSave: (doc) => this.save.emit(doc),
+      runObserved: () => this.run.observed,
+      emitRun: (doc) => this.run.emit(doc),
+    });
+    this.changeTicks.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.emitDocumentChange();
+    });
     effect(() => {
       const features = this.effectiveFeatures();
       this.facade.setAgentTabsChromeEnabled(features.agentTabs.enabled);
@@ -158,5 +195,35 @@ export class ShellLayoutComponent {
         this.facade.setChromeInsetTop(16);
       }
     });
+    effect(() => {
+      const raw = this.document();
+      if (raw === undefined) {
+        return;
+      }
+      untracked(() => this.facade.loadDocument(raw));
+    });
+    effect(() => {
+      const rev = this.facade.documentRevision();
+      if (rev > 0) {
+        untracked(() => this.emitDocumentChange());
+      }
+    });
+    effect(() => {
+      if (this.facade.dirty()) {
+        this.changeTicks.next();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.facade.registerInstancePersist(null);
+  }
+
+  private emitDocumentChange(): void {
+    const doc = this.facade.getDocument();
+    if (!doc) {
+      return;
+    }
+    this.documentChange.emit(structuredClone(doc));
   }
 }

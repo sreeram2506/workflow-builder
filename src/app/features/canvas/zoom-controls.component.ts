@@ -17,7 +17,7 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
             <button
               type="button"
               class="z-btn icon"
-              (click)="facade.saveDownload()"
+              (click)="facade.requestSave()"
               title="Save"
               aria-label="Save"
             >
@@ -80,7 +80,7 @@ import { ImportWorkflowDialogComponent } from '../shell/import-workflow-dialog.c
               <button
                 type="button"
                 class="z-btn icon"
-                (click)="facade.startRun()"
+                (click)="facade.requestRun()"
                 title="Run simulation"
                 aria-label="Run simulation"
               >

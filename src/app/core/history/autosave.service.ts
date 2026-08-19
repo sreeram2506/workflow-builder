@@ -10,6 +10,8 @@ export class AutoSaveService {
   private readonly mutations$ = new Subject<void>();
 
   readonly dirty = signal(false);
+  /** Host contract dirty — does not auto-clear after the autosave debounce. */
+  readonly hostDirty = signal(false);
   readonly lastSavedAt = signal<string | null>(null);
 
   constructor() {
@@ -22,5 +24,13 @@ export class AutoSaveService {
   notifyMutation(): void {
     this.dirty.set(true);
     this.mutations$.next();
+  }
+
+  markHostDirty(): void {
+    this.hostDirty.set(true);
+  }
+
+  markHostClean(): void {
+    this.hostDirty.set(false);
   }
 }

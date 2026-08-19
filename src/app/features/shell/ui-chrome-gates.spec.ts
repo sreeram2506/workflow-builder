@@ -67,7 +67,7 @@ describe('UI chrome gates (ShellLayout)', () => {
   it('Save shortcut no-ops when canvas.save is false', () => {
     ui.applyLayers({ canvas: { save: false } }, { kind: 'ok', message: null });
     fixture.detectChanges();
-    const spy = vi.spyOn(facade, 'saveDownload');
+    const spy = vi.spyOn(facade, 'requestSave');
     document.dispatchEvent(
       new KeyboardEvent('keydown', { key: 's', metaKey: true, bubbles: true }),
     );

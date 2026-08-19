@@ -54,7 +54,7 @@ export class ChromeShortcutsDirective {
         return;
       }
       event.preventDefault();
-      this.facade.saveDownload();
+      void this.facade.requestSave();
     }
   }
 }

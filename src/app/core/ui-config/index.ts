@@ -47,6 +47,10 @@ export {
   type WorkflowBuilderPropertiesAdapter,
 } from './properties-adapter';
 export {
+  WORKFLOW_BUILDER_PERSIST,
+  type WorkflowBuilderPersistAdapter,
+} from './persist-adapter';
+export {
   provideWorkflowBuilderUi,
   type ProvideWorkflowBuilderUiOptions,
 } from './provide-workflow-builder-ui';

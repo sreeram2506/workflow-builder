@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnDestroy, OnInit, computed, effect, inject, input } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, OnDestroy, OnInit, Output, computed, effect, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -9,6 +9,7 @@ import {
   type UiFeaturesPartial,
 } from '../../core/ui-config';
 import type { PaletteItem } from '../../core/domain/palette.catalog';
+import type { WorkflowDocument } from '../../core/domain/workflow.models';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { CanvasHostComponent } from '../canvas/canvas-host.component';
 import { AgentTabsComponent } from '../shell/agent-tabs.component';
@@ -105,10 +106,16 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
     </div>
   `,
   styles: `
+    :host {
+      display: block;
+      height: 100%;
+      min-height: 0;
+    }
     .shell {
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      height: 100%;
+      min-height: 0;
       background: var(--wb-bg-app);
     }
     .error-banner {
@@ -181,6 +188,8 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   /** Instance chrome overlay (omit = no overlay). Independent of solution shell. */
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
+  @Output() readonly save = new EventEmitter<WorkflowDocument>();
+  @Output() readonly run = new EventEmitter<WorkflowDocument>();
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   nodeId = '';
@@ -200,6 +209,12 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
+    this.facade.registerInstancePersist({
+      saveObserved: () => this.save.observed,
+      emitSave: (doc) => this.save.emit(doc),
+      runObserved: () => this.run.observed,
+      emitRun: (doc) => this.run.emit(doc),
+    });
     effect(() => {
       const features = this.effectiveFeatures();
       this.facade.setAgentTabsChromeEnabled(features.agentTabs.enabled);
@@ -222,6 +237,7 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.facade.registerInstancePersist(null);
     if (this.facade.editingAgentNodeId()) {
       this.facade.exitAgentCanvas();
     }

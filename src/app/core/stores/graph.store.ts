@@ -10,6 +10,8 @@ export interface GraphWriteOptions {
   skipAutosave?: boolean;
   /** When true, do not flip `saved` → `draft` on this write. */
   skipDirtyStatus?: boolean;
+  /** When true, do not mark host `dirty` (viewport pan). */
+  skipHostDirty?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -32,8 +34,8 @@ export class GraphStore {
     if (!doc) {
       return;
     }
-    // Viewport-only: skip history
-    this.commit({ ...doc, viewport: { ...viewport } }, { skipHistory: true });
+    // Viewport-only: skip history and host dirty (pan is not a committed graph edit).
+    this.commit({ ...doc, viewport: { ...viewport } }, { skipHistory: true, skipHostDirty: true });
   }
 
   moveNodes(ids: readonly string[], delta: { x: number; y: number }): void {
@@ -280,6 +282,9 @@ export class GraphStore {
     this.document.set(doc);
     if (!options.skipAutosave) {
       this.autoSave.notifyMutation();
+      if (!options.skipHostDirty) {
+        this.autoSave.markHostDirty();
+      }
     }
   }
 }

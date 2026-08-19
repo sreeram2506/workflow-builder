@@ -5,6 +5,7 @@ import {
   WORKFLOW_SCHEMA_VERSION,
   allowlistSerialized,
   parseWorkflowJson,
+  parseWorkflowUnknown,
   serializeWorkflow,
   toDownloadFilename,
 } from './workflow.serialize';
@@ -55,6 +56,23 @@ describe('workflow.serialize', () => {
   it('rejects invalid JSON and wrong schema', () => {
     expect(parseWorkflowJson('{').ok).toBe(false);
     expect(parseWorkflowJson(JSON.stringify({ schemaVersion: 99 })).ok).toBe(false);
+  });
+
+  it('parseWorkflowUnknown rejects non-objects without throwing', () => {
+    expect(parseWorkflowUnknown(null).ok).toBe(false);
+    expect(parseWorkflowUnknown(undefined).ok).toBe(false);
+    expect(parseWorkflowUnknown([]).ok).toBe(false);
+    expect(parseWorkflowUnknown(1).ok).toBe(false);
+    expect(parseWorkflowUnknown('nope').ok).toBe(false);
+  });
+
+  it('parses an in-memory document without schemaVersion', () => {
+    const parsed = parseWorkflowUnknown(SAMPLE_WORKFLOW);
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.document.id).toBe(SAMPLE_WORKFLOW.id);
+      expect(parsed.document.nodes.length).toBe(SAMPLE_WORKFLOW.nodes.length);
+    }
   });
 
   it('allowlist strips unknown top-level keys', () => {
@@ -148,9 +166,12 @@ describe('workflow.serialize', () => {
         };
         const parsed = parseWorkflowJson(serializeWorkflow(doc));
         expect(parsed.ok).toBe(true);
-        if (parsed.ok) {
+        const asObject = parseWorkflowUnknown(doc);
+        expect(asObject.ok).toBe(true);
+        if (parsed.ok && asObject.ok) {
           expect(parsed.document.nodes.length).toBe(doc.nodes.length);
           expect(parsed.document.edges.length).toBe(doc.edges.length);
+          expect(asObject.document.nodes.length).toBe(doc.nodes.length);
           expect(WORKFLOW_SCHEMA_VERSION).toBe(1);
         }
       }),

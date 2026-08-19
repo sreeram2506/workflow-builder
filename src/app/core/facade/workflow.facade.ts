@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { MockWorkflowRepository } from '../data/mock-workflow.repository';
@@ -62,12 +62,21 @@ import { AutoSaveService } from '../history/autosave.service';
 import { ClipboardService } from '../history/clipboard.service';
 import { HistoryService } from '../history/history.service';
 import { SerializationService } from '../history/serialization.service';
+import { parseWorkflowUnknown } from '../domain/workflow.serialize';
 import { RunSimulationService } from '../run/run-simulation.service';
 import { GraphStore } from '../stores/graph.store';
 import { UiStore } from '../stores/ui.store';
 import { ThemeApplicator } from '../theme/theme-applicator';
+import { WORKFLOW_BUILDER_PERSIST } from '../ui-config/persist-adapter';
 
 export type { LayoutMode };
+
+export interface InstancePersistHooks {
+  saveObserved: () => boolean;
+  emitSave: (doc: WorkflowDocument) => void;
+  runObserved: () => boolean;
+  emitRun: (doc: WorkflowDocument) => void;
+}
 
 const PASTE_OFFSET = 40;
 
@@ -100,8 +109,10 @@ export class WorkflowFacade {
   private readonly clipboard = inject(ClipboardService);
   private readonly runSim = inject(RunSimulationService);
   private readonly router = inject(Router);
+  private readonly persist = inject(WORKFLOW_BUILDER_PERSIST, { optional: true });
   /** Stashed solution document while GraphStore holds an agent nested canvas. */
   private solutionDocument: WorkflowDocument | null = null;
+  private instancePersist: InstancePersistHooks | null = null;
 
   readonly document = this.graph.document;
   readonly theme = this.ui.theme;
@@ -129,6 +140,8 @@ export class WorkflowFacade {
   readonly canUndo = this.history.canUndo;
   readonly canRedo = this.history.canRedo;
   readonly autoSaveDirty = this.autoSave.dirty;
+  readonly dirty = this.autoSave.hostDirty;
+  readonly documentRevision = signal(0);
 
   readonly workflowName = computed(() => this.graph.document()?.name ?? 'Untitled workflow');
   readonly workflowStatus = computed(() => this.graph.document()?.status ?? 'draft');
@@ -145,7 +158,13 @@ export class WorkflowFacade {
     this.history.clear();
     const doc = this.repo.getEmptyWorkflow();
     this.graph.setDocument(doc, { skipHistory: true, skipAutosave: true });
+    this.autoSave.markHostClean();
+    this.documentRevision.set(0);
     this.themeApplicator.apply(this.ui.theme());
+  }
+
+  registerInstancePersist(hooks: InstancePersistHooks | null): void {
+    this.instancePersist = hooks;
   }
 
   toggleTheme(): void {
@@ -176,6 +195,98 @@ export class WorkflowFacade {
 
   setPropertiesWidth(width: number): void {
     this.ui.setPropertiesWidth(width);
+  }
+
+  /**
+   * Load a host document. Invalid payloads keep the last good graph and never throw.
+   * Returns true on success.
+   */
+  loadDocument(raw: unknown): boolean {
+    try {
+      const parsed = parseWorkflowUnknown(raw);
+      if (!parsed.ok) {
+        this.setCanvasError(parsed.error);
+        return false;
+      }
+      if (this.ui.editingAgentNodeId()) {
+        this.exitAgentCanvas();
+      }
+      this.history.clear();
+      this.history.setSuppressRecording(true);
+      this.graph.setDocument(parsed.document, { skipHistory: true, skipAutosave: true });
+      this.history.setSuppressRecording(false);
+      this.solutionDocument = null;
+      this.clearSelection();
+      this.autoSave.markHostClean();
+      this.setCanvasError(null);
+      this.documentRevision.update((n) => n + 1);
+      return true;
+    } catch (err) {
+      this.history.setSuppressRecording(false);
+      this.setCanvasError(err instanceof Error ? err.message : 'Load failed');
+      return false;
+    }
+  }
+
+  /**
+   * Current solution document. Flushes nested canvas onto the solution agent first
+   * without exiting nested view.
+   */
+  getDocument(): WorkflowDocument | null {
+    if (this.ui.editingAgentNodeId()) {
+      this.flushAgentCanvasToSolution();
+      return this.solutionDocument ? structuredClone(this.solutionDocument) : null;
+    }
+    const doc = this.graph.document();
+    return doc ? structuredClone(doc) : null;
+  }
+
+  async requestSave(): Promise<void> {
+    try {
+      const doc = this.getDocument();
+      if (!doc) {
+        return;
+      }
+      if (this.instancePersist?.saveObserved()) {
+        this.instancePersist.emitSave(structuredClone(doc));
+        this.autoSave.markHostClean();
+        this.setCanvasStatus('Saved');
+        this.setCanvasError(null);
+        return;
+      }
+      if (this.persist?.save) {
+        await this.persist.save(structuredClone(doc));
+        this.autoSave.markHostClean();
+        this.setCanvasStatus('Saved');
+        this.setCanvasError(null);
+        return;
+      }
+      this.saveDownload();
+    } catch (err) {
+      this.setCanvasError(err instanceof Error ? err.message : 'Save failed');
+    }
+  }
+
+  async requestRun(): Promise<void> {
+    try {
+      const doc = this.getDocument();
+      if (!doc) {
+        return;
+      }
+      if (this.instancePersist?.runObserved()) {
+        this.instancePersist.emitRun(structuredClone(doc));
+        this.setCanvasError(null);
+        return;
+      }
+      if (this.persist?.run) {
+        await this.persist.run(structuredClone(doc));
+        this.setCanvasError(null);
+        return;
+      }
+      this.startRun();
+    } catch (err) {
+      this.setCanvasError(err instanceof Error ? err.message : 'Run failed');
+    }
   }
 
   setBootstrapError(message: string | null): void {
@@ -927,8 +1038,9 @@ export class WorkflowFacade {
           status: 'saved',
           updatedAt: new Date().toISOString(),
         },
-        { skipHistory: true },
+        { skipHistory: true, skipAutosave: true },
       );
+      this.autoSave.markHostClean();
       this.setCanvasStatus('Saved');
       this.setCanvasError(null);
     } catch (err) {

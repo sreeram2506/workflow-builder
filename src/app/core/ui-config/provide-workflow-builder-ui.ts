@@ -10,6 +10,10 @@ import {
   WORKFLOW_BUILDER_PROPERTIES,
   type WorkflowBuilderPropertiesAdapter,
 } from './properties-adapter';
+import {
+  WORKFLOW_BUILDER_PERSIST,
+  type WorkflowBuilderPersistAdapter,
+} from './persist-adapter';
 
 export interface ProvideWorkflowBuilderUiOptions {
   features?: UiFeaturesPartial;
@@ -18,6 +22,7 @@ export interface ProvideWorkflowBuilderUiOptions {
     agent?: WorkflowBuilderCatalogAdapter;
   };
   properties?: WorkflowBuilderPropertiesAdapter;
+  persist?: WorkflowBuilderPersistAdapter;
 }
 
 /** Host override layer — wins over JSON/defaults (FR-UI-02). Catalog tokens are provider-only. */
@@ -46,6 +51,12 @@ export function provideWorkflowBuilderUi(
     providers.push({
       provide: WORKFLOW_BUILDER_PROPERTIES,
       useValue: options.properties,
+    });
+  }
+  if (options.persist !== undefined) {
+    providers.push({
+      provide: WORKFLOW_BUILDER_PERSIST,
+      useValue: options.persist,
     });
   }
   return makeEnvironmentProviders(providers);

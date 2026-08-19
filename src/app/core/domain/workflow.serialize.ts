@@ -71,6 +71,18 @@ export function allowlistSerialized(raw: unknown): Record<string, unknown> | nul
   return out;
 }
 
+/** Parse a host `[document]` object or deserialized JSON. Never throws. */
+export function parseWorkflowUnknown(raw: unknown): ParseWorkflowResult {
+  const allowed = allowlistSerialized(raw);
+  if (!allowed) {
+    return { ok: false, error: 'Workflow must be an object' };
+  }
+  if (!('schemaVersion' in allowed)) {
+    allowed['schemaVersion'] = WORKFLOW_SCHEMA_VERSION;
+  }
+  return validateSerialized(allowed);
+}
+
 export function parseWorkflowJson(text: string): ParseWorkflowResult {
   let parsed: unknown;
   try {
@@ -78,11 +90,7 @@ export function parseWorkflowJson(text: string): ParseWorkflowResult {
   } catch {
     return { ok: false, error: 'Invalid JSON' };
   }
-  const allowed = allowlistSerialized(parsed);
-  if (!allowed) {
-    return { ok: false, error: 'Workflow must be a JSON object' };
-  }
-  return validateSerialized(allowed);
+  return parseWorkflowUnknown(parsed);
 }
 
 export function validateSerialized(raw: Record<string, unknown>): ParseWorkflowResult {

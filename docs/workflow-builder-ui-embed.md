@@ -24,6 +24,8 @@ export const appConfig: ApplicationConfig = {
 
 `provideWorkflowBuilderUi({ features })` supplies a deep-partial overlay. Omit the provider to use defaults + JSON only.
 
+Optional `persist.save` / `persist.run` are host callbacks (see [Document I/O and persist](#document-io-and-persist)). This increment does **not** require ng-packagr or an npm package.
+
 ## Merge order (precedence)
 
 1. **Built-in defaults** — every leaf `true`
@@ -178,6 +180,10 @@ Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed
   [ui]="ui"
   [palettes]="palettes"
   [defaultAgents]="defaultAgents"
+  [document]="document"
+  (documentChange)="onDocumentChange($event)"
+  (save)="onSave($event)"
+  (run)="onRun($event)"
 />
 ```
 
@@ -272,6 +278,60 @@ If an image fails to load, that card falls back to `iconPath` or the type glyph.
 Do not put access tokens in palette items, `metadata`, or embed examples.
 
 Optional `wb-nested-skills-library` accepts the same `[palettes]` overlay (search + Add via palette item). It is not mounted in `wb-agent-skills-shell`; the agent-shell left sidebar is the visible nested Skills Library.
+
+## Document I/O and persist
+
+Hosts load and read the **solution** document on `wb-shell-layout`. Nested `wb-agent-skills-shell` does not take `[document]` — the nested graph lives on the solution agent.
+
+```html
+<div class="host-panel">
+  <wb-shell-layout
+    [document]="document"
+    (documentChange)="onDocumentChange($event)"
+    (save)="onSave($event)"
+    (run)="onRun($event)"
+  />
+</div>
+```
+
+```css
+.host-panel {
+  height: 640px; /* host must supply a definite height */
+}
+```
+
+| Binding / API | Effect |
+|---|---|
+| Omit `[document]` | SPA `initialize()` empty canvas |
+| `[document]="doc"` | `loadDocument` — valid object replaces the graph |
+| Invalid `[document]` | Last good graph stays; non-secret canvas error; no throw to the host page |
+| `(documentChange)` | Structured clone after a successful load, and after committed graph edits (debounced ~500ms; not pan) |
+| `inject(WorkflowFacade).getDocument()` | Solution document; flushes nested canvas onto the agent first |
+| `inject(WorkflowFacade).dirty()` | True after committed edits; false after successful load or Save |
+| `(save)` / `(run)` | Instance outputs. If bound, Save/Run call these with `getDocument()` |
+| `provideWorkflowBuilderUi({ persist: { save, run } })` | Used when the matching shell output is **not** bound |
+| No Save handler | Today's Save: mark document saved + toast (not a blob). **Export** is the blob file |
+| No Run handler | Today's simulated Run |
+| Export / Import | File chrome unchanged |
+
+First-win for Save and Run:
+
+1. Bound shell `(save)` / `(run)` (subscriber)
+2. Else `persist.save` / `persist.run` from the provider
+3. Else default Save / simulated Run
+
+```typescript
+provideWorkflowBuilderUi({
+  persist: {
+    save: (doc) => hostApi.putWorkflow(doc),
+    run: (doc) => hostApi.startRun(doc),
+  },
+});
+```
+
+`wb-shell-layout` and `wb-agent-skills-shell` fill the host box (`height: 100%` / `min-height: 0`). They do **not** use `height: 100vh` and there is no `[height]` input. Standalone SPA still looks full-page because `html` / `body` / `app-root` are `height: 100%`.
+
+Do not put secrets in documents, `(documentChange)` payloads, or embed examples.
 
 ## Load status banner
 

@@ -29,6 +29,8 @@
 - See General only (no Ignore Keys, no flattened blob) on Action/Trigger when the host did not supply a schema
 - Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema
 - Connect steps correctly and configure node properties
+- See a host-loaded `[document]` on the canvas (not only the SPA empty graph)
+- Save still downloads JSON when the host did not supply a Save handler; Run still simulates when the host did not supply a Run handler
 - Double-click a Blank Agent / AIAgent to open its nested canvas even when the host hid the agent tab bar
 - Return from nested canvas via tab Solution chip (bar on) or nested Back / Solution (bar off)
 - Validate flow with simulated Run
@@ -92,6 +94,9 @@
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
 - Pass optional `propertiesSchema` on palette items (copied onto the node) and/or `provideWorkflowBuilderUi({ properties })` so Properties is host-driven
 - Hide the agent tab strip (`agentTabs.enabled`) without blocking double-click enter or nested Back
+- Bind `[document]` and `(documentChange)` so the host owns persistence
+- Optionally hook Save and Run (`persist.save` / `persist.run`) so blob download and simulated Run are not used
+- Place the shell in a fixed-height panel and have it fill that box (`height: 100%`)
 - Keep host blobs opaque (`taskMeta`); this package must not flatten them into a fake form
 - Chrome flags via JSON / `provideWorkflowBuilderUi` **and** per-instance `[ui]` override
 - Keep full chrome when no UI config is supplied (safe default); omitted `[palettes]` with no adapter is empty-remote, not a built-in catalog
@@ -118,6 +123,9 @@
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
 - Properties schema on palettes / adapter renders generic fields; no Enso-named public API; blobs stay uninterpreted
 - `agentTabs.enabled` false hides the strip; double-click still opens `/agent/:id`; nested Back still returns
+- `[document]` loads a graph; invalid payload keeps last good + status
+- Save/Run handlers receive the document when set; otherwise download / simulate remain
+- Shell fills the host panel (`100%`), not `100vh`
 
 ---
 
@@ -145,4 +153,5 @@
 | Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
 | Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
 | Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`) |
+| Host `[document]` / Save / Run hooks / fill-host | Sees loaded graph; Save/Run defaults | View Save still off | Primary |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkflowFacade } from './workflow.facade';
 import { RunSimulationService } from '../run/run-simulation.service';
 import { GraphStore } from '../stores/graph.store';
 import { MockWorkflowRepository } from '../data/mock-workflow.repository';
 import { blankAgentPaletteItem } from '../domain/palette.catalog';
+import { provideWorkflowBuilderUi } from '../ui-config';
 import { routes } from '../../app.routes';
 
 /** App boots empty; most facade specs still need the sample fixture graph. */
@@ -515,5 +516,149 @@ describe('WorkflowFacade.agentTabs', () => {
     const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
     facade.setEditorMode('view');
     expect(facade.addSkillToAgent(id, 'skill-summarize')).toBe(false);
+  });
+});
+
+describe('WorkflowFacade host embed contract', () => {
+  let facade: WorkflowFacade;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes)],
+    });
+    facade = TestBed.inject(WorkflowFacade);
+    initWithSample(facade);
+  });
+
+  it('loadDocument applies a valid document and clears dirty', () => {
+    const sample = TestBed.inject(MockWorkflowRepository).getSampleWorkflow();
+    expect(facade.loadDocument(sample)).toBe(true);
+    expect(facade.dirty()).toBe(false);
+    expect(facade.nodes().length).toBe(sample.nodes.length);
+    expect(facade.documentRevision()).toBe(1);
+    expect(facade.canvasError()).toBeNull();
+  });
+
+  it('invalid load keeps last good graph and sets a non-secret error', () => {
+    const before = facade.nodeCount();
+    const name = facade.workflowName();
+    expect(facade.loadDocument(null)).toBe(false);
+    expect(facade.loadDocument(['not-an-object'])).toBe(false);
+    expect(facade.nodeCount()).toBe(before);
+    expect(facade.workflowName()).toBe(name);
+    expect(facade.canvasError()).toBeTruthy();
+    expect(String(facade.canvasError())).not.toMatch(/token|secret|password/i);
+  });
+
+  it('does not throw when loadDocument is given garbage', () => {
+    expect(() => facade.loadDocument(undefined)).not.toThrow();
+    expect(() => facade.loadDocument(1)).not.toThrow();
+  });
+
+  it('dirty is true after a committed edit and false after Save', () => {
+    expect(facade.loadDocument(TestBed.inject(MockWorkflowRepository).getSampleWorkflow())).toBe(
+      true,
+    );
+    expect(facade.dirty()).toBe(false);
+    facade.createNode('Delay', { x: 10, y: 20 });
+    expect(facade.dirty()).toBe(true);
+    facade.saveDownload();
+    expect(facade.dirty()).toBe(false);
+  });
+
+  it('getDocument flushes nested edits onto the solution agent', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(facade.enterAgentCanvas(id)).toBe(true);
+    facade.createNode('Action', { x: 5, y: 5 });
+    const doc = facade.getDocument();
+    expect(facade.editingAgentNodeId()).toBe(id);
+    const agent = doc?.nodes.find((n) => n.id === id);
+    const nested = agent?.data['nestedWorkflow'] as { nodes: unknown[] } | undefined;
+    expect(nested?.nodes).toHaveLength(1);
+  });
+
+  it('loadDocument exits nested edit so the solution document is shown', () => {
+    const id = facade.createNode('AIAgent', { x: 0, y: 0 })!;
+    expect(facade.enterAgentCanvas(id)).toBe(true);
+    const sample = TestBed.inject(MockWorkflowRepository).getSampleWorkflow();
+    expect(facade.loadDocument(sample)).toBe(true);
+    expect(facade.editingAgentNodeId()).toBeNull();
+    expect(facade.nodes().length).toBe(sample.nodes.length);
+  });
+
+  it('requestSave uses default saveDownload when no host handler is set', async () => {
+    const spy = vi.spyOn(facade, 'saveDownload');
+    await facade.requestSave();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('requestRun uses simulated startRun when no host handler is set', async () => {
+    const spy = vi.spyOn(facade, 'startRun');
+    await facade.requestRun();
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('WorkflowFacade persist provider hooks', () => {
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('requestSave calls persist.save and does not saveDownload', async () => {
+    const save = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideWorkflowBuilderUi({ persist: { save } }),
+      ],
+    });
+    const facade = TestBed.inject(WorkflowFacade);
+    initWithSample(facade);
+    const spy = vi.spyOn(facade, 'saveDownload');
+    await facade.requestSave();
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save.mock.calls[0]![0]).toMatchObject({ id: facade.getDocument()?.id });
+    expect(spy).not.toHaveBeenCalled();
+    expect(facade.dirty()).toBe(false);
+  });
+
+  it('requestRun calls persist.run and does not startRun', async () => {
+    const run = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideWorkflowBuilderUi({ persist: { run } }),
+      ],
+    });
+    const facade = TestBed.inject(WorkflowFacade);
+    initWithSample(facade);
+    const spy = vi.spyOn(facade, 'startRun');
+    await facade.requestRun();
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('instance save output wins over provider persist.save', async () => {
+    const persistSave = vi.fn();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideWorkflowBuilderUi({ persist: { save: persistSave } }),
+      ],
+    });
+    const facade = TestBed.inject(WorkflowFacade);
+    initWithSample(facade);
+    const instanceSave = vi.fn();
+    facade.registerInstancePersist({
+      saveObserved: () => true,
+      emitSave: instanceSave,
+      runObserved: () => false,
+      emitRun: () => undefined,
+    });
+    const spy = vi.spyOn(facade, 'saveDownload');
+    await facade.requestSave();
+    expect(instanceSave).toHaveBeenCalledTimes(1);
+    expect(persistSave).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 });
