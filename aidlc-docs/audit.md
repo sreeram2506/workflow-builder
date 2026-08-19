@@ -5071,3 +5071,27 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 **Context**: R61 direct implement — matching connection dots + agent name-only layout
 
 ---
+
+## Post-ops polish — U-AE-01 dblclick when tab strip off
+**Timestamp**: 2026-08-19T15:35:00Z
+**User Input**: "with agent tabs false, double-clicking an agent does not go inside"
+**AI Response**: "Delayed setPointerCapture in canvas-viewport until NODE_DRAG_THRESHOLD_PX so dblclick fires when the tab strip is off. Documented host route agent/:nodeId in docs/workflow-builder-ui-embed.md. Tests 300 passed."
+**Context**: Post-ops follow-up after U-NP-01 — not a new increment. Code already applied; aidlc-docs update requested next.
+
+---
+
+## Post-ops polish — aidlc-docs for dblclick fix
+**Timestamp**: 2026-08-19T15:40:00Z
+**User Input**: "updated aidlc docs for fix"
+**AI Response**: "Recorded the pointer-capture delay and host /agent/:nodeId requirement in U-AE-01 construction summaries and CG plan follow-up, U-HE-01 embed summaries, npm operations placeholder, aidlc-state Current Status (deduped), and this audit entry. Did not start a new increment."
+**Context**: Documentation-only follow-up for existing canvas + embed-docs fix. No application code in this interaction.
+
+---
+
+## Post-ops polish — nested tab strip on after dblclick
+**Timestamp**: 2026-08-19T15:48:00Z
+**User Input**: "after doubleclicking its going but agent tab is opening , when agent tab is flse when doublie click its should go inside agent tab bar shouldnt get"
+**AI Response**: "Sticky instance [ui] on UiConfigService so routed wb-agent-skills-shell without [ui] keeps agentTabs.enabled false. Nested Back, no chip strip. Tests 302 passed. Updated embed docs and U-AE-01 summaries."
+**Context**: Post-ops follow-up — routed nested shell was resetting chrome to defaults and openAgentTab added a chip.
+
+---

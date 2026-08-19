@@ -185,7 +185,7 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
 export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   readonly facade = inject(WorkflowFacade);
   readonly uiConfig = inject(UiConfigService);
-  /** Instance chrome overlay (omit = no overlay). Independent of solution shell. */
+  /** Instance chrome overlay (omit = last shell overlay, else JSON/provider). */
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
   @Output() readonly save = new EventEmitter<WorkflowDocument>();
@@ -195,7 +195,7 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   nodeId = '';
 
   readonly effectiveFeatures = computed(() =>
-    mergeInstanceUiFeatures(this.uiConfig.features(), this.ui()),
+    mergeInstanceUiFeatures(this.uiConfig.features(), this.uiConfig.instanceUiForMerge(this.ui())),
   );
   readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
   /** Top bar, tab strip, or nested Back when the strip is not mounted. */
@@ -214,6 +214,9 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
       emitSave: (doc) => this.save.emit(doc),
       runObserved: () => this.run.observed,
       emitRun: (doc) => this.run.emit(doc),
+    });
+    effect(() => {
+      this.uiConfig.publishInstanceUiOverlay(this.ui());
     });
     effect(() => {
       const features = this.effectiveFeatures();

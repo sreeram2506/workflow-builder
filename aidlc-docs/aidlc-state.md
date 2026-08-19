@@ -56,15 +56,8 @@
 - [x] Operations — PLACEHOLDER
 
 ## Current Status
-- **Lifecycle Phase**: COMPLETE (increment)
-- **Current Stage**: Operations placeholder acknowledged
-- **Blocked On**: Explicit new request before another increment
-- **Timestamp**: 2026-08-19T10:02:00Z
-- **Lifecycle Phase**: OPERATIONS (placeholder) + post-ops polish
-- **Current Stage**: More Changes R61 — uniform handle colors; no invented agent descriptions
-- **Blocked On**: Request Changes or Done after hard-refresh verify
-- **Timestamp**: 2026-08-19T10:10:21Z
-- **Lifecycle Phase**: OPERATIONS (placeholder)
-- **Current Stage**: Increment complete
-- **Blocked On**: None — request new work or later `npm publish`
-- **Timestamp**: 2026-08-19T13:21:00Z
+- **Lifecycle Phase**: COMPLETE (npm package increment) + post-ops polish documented
+- **Current Stage**: Operations placeholder acknowledged; U-AE-01 dblclick follow-up recorded in construction summaries
+- **Post-ops (2026-08-19)**: Sticky instance `[ui]` so `/agent/:id` does not show the tab strip when `agentTabs.enabled` is false; pointer-capture delay for dblclick enter
+- **Blocked On**: Explicit new request before another increment (or later `npm publish` with OTP)
+- **Timestamp**: 2026-08-19T15:48:00Z

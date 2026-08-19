@@ -208,6 +208,8 @@ export class CanvasViewportComponent implements AfterViewInit {
   private pendingPan = { x: 0, y: 0 };
   private pendingMove = { x: 0, y: 0 };
   private panDistance = 0;
+  /** Captured only after NODE_DRAG_THRESHOLD so dblclick can still fire (agentTabs off has no tab re-render). */
+  private pendingNodePointerId: number | null = null;
   private connectSourceId: string | null = null;
   private connectSourceSide: PortSide | null = null;
   private pendingDraftPointer: Point | null = null;
@@ -370,7 +372,7 @@ export class CanvasViewportComponent implements AfterViewInit {
       this.lastWorld = screenToWorld(screen, this.facade.viewport());
       this.panDistance = 0;
       this.gesture = 'pendingNodeDrag';
-      this.viewportEl().nativeElement.setPointerCapture(event.pointerId);
+      this.pendingNodePointerId = event.pointerId;
     } catch (err) {
       this.facade.setCanvasError(err instanceof Error ? err.message : 'Node drag error');
     }
@@ -511,6 +513,9 @@ export class CanvasViewportComponent implements AfterViewInit {
           return;
         }
         this.gesture = 'nodeDrag';
+        if (this.pendingNodePointerId != null) {
+          this.viewportEl().nativeElement.setPointerCapture(this.pendingNodePointerId);
+        }
         this.facade.beginHistoryGesture();
         this.lastWorld = screenToWorld(screen, this.facade.viewport());
         return;
@@ -621,6 +626,7 @@ export class CanvasViewportComponent implements AfterViewInit {
       this.pendingPan = { x: 0, y: 0 };
       this.pendingMove = { x: 0, y: 0 };
       this.panDistance = 0;
+      this.pendingNodePointerId = null;
       this.waypointEdgeId = null;
       this.waypointIndex = -1;
       this.pendingWaypoint = null;

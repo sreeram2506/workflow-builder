@@ -11,6 +11,7 @@ import {
 } from '../../core/domain/palette.catalog';
 import type { NodeType } from '../../core/domain/workflow.models';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
+import { UiConfigService } from '../../core/ui-config';
 import { AgentSkillsShellComponent } from './agent-skills-shell.component';
 
 function catalogStub() {
@@ -81,5 +82,18 @@ describe('AgentSkillsShell nested Back', () => {
 
     expect(fixture.nativeElement.querySelector('[data-testid="nested-back-to-solution"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeTruthy();
+  });
+
+  it('hides the tab strip on the routed shell when solution [ui] hid tabs (no nested [ui])', () => {
+    const uiConfig = TestBed.inject(UiConfigService);
+    uiConfig.publishInstanceUiOverlay({ agentTabs: { enabled: false } });
+    facade.setAgentTabsChromeEnabled(false);
+
+    fixture = TestBed.createComponent(AgentSkillsShellComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="nested-back-to-solution"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeNull();
+    expect(facade.agentTabsChromeEnabled()).toBe(false);
   });
 });

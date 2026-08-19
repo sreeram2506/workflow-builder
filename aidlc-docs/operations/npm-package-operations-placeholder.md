@@ -35,3 +35,7 @@ No cloud deployable, monitoring stack, or registry publish pipeline is generated
 | Operations | Placeholder — workflow ends here for this increment |
 
 Embed + install: `docs/workflow-builder-ui-embed.md`
+
+## Post-ops polish (not a new increment)
+
+**2026-08-19** — With `agentTabs.enabled: false`, solution dblclick failed to enter nested agent because `canvas-viewport` captured the pointer on first press (tab strip no longer re-rendered). Capture is delayed until drag threshold. Hosts still need `{ path: 'agent/:nodeId', component: AgentSkillsShellComponent }`. Recorded under U-AE-01 construction summaries.

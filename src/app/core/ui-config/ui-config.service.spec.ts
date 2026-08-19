@@ -154,4 +154,24 @@ describe('UiConfigService + initializer', () => {
     expect(ui.features().palette.solution.defaultAgents).toEqual({ mode: 'omitted' });
     http.verify();
   });
+
+  it('keeps published instance [ui] when a later shell omits the input', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const ui = TestBed.inject(UiConfigService);
+    expect(ui.instanceUiForMerge(undefined)).toBeUndefined();
+
+    ui.publishInstanceUiOverlay({ agentTabs: { enabled: false } });
+    expect(ui.instanceUiForMerge(undefined)).toEqual({ agentTabs: { enabled: false } });
+    expect(ui.instanceUiForMerge({ topBar: { enabled: false } })).toEqual({
+      topBar: { enabled: false },
+    });
+
+    ui.publishInstanceUiOverlay(undefined);
+    expect(ui.instanceUiForMerge(undefined)).toEqual({ agentTabs: { enabled: false } });
+
+    ui.clearInstanceUiOverlay();
+    expect(ui.instanceUiForMerge(undefined)).toBeUndefined();
+  });
 });

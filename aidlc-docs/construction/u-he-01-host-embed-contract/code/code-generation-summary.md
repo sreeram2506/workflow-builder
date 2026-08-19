@@ -34,6 +34,11 @@
 - `npm test` — 298 passed / 40 files
 - `npm run build` — success (existing budget warnings)
 
+## Follow-up (2026-08-19)
+
+- Embed docs: host nested route `agent/:nodeId` + `AgentSkillsShellComponent` required for dblclick enter
+- Pointer-capture delay lives in U-AE-01 canvas follow-up (not a new U-HE-01 code change)
+
 ## SKIP
 
 - API layer, repository layer, deployment artifacts — N/A (client SPA)

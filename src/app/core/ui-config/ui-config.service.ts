@@ -35,6 +35,31 @@ export class UiConfigService {
   readonly features = this.featuresSignal.asReadonly();
   readonly loadStatus = this.loadStatusSignal.asReadonly();
 
+  /**
+   * Last instance `[ui]` published by a mounted shell.
+   * Routed `wb-agent-skills-shell` often has no `[ui]` (sibling of `wb-shell-layout`);
+   * omitting it must not reset chrome to defaults (e.g. `agentTabs.enabled: true`).
+   */
+  private readonly instanceUiOverlaySignal = signal<UiFeaturesPartial | undefined>(undefined);
+  readonly instanceUiOverlay = this.instanceUiOverlaySignal.asReadonly();
+
+  /** Bound `[ui]` wins; otherwise the last overlay published by a shell. */
+  instanceUiForMerge(bound: UiFeaturesPartial | undefined): UiFeaturesPartial | undefined {
+    return bound ?? this.instanceUiOverlaySignal();
+  }
+
+  /** Publish when the host binds `[ui]` (including `{}`). Omit does not clear. */
+  publishInstanceUiOverlay(bound: UiFeaturesPartial | undefined): void {
+    if (bound !== undefined) {
+      this.instanceUiOverlaySignal.set(bound);
+    }
+  }
+
+  /** Test / teardown only — do not call from shells on destroy (route swap would drop chrome). */
+  clearInstanceUiOverlay(): void {
+    this.instanceUiOverlaySignal.set(undefined);
+  }
+
   /** Apply JSON layer + host provider (provider wins). */
   applyLayers(jsonPartial: UiFeaturesPartial, status: UiConfigLoadStatus): void {
     const resolved = resolveUiFeatures(jsonPartial, this.hostPartial);

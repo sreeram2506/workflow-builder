@@ -130,6 +130,25 @@ This plan is the single source of truth for Code Generation. Do not run Part 2 u
 
 ---
 
+## Follow-up (2026-08-19) — dblclick when tab strip off
+
+Original Step 3 left canvas pointer capture unchanged. After U-HE-01 / U-NPM-01, `agentTabs.enabled: false` meant the tab strip did not re-render on first click, so `setPointerCapture` on pointerdown swallowed the second click.
+
+- [x] `canvas-viewport.component.ts`: store `pendingNodePointerId`; capture only after `NODE_DRAG_THRESHOLD_PX`; clear on pointerup
+- [x] Hosts must register `{ path: 'agent/:nodeId', component: AgentSkillsShellComponent }` (`docs/workflow-builder-ui-embed.md`)
+- [x] `npm test` — 300 passed / 41 files
+
+### Follow-up (2026-08-19) — nested strip stayed on after enter
+
+Routed `wb-agent-skills-shell` omitted `[ui]`, so chrome reset to defaults and `ensureAgentRoute` opened a chip.
+
+- [x] `UiConfigService`: sticky last instance `[ui]` (`publishInstanceUiOverlay` / `instanceUiForMerge`)
+- [x] Both shells merge `ui() ?? sticky overlay`; omit does not clear
+- [x] Nested Back + no strip when solution hid tabs and nested has no `[ui]`
+- [x] `npm test` — 302 passed / 41 files
+
+---
+
 ## Approval
 
 Approve this plan to run Part 2 in order.

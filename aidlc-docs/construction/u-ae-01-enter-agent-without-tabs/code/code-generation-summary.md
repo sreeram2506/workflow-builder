@@ -16,15 +16,16 @@
 - `src/app/features/shell/ui-chrome-gates.spec.ts`
 - `docs/workflow-builder-ui-embed.md`
 
-## Unchanged (confirmed)
+## Unchanged at original CG (later revised)
 
-- `src/app/features/canvas/canvas-viewport.component.ts` — dblclick enter / nested no re-enter
+- `src/app/core/ui-config/ui-config.service.ts` — sticky last instance `[ui]` so routed nested shell without `[ui]` keeps solution chrome
+- `src/app/features/canvas/canvas-viewport.component.ts` — originally left unchanged; **follow-up 2026-08-19** delayed pointer capture so dblclick works with `agentTabs.enabled: false`
 - `src/app/features/shell/agent-tabs.component.ts` — chip enter/exit when bar on
 
 ## Verification
 
-- `npm test` — 280 passed / 39 files
-- `npm run build` — success (existing budget warnings)
+- Original CG: `npm test` — 280 passed / 39 files; `npm run build` success
+- Follow-up 2026-08-19: `npm test` — 302 passed / 41 files; sticky instance `[ui]` across `/agent/:id`; embed docs require host route `/agent/:nodeId`
 
 ## SKIP
 

@@ -160,7 +160,7 @@ export class ShellLayoutComponent implements OnDestroy {
   readonly uiConfig = inject(UiConfigService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly changeTicks = new Subject<void>();
-  /** Instance chrome overlay (omit = no overlay). */
+  /** Instance chrome overlay (omit = last shell overlay, else JSON/provider). */
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
   readonly defaultAgents = input<DefaultAgentCard[] | undefined>();
@@ -172,7 +172,7 @@ export class ShellLayoutComponent implements OnDestroy {
   @Output() readonly run = new EventEmitter<WorkflowDocument>();
 
   readonly effectiveFeatures = computed(() =>
-    mergeInstanceUiFeatures(this.uiConfig.features(), this.ui()),
+    mergeInstanceUiFeatures(this.uiConfig.features(), this.uiConfig.instanceUiForMerge(this.ui())),
   );
   readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
 
@@ -185,6 +185,9 @@ export class ShellLayoutComponent implements OnDestroy {
     });
     this.changeTicks.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.emitDocumentChange();
+    });
+    effect(() => {
+      this.uiConfig.publishInstanceUiOverlay(this.ui());
     });
     effect(() => {
       const features = this.effectiveFeatures();

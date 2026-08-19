@@ -58,7 +58,7 @@ The host still owns `html` / `body` / wrapper height (`height: 100%` on a defini
 1. **Built-in defaults** — every leaf `true`
 2. **JSON** — `GET /assets/wb-ui-config.json` (missing → status `missing`, keep defaults; invalid → `invalid`, keep defaults)
 3. **Host provider** — `provideWorkflowBuilderUi({ features })` wins over JSON for the same keys
-4. **Instance `[ui]`** — bound on `wb-shell-layout` / `wb-agent-skills-shell`; wins per leaf over provider/JSON. Does **not** rewrite global `UiConfigService` (other instances keep their own effective map).
+4. **Instance `[ui]`** — bound on `wb-shell-layout` / `wb-agent-skills-shell`; wins per leaf over provider/JSON. Publishing a bound `[ui]` is sticky for the next routed shell that **omits** `[ui]` (see nested enter). An explicit nested `[ui]` still wins and does not read the solution binding as a live parent overlay.
 
 Alias: legacy `topBar.save|export|import|run|reset` map to the matching `canvas.*` leaves (canonical `canvas.save` wins in the same layer). Theme is only `topBar.theme` — do not put a root `themeToggle` key in JSON (a leftover alias is still accepted if present, including on `[ui]`).
 
@@ -106,7 +106,22 @@ Palette allow-lists are independent per canvas. `"Router"` is not a type key (us
 
 ### Nested agent enter / exit
 
-`agentTabs.enabled` is tab-strip chrome. It does not gate `/agent/:id`.
+`agentTabs.enabled` is tab-strip chrome. It does not gate `/agent/:id`. Double-click a solution **AIAgent** still enters when the strip is off.
+
+Hosts **must** register the nested route (the library navigates to `/agent/:nodeId`):
+
+```typescript
+import { AgentSkillsShellComponent, ShellLayoutComponent } from 'enso-workflow-builder';
+
+export const routes: Routes = [
+  { path: '', component: ShellLayoutComponent },
+  { path: 'agent/:nodeId', component: AgentSkillsShellComponent },
+];
+```
+
+If that route is missing, double-click does not show the nested canvas — the solution shell stays mounted.
+
+`selectAgentTab` **replaces** the solution shell with `wb-agent-skills-shell`. That nested instance often has **no** `[ui]` input. The last `[ui]` bound on `wb-shell-layout` stays applied so `agentTabs.enabled: false` still hides the chip strip and shows **Solution** Back. Bind `[ui]` on the nested shell (wrapper route) only when nested chrome should differ.
 
 - **Enter:** double-click a Blank Agent / AIAgent on the solution canvas, or click a chip when the strip is on.
 - **Exit without the strip:** nested shell **Solution** control (`navigateBackToSolution`). It does not require open chips.
@@ -229,7 +244,7 @@ const ui: UiFeaturesPartial = {
 | Omit `[ui]` | No instance overlay — JSON/provider chrome only |
 | `[ui]="{}"` | No leaf overrides |
 | `[ui]="partial"` | Defined leaves win over global; omitted leaves keep lower layers |
-| Nested `wb-agent-skills-shell [ui]` | Independent of the solution shell overlay (does not inherit parent `[ui]`) |
+| Nested `wb-agent-skills-shell [ui]` | Explicit nested overlay wins. If omitted, keep the last `[ui]` published by `wb-shell-layout` (routed enter). |
 
 Changing the bound object updates chrome without a full page reload.
 

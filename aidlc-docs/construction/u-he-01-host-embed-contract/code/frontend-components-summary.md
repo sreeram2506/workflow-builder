@@ -21,3 +21,11 @@
 - Save button and ⌘/Ctrl+S call `requestSave()`.
 - Run calls `requestRun()`.
 - Export / Import unchanged.
+
+## Follow-up (2026-08-19) — nested enter when tab strip off
+
+Hosts must register `{ path: 'agent/:nodeId', component: AgentSkillsShellComponent }`. Library `selectAgentTab` navigates there; mounting only `wb-shell-layout` does not show nested canvas.
+
+Canvas dblclick: `canvas-viewport` must not `setPointerCapture` on pointerdown (delay until drag threshold) or the second click is swallowed when `agentTabs.enabled` is false. See U-AE-01 follow-up.
+
+Routed nested shell: last `[ui]` from `wb-shell-layout` stays applied when `wb-agent-skills-shell` omits `[ui]`, so the chip strip stays off.
