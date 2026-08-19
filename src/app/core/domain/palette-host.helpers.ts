@@ -124,7 +124,7 @@ export function defaultAgentCardToPaletteItem(card: DefaultAgentCard): PaletteIt
     key: card.key,
     type: BLANK_AGENT_TYPE,
     label: card.label,
-    description: card.description,
+    description: (card.description ?? '').trim(),
     categoryId: 'logic',
     origin: 'default-agent',
   };

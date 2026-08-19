@@ -35,30 +35,30 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
     >
       <button
         type="button"
-        class="handle handle-left handle-input"
-        aria-label="Input left"
-        title="Input"
+        class="handle handle-left"
+        aria-label="Connect left"
+        title="Connect"
         (pointerdown)="onSourceHandle($event, 'left')"
       ></button>
       <button
         type="button"
-        class="handle handle-right handle-output"
-        aria-label="Output right"
-        title="Output"
+        class="handle handle-right"
+        aria-label="Connect right"
+        title="Connect"
         (pointerdown)="onSourceHandle($event, 'right')"
       ></button>
       <button
         type="button"
-        class="handle handle-top handle-input"
-        aria-label="Input top"
-        title="Input"
+        class="handle handle-top"
+        aria-label="Connect top"
+        title="Connect"
         (pointerdown)="onSourceHandle($event, 'top')"
       ></button>
       <button
         type="button"
-        class="handle handle-bottom handle-input"
-        aria-label="Input bottom"
-        title="Input"
+        class="handle handle-bottom"
+        aria-label="Connect bottom"
+        title="Connect"
         (pointerdown)="onSourceHandle($event, 'bottom')"
       ></button>
 
@@ -176,9 +176,11 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
             {{ initials() }}
           }
         </div>
-        <div class="body">
+        <div class="body" [class.no-subtitle]="!node().subtitle.trim()">
           <div class="label">{{ node().label }}</div>
-          <div class="subtitle">{{ node().subtitle }}</div>
+          @if (node().subtitle.trim()) {
+            <div class="subtitle">{{ node().subtitle }}</div>
+          }
         </div>
         <span class="status" [attr.data-status]="node().status">{{ node().status }}</span>
       }
@@ -343,20 +345,10 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
       top: auto;
       bottom: calc(6% - 5px);
     }
-    .handle-output {
-      background: var(--wb-accent);
-      border-color: color-mix(in srgb, var(--wb-accent) 70%, var(--wb-edge));
-    }
-    .handle-input {
-      background: var(--wb-bg-elevated);
-    }
     .handle:hover {
       border-color: var(--wb-accent);
       background: color-mix(in srgb, var(--wb-accent) 25%, var(--wb-bg-elevated));
       transform: scale(1.15);
-    }
-    .handle-output:hover {
-      background: color-mix(in srgb, var(--wb-accent) 85%, white);
     }
     .handle:focus-visible {
       outline: 2px solid var(--wb-accent);
@@ -391,6 +383,12 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
     }
     .body {
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .body.no-subtitle {
+      justify-content: center;
     }
     .label {
       font-size: 0.85rem;

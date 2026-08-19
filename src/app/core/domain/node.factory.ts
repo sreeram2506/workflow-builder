@@ -66,7 +66,8 @@ export function createWorkflowNodeFromPaletteItem(
     id: newNodeId(item.type),
     type: item.type,
     label: item.label,
-    subtitle: item.description,
+    // Never invent a description — empty stays empty so the name can center alone.
+    subtitle: (item.description ?? '').trim(),
     position: { x: position.x, y: position.y },
     status: 'idle',
     data,

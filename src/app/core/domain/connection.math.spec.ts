@@ -43,21 +43,31 @@ describe('connection.math', () => {
     expect(validateConnection('a', 'b', sampleNodes).ok).toBe(true);
   });
 
-  it('never connects to right; allows input→input and right→input', () => {
+  it('allows any side → any side (including output↔output)', () => {
     expect(portRole('right')).toBe('out');
     expect(arePortsCompatible('right', 'left')).toBe(true);
     expect(arePortsCompatible('right', 'top')).toBe(true);
     expect(arePortsCompatible('top', 'left')).toBe(true);
     expect(arePortsCompatible('left', 'bottom')).toBe(true);
     expect(arePortsCompatible('top', 'top')).toBe(true);
-    expect(arePortsCompatible('right', 'right')).toBe(false);
-    expect(arePortsCompatible('left', 'right')).toBe(false);
-    expect(arePortsCompatible('top', 'right')).toBe(false);
+    expect(arePortsCompatible('right', 'right')).toBe(true);
+    expect(arePortsCompatible('left', 'right')).toBe(true);
+    expect(arePortsCompatible('top', 'right')).toBe(true);
   });
 
-  it('resolveConnection rejects landing on output', () => {
-    expect(resolveConnection('a', 'right', 'b', 'right')).toBeNull();
-    expect(resolveConnection('a', 'top', 'b', 'right')).toBeNull();
+  it('resolveConnection accepts landing on any side including output', () => {
+    expect(resolveConnection('a', 'right', 'b', 'right')).toEqual({
+      sourceId: 'a',
+      targetId: 'b',
+      sourceSide: 'right',
+      targetSide: 'right',
+    });
+    expect(resolveConnection('a', 'top', 'b', 'right')).toEqual({
+      sourceId: 'a',
+      targetId: 'b',
+      sourceSide: 'top',
+      targetSide: 'right',
+    });
     expect(resolveConnection('a', 'top', 'b', 'left')).toEqual({
       sourceId: 'a',
       targetId: 'b',
@@ -83,13 +93,14 @@ describe('connection.math', () => {
     expect(isValidCreatedEdgeId(e1!.id, 'a', 'b')).toBe(true);
   });
 
-  it('createWorkflowEdge rejects connect-to-output', () => {
-    expect(
-      createWorkflowEdge('a', 'b', sampleNodes, {
-        sourceSide: 'right',
-        targetSide: 'right',
-      }),
-    ).toBeNull();
+  it('createWorkflowEdge allows connect-to-output', () => {
+    const e = createWorkflowEdge('a', 'b', sampleNodes, {
+      sourceSide: 'right',
+      targetSide: 'right',
+    });
+    expect(e).not.toBeNull();
+    expect(e!.sourceSide).toBe('right');
+    expect(e!.targetSide).toBe('right');
   });
 
   it('createWorkflowEdge allows duplicates and sets empty waypoints', () => {

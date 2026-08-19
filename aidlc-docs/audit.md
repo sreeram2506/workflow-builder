@@ -4926,3 +4926,35 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 ---
 
 
+
+## More Changes R60 — Request Changes (clarification opened)
+**Timestamp**: 2026-08-19T09:56:04Z
+**User Input**: "request changes"
+**AI Response**: "Opened more-changes-r60-clarification-questions.md for post-U-AE-01 / post-ops polish feedback."
+**Context**: User chose Request Changes after Enter agent without tab bar increment complete
+
+---
+
+## More Changes R60 — Answers + implement
+**Timestamp**: 2026-08-19T10:01:50Z
+**User Input**: "answered"
+**AI Response**: "Q1=F; Q2/Q3=A. Free any-handle→any-handle connections (output↔output allowed). Agent/library cards center name when description empty (Kumar screenshot). Tests 280 passed."
+**Context**: R60 direct implement — flexible connections + no-desc name centering
+
+---
+
+## More Changes R61 — Request Changes (clarification opened)
+**Timestamp**: 2026-08-19T10:03:31Z
+**User Input**: "Request Changes"
+**AI Response**: "Opened more-changes-r61-clarification-questions.md for post-R60 feedback."
+**Context**: User chose Request Changes after R60 connections + agent name centering
+
+---
+
+## More Changes R61 — Answers + implement
+**Timestamp**: 2026-08-19T10:10:21Z
+**User Input**: "answered"
+**AI Response**: "Q1=connections+agent details; Q2/Q3=A. Unified handle colors (no accent-filled output). Confirmed no invented descriptions; name centers when description empty. Tests 280 passed."
+**Context**: R61 direct implement — matching connection dots + agent name-only layout
+
+---

@@ -14,7 +14,10 @@ export const HANDLE_HIT_RADIUS = 28;
 /** Inflate node bounds so dropping on the card snaps to a port. */
 export const NODE_HIT_PADDING = 14;
 export const PORT_SIDES: readonly PortSide[] = ['left', 'right', 'top', 'bottom'];
-/** Only right is an output; left/top/bottom are inputs. */
+/**
+ * Historical labels (right was “output-only”). Connections are now free: any side → any side.
+ * Kept for callers that still classify handles visually.
+ */
 export const OUTPUT_SIDES: readonly PortSide[] = ['right'];
 export const INPUT_SIDES: readonly PortSide[] = ['left', 'top', 'bottom'];
 
@@ -52,15 +55,14 @@ export function portRole(side: PortSide): 'out' | 'in' {
   return isOutputSide(side) ? 'out' : 'in';
 }
 
-/** Valid targets are always inputs (left/top/bottom) — never connect to right (output). */
-export function arePortsCompatible(sourceSide: PortSide, targetSide: PortSide): boolean {
-  return isInputSide(targetSide);
+/** Any handle may connect to any handle on another node. */
+export function arePortsCompatible(_sourceSide: PortSide, _targetSide: PortSide): boolean {
+  return true;
 }
 
 /**
  * Normalize a drag into a stored edge.
- * - Any side → left/top/bottom: keep as-is (output→input or input→input)
- * - Anything → right: invalid (output is not a drop target)
+ * Any side → any side is allowed (except self-loop).
  */
 export function resolveConnection(
   fromId: string,
@@ -71,15 +73,12 @@ export function resolveConnection(
   if (fromId === toId) {
     return null;
   }
-  if (arePortsCompatible(fromSide, toSide)) {
-    return {
-      sourceId: fromId,
-      targetId: toId,
-      sourceSide: fromSide,
-      targetSide: toSide,
-    };
-  }
-  return null;
+  return {
+    sourceId: fromId,
+    targetId: toId,
+    sourceSide: fromSide,
+    targetSide: toSide,
+  };
 }
 
 export function pointNearNode(
@@ -118,8 +117,7 @@ export function nearestPortSide(
 }
 
 /**
- * Pick an input port by angle from node center (fixes Condition diamond flanks
- * where Euclidean distance prefers left/right over top/bottom).
+ * Pick a port by angle from node center (includes all four sides).
  */
 export function nearestInputSideByAngle(
   world: Point,
@@ -136,9 +134,9 @@ export function nearestInputSideByAngle(
   const uy = dy / len;
   let best: PortSide = 'left';
   let bestScore = -Infinity;
-  for (const side of INPUT_SIDES) {
-    // Outward unit vector · direction-to-pointer
-    const score = side === 'left' ? -ux : side === 'top' ? -uy : uy;
+  for (const side of PORT_SIDES) {
+    const score =
+      side === 'left' ? -ux : side === 'right' ? ux : side === 'top' ? -uy : uy;
     if (score > bestScore) {
       bestScore = score;
       best = side;
@@ -300,13 +298,13 @@ export function edgeRenderPoints(
 
 /**
  * Ensure an edge has stable sourceSide/targetSide so attachments don't jump while nodes move.
- * Target is never right (output).
+ * Any side is a valid attachment (including right).
  */
 export function lockEdgePortSides(
   edge: WorkflowEdge,
   nodes: readonly WorkflowNode[],
 ): WorkflowEdge {
-  if (edge.sourceSide && edge.targetSide && isInputSide(edge.targetSide)) {
+  if (edge.sourceSide && edge.targetSide) {
     return edge;
   }
   const s = nodes.find((n) => n.id === edge.source);
@@ -323,10 +321,10 @@ export function lockEdgePortSides(
     y: s.position.y + sw.height / 2,
   };
   let targetSide = edge.targetSide;
-  if (!targetSide || !isInputSide(targetSide)) {
+  if (!targetSide) {
     let best: PortSide = 'left';
     let bestDist = Infinity;
-    for (const side of INPUT_SIDES) {
+    for (const side of PORT_SIDES) {
       const p = portOnSideForNode(t.type, t.position, tw.width, tw.height, side);
       const d = Math.hypot(sm.x - p.x, sm.y - p.y);
       if (d < bestDist) {
@@ -363,7 +361,7 @@ export function findTargetHandleAt(
 
 /**
  * Resolve a connection drop/hover target:
- * 1) over/near node body → snap by **angle** to nearest input (diamond-safe)
+ * 1) over/near node body → snap by **angle** to nearest port (any side)
  * 2) else exact handle hit within radius
  */
 export function findConnectionTargetAt(
@@ -392,12 +390,7 @@ export function findConnectionTargetAt(
     return bestBody.hit;
   }
 
-  const handle = findTargetHandleAt(world, nodes, excludeNodeId);
-  if (handle && isInputSide(handle.side)) {
-    return handle;
-  }
-  // Raw handle on output (right): still return so resolveConnection can reject clearly
-  return handle;
+  return findTargetHandleAt(world, nodes, excludeNodeId);
 }
 
 /** Insert index for a new waypoint along the path (nearest segment midpoint heuristic). */

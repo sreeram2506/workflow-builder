@@ -279,9 +279,11 @@ export {
                           </svg>
                         }
                       </div>
-                      <div class="node-text">
+                      <div class="node-text" [class.no-desc]="!item.description.trim()">
                         <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
-                        <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                        @if (item.description.trim()) {
+                          <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                        }
                       </div>
                     </div>
                   }
@@ -347,9 +349,11 @@ export {
                         </svg>
                       }
                     </div>
-                    <div class="node-text">
+                    <div class="node-text" [class.no-desc]="!item.description.trim()">
                       <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
-                      <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                      @if (item.description.trim()) {
+                        <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                      }
                     </div>
                   </div>
                 } @empty {
@@ -433,9 +437,11 @@ export {
                                     </svg>
                                   }
                                 </div>
-                                <div class="node-text">
+                                <div class="node-text" [class.no-desc]="!item.description.trim()">
                                   <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
-                                  <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                                  @if (item.description.trim()) {
+                                    <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                                  }
                                 </div>
                               </div>
                             }
@@ -709,7 +715,7 @@ export {
     .node-card {
       display: flex;
       gap: 0.7rem;
-      align-items: flex-start;
+      align-items: center;
       padding: 0.65rem 0.7rem;
       border: 1px solid var(--wb-border);
       border-radius: 10px;
@@ -721,6 +727,7 @@ export {
       max-width: 100%;
       box-sizing: border-box;
       overflow: hidden;
+      min-height: 3.1rem;
     }
     .node-card:focus-visible {
       border-color: var(--wb-accent);
@@ -754,7 +761,11 @@ export {
     .preview-glyph {
       color: var(--accent, var(--wb-accent));
     }
-    .node-text { min-width: 0; flex: 1 1 auto; overflow: hidden; }
+    .node-text { min-width: 0; flex: 1 1 auto; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+    .node-text.no-desc {
+      justify-content: center;
+      min-height: 36px;
+    }
     .node-title {
       font-weight: 700;
       font-size: 0.92rem;
@@ -763,6 +774,10 @@ export {
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 100%;
+    }
+    .node-text.no-desc .node-title {
+      /* Vertically centered name when description is absent (agent cards). */
+      margin: 0;
     }
     .node-desc {
       margin-top: 0.15rem;
