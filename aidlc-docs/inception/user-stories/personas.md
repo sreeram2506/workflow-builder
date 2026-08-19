@@ -26,6 +26,7 @@
 - Configure Repeater Properties without dummy Claims / Policy / Notify workflow options
 - Drop a host card and keep its metadata on the node for the host product to read
 - Configure host `propertiesSchema` fields in Properties (Save writes `node.data` paths)
+- Keep using the standalone SPA demo after the library is extracted
 - See General only (no Ignore Keys, no flattened blob) on Action/Trigger when the host did not supply a schema
 - Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema
 - Connect steps correctly and configure node properties
@@ -97,6 +98,9 @@
 - Bind `[document]` and `(documentChange)` so the host owns persistence
 - Optionally hook Save and Run (`persist.save` / `persist.run`) so blob download and simulated Run are not used
 - Place the shell in a fixed-height panel and have it fill that box (`height: 100%`)
+- **`npm install enso-workflow-builder`** (or a local tarball) instead of copying `src/app`
+- Import `wb-shell-layout` / `provideWorkflowBuilderUi` / `WorkflowFacade` from the package
+- Include package styles/tokens as documented
 - Keep host blobs opaque (`taskMeta`); this package must not flatten them into a fake form
 - Chrome flags via JSON / `provideWorkflowBuilderUi` **and** per-instance `[ui]` override
 - Keep full chrome when no UI config is supplied (safe default); omitted `[palettes]` with no adapter is empty-remote, not a built-in catalog
@@ -126,6 +130,7 @@
 - `[document]` loads a graph; invalid payload keeps last good + status
 - Save/Run handlers receive the document when set; otherwise download / simulate remain
 - Shell fills the host panel (`100%`), not `100vh`
+- Can install `enso-workflow-builder` and import the public API (no `src` copy)
 
 ---
 
@@ -154,4 +159,5 @@
 | Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
 | Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`) |
 | Host `[document]` / Save / Run hooks / fill-host | Sees loaded graph; Save/Run defaults | View Save still off | Primary |
+| npm package `enso-workflow-builder` | Sees result in demo SPA | Sees result | Primary |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

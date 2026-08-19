@@ -1,24 +1,28 @@
 # Security Test Instructions
 
 ## Purpose
-Security Baseline is enabled (new-code scoped). This increment must not put secrets in documents, `(documentChange)` emits, persist examples, or embed docs. Invalid load must not throw to the host page.
+Security Baseline is enabled (new-code scoped). The published package and embed docs must not contain secrets, `.env`, or `src/app/try/`.
 
 ## Automated
 ```bash
 npm test
+npm run pack:lib
+tar -tzf dist/enso-workflow-builder/enso-workflow-builder-0.1.0.tgz
 ```
 
 Covered in this increment:
-- `parseWorkflowUnknown` allowlists top-level keys (unknown keys stripped)
-- Invalid `loadDocument` sets a non-secret canvas error and does not throw (`workflow.facade.spec.ts`)
-- Embed docs (`docs/workflow-builder-ui-embed.md` Document I/O) do not add secrets
+- Public barrel does not export SPA `App` or try/
+- Tarball listing has no `try/` or `.env`
+- Embed docs (`docs/workflow-builder-ui-embed.md`) use package imports and do not add secrets
+- U-HE-01 allowlist parse / invalid-load fail-safe unchanged
 
 ## Checks (manual / review)
-1. Confirm a bad `[document]` leaves the previous graph and does not surface tokens
-2. Confirm `docs/workflow-builder-ui-embed.md` persist examples have no access tokens
-3. Confirm `src/app/try/` is not committed
+1. Confirm `projects/enso-workflow-builder/src/public-api.ts` does not export try/ or `App`
+2. Confirm tarball has `styles/tokens.css` and compiled JS only (no credentials)
+3. Confirm `src/app/try/` is still gitignored and not committed
+4. Confirm this increment did **not** run `npm publish`
 
 ## Not in this increment
 - Dependency CVE scanners / pentest jobs (repo CI, not this unit)
-- HTML security headers (host page owns headers for the embed)
+- Registry auth / npmjs publish
 - New authn/authz or HTTP surfaces

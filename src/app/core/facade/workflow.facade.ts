@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '../builder-env';
 import { MockWorkflowRepository } from '../data/mock-workflow.repository';
 import {
   createWorkflowEdge,

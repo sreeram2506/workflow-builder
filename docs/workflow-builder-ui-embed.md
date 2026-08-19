@@ -1,11 +1,26 @@
 # Embed Workflow Builder UI config
 
+Install **`enso-workflow-builder`** `@0.1.0` in a host Angular 20 app. Peer dependencies: `@angular/core`, `@angular/common`, `@angular/forms`, `@angular/platform-browser`, `@angular/router`, `@angular/cdk`, `rxjs`, `zone.js`. The library does **not** bundle Angular.
+
+```bash
+npm install enso-workflow-builder
+```
+
+Until the package is on a registry, pack it from this repo and install the tarball:
+
+```bash
+npm run pack:lib
+npm install ./dist/enso-workflow-builder/enso-workflow-builder-0.1.0.tgz
+```
+
+`npm publish` from `dist/enso-workflow-builder` is a later step (needs registry auth). This repo does not run publish as part of the library increment. `src/app/try/` is gitignored and is not in the tarball.
+
 Host apps and the SPA can control chrome via `provideWorkflowBuilderUi` and/or `/assets/wb-ui-config.json`.
 
 ## Provider API
 
 ```typescript
-import { provideWorkflowBuilderUi, uiConfigAppInitializer } from './core/ui-config';
+import { provideWorkflowBuilderUi, uiConfigAppInitializer } from 'enso-workflow-builder';
 import { provideAppInitializer } from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
@@ -24,7 +39,19 @@ export const appConfig: ApplicationConfig = {
 
 `provideWorkflowBuilderUi({ features })` supplies a deep-partial overlay. Omit the provider to use defaults + JSON only.
 
-Optional `persist.save` / `persist.run` are host callbacks (see [Document I/O and persist](#document-io-and-persist)). This increment does **not** require ng-packagr or an npm package.
+Optional `persist.save` / `persist.run` are host callbacks (see [Document I/O and persist](#document-io-and-persist)).
+
+## Styles
+
+Include package tokens in the host `angular.json` (or equivalent) styles:
+
+```json
+"styles": [
+  "node_modules/enso-workflow-builder/styles/tokens.css"
+]
+```
+
+The host still owns `html` / `body` / wrapper height (`height: 100%` on a definite-height wrapper). Do not copy `src/styles.css` from this repo as the only documented path.
 
 ## Merge order (precedence)
 
@@ -188,7 +215,7 @@ Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed
 ```
 
 ```typescript
-import type { UiFeaturesPartial } from './core/ui-config';
+import type { UiFeaturesPartial } from 'enso-workflow-builder';
 
 const ui: UiFeaturesPartial = {
   agentsLibrary: { enabled: true },
@@ -218,8 +245,7 @@ Bind catalog cards on the host tags. These are **instance** inputs — they win 
 ```
 
 ```typescript
-import type { PaletteItem } from './core/domain/palette.catalog';
-import type { DefaultAgentCard } from './core/ui-config';
+import type { PaletteItem, DefaultAgentCard } from 'enso-workflow-builder';
 
 const palettes: PaletteItem[] = [
   {
@@ -282,6 +308,14 @@ Optional `wb-nested-skills-library` accepts the same `[palettes]` overlay (searc
 ## Document I/O and persist
 
 Hosts load and read the **solution** document on `wb-shell-layout`. Nested `wb-agent-skills-shell` does not take `[document]` — the nested graph lives on the solution agent.
+
+```typescript
+import {
+  ShellLayoutComponent,
+  WorkflowFacade,
+  provideWorkflowBuilderUi,
+} from 'enso-workflow-builder';
+```
 
 ```html
 <div class="host-panel">

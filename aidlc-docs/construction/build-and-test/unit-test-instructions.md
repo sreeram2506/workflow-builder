@@ -10,21 +10,21 @@ npm test
 (`package.json`: `ng test --watch=false`, Vitest.)
 
 ### 2. Review Test Results
-- **Expected**: 298 tests pass, 0 failures (40 files)
+- **Expected**: 300 tests pass, 0 failures (41 files)
 - **Test Coverage**: not gated
 - **Test Report Location**: terminal (Vitest)
 
-Verified 2026-08-19: 298 passed / 40 files.
+Verified 2026-08-19: 300 passed / 41 files.
 
 ### 3. Fix Failing Tests
 1. Read Vitest output
 2. Fix source or spec
 3. Rerun `npm test`
 
-**U-HE-01 focus**
-- `workflow.serialize.spec.ts` — `parseWorkflowUnknown` non-object fail; missing `schemaVersion` still parses; PBT JSON + object round-trip
-- `workflow.facade.spec.ts` — valid load; invalid load keeps last good; dirty after edit / clean after Save; `getDocument` flushes nested; persist.save/run vs defaults; instance save wins over provider
-- `shell-layout.embed-contract.spec.ts` — `[document]` load + `documentChange`; invalid payload keeps graph; bound `(save)` skips `saveDownload`; Export still wired; shells not `100vh`
+**U-NP-01 focus**
+- `src/public-package-api.spec.ts` — import from `'enso-workflow-builder'`; shells, `provideWorkflowBuilderUi`, `WorkflowFacade`; selectors `wb-shell-layout` / `wb-agent-skills-shell`
 
 **Regression (prior units)**
+- Host embed contract (`shell-layout.embed-contract.spec.ts`, facade load/dirty/persist)
+- Serialize PBT Partial (`workflow.serialize.spec.ts`)
 - Agent enter without tabs, Host Properties, palettes, chrome flags, Condition edges, Router connectors

@@ -1,14 +1,14 @@
 # Performance Test Instructions
 
 ## Purpose
-No load/stress suite for this increment. U-HE-01 is host document I/O, persist hooks, and shell height.
+No load/stress suite for this increment. U-NP-01 is ng-packagr packaging + `npm pack`.
 
 ## Performance Requirements
-N/A — NFR Requirements/Design skipped. No response-time, throughput, or concurrent-user targets for this SPA increment. DR N/A.
+N/A — NFR Requirements/Design skipped. No response-time, throughput, or concurrent-user targets. DR N/A (client library).
 
 ## Setup / Run
 N/A.
 
-Optional: `npm test` (PBT Partial on `parseWorkflowUnknown` / serialize round-trip in `workflow.serialize.spec.ts`).
+Optional: `npm test` (existing PBT Partial on serialize / `parseWorkflowUnknown` in `workflow.serialize.spec.ts`).
 
-Bundle budget warning (~604 kB vs 500 kB) is accepted as a warning, not a test failure.
+SPA bundle budget warning (~604 kB vs 500 kB) is accepted as a warning, not a test failure.

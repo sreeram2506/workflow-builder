@@ -86,6 +86,26 @@
           }
         }
       }
+    },
+    "enso-workflow-builder": {
+      "projectType": "library",
+      "root": "projects/enso-workflow-builder",
+      "sourceRoot": "projects/enso-workflow-builder/src",
+      "prefix": "wb",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/enso-workflow-builder/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/enso-workflow-builder/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

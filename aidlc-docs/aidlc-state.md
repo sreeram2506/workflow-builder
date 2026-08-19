@@ -3,34 +3,31 @@
 ## Project Information
 - **Project Name**: Angular Workflow Builder
 - **Project Type**: Greenfield origin; brownfield increment
-- **Start Date**: 2026-08-19T07:44:00Z
-- **Current Stage**: COMPLETE — Host embed contract (Operations placeholder)
-- **Current Phase**: OPERATIONS (placeholder)
-- **Current Unit**: —
-- **Active Increment**: Host embed contract — COMPLETE
+- **Start Date**: 2026-08-19T10:57:00Z
+- **Current Stage**: OPERATIONS — PLACEHOLDER (increment COMPLETE)
+- **Current Phase**: OPERATIONS
+- **Current Unit**: U-NP-01 npm package publish — COMPLETE
+- **Active Increment**: npm package publish (`enso-workflow-builder`) — COMPLETE
 
 ## Workspace State
 - **Existing Code**: Yes
 - **Programming Languages**: TypeScript, HTML, SCSS (Angular)
 - **Build System**: npm / Angular CLI / Vitest
-- **Project Structure**: Monolith SPA (workflow canvas + embeddable shells)
+- **Project Structure**: Monolith SPA + planned ng-packagr library
 - **Workspace Root**: `/Users/sreeram/ofcwork/workflow-builder`
-- **Reverse Engineering Needed**: No (skipped — scoped brownfield; prior increments skipped RE)
+- **Reverse Engineering Needed**: No (skipped — scoped brownfield packaging increment)
 - **Prior Increment**: Host embed contract (U-HE-01) — COMPLETE
-- **Earlier Increment**: Enter agent without tab bar (U-AE-01) — COMPLETE
 
 ## Extension Configuration
 | Extension | Enabled | Mode | Decided At |
 |---|---|---|---|
-| Security Baseline | Yes | New-code scoped (Q5=A) | Host-embed-contract RA |
-| Resiliency Baseline | Yes | Directional; DR N/A (SPA increment) | Host-embed-contract RA |
-| Property-Based Testing | Yes | Partial (Q7=B) | Host-embed-contract RA |
+| Security Baseline | Yes | New-code scoped (Q6=A) | npm-package RA |
+| Resiliency Baseline | Yes | Directional; DR N/A (library increment) | npm-package RA |
+| Property-Based Testing | Yes | Partial (Q8=B) | npm-package RA |
 
 ## Execution Plan Summary
 - **Approved**: Yes (Q1=A)
-- **Plan file**: `aidlc-docs/inception/plans/host-embed-contract-execution-plan.md`
-- **Execute**: Units Generation (1× U-HE-01), Code Generation, Build and Test, Operations placeholder
-- **Skip**: Application Design, Functional Design, NFR Requirements/Design, Infrastructure Design
+- **Plan file**: `aidlc-docs/inception/plans/npm-package-execution-plan.md`
 
 ## Code Location Rules
 - **Application Code**: Workspace root (NEVER in aidlc-docs/)
@@ -38,25 +35,25 @@
 
 ## Stage Progress
 
-### INCEPTION — Host embed contract
+### INCEPTION — npm package publish
 - [x] Workspace Detection
 - [x] Reverse Engineering — SKIP
 - [x] Requirements Analysis — approved
 - [x] User Stories — approved
 - [x] Workflow Planning — approved (Q1=A)
 - [x] Application Design — SKIP
-- [x] Units Generation — approved (U-HE-01)
+- [x] Units Generation — approved (Q1–Q4=A; 1 unit U-NP-01)
 
-### CONSTRUCTION
-- [x] Code Generation Part 1 — plan approved
-- [x] Code Generation Part 2 — approved
-- [x] Build and Test — approved
+### CONSTRUCTION — U-NP-01
 - [x] Functional Design — SKIP
-- [x] NFR Requirements/Design — SKIP
+- [x] NFR Requirements — SKIP
+- [x] NFR Design — SKIP
 - [x] Infrastructure Design — SKIP
+- [x] Code Generation — approved
+- [x] Build and Test — approved
 
 ### OPERATIONS
-- [x] Operations — PLACEHOLDER (`aidlc-docs/operations/host-embed-contract-operations-placeholder.md`)
+- [x] Operations — PLACEHOLDER
 
 ## Current Status
 - **Lifecycle Phase**: COMPLETE (increment)
@@ -67,3 +64,7 @@
 - **Current Stage**: More Changes R61 — uniform handle colors; no invented agent descriptions
 - **Blocked On**: Request Changes or Done after hard-refresh verify
 - **Timestamp**: 2026-08-19T10:10:21Z
+- **Lifecycle Phase**: OPERATIONS (placeholder)
+- **Current Stage**: Increment complete
+- **Blocked On**: None — request new work or later `npm publish`
+- **Timestamp**: 2026-08-19T13:21:00Z

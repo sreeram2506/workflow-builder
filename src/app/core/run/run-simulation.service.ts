@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Subject, Subscription, concatMap, delay, finalize, from, of, takeUntil, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../builder-env';
 import { computeRunOrder } from '../domain/run-order';
 import type { NodeStatus } from '../domain/workflow.models';
 import { GraphStore } from '../stores/graph.store';

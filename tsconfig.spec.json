@@ -2,7 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "enso-workflow-builder": ["./projects/enso-workflow-builder/src/public-api.ts"]
+    }
   },
   "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
 }

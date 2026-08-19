@@ -4924,6 +4924,119 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 **AI Prompt**: "Increment complete. Operations is a placeholder. Wait for an explicit new request before starting another increment."
 
 ---
+## Workspace Detection + Requirements Analysis — npm package publish
+**Timestamp**: 2026-08-19T10:57:00Z
+**User Input**: "publish this as npm package "
+**AI Response**: "New increment. Workspace Detection: brownfield SPA; RE skipped (scoped packaging, same as prior). Opened RA questions Q1–Q8 (publish meaning, layout, name, public API, peerDeps, extensions)."
+**Context**: INCEPTION Workspace Detection + Requirements Analysis — npm package publish
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/requirements/npm-package-requirement-verification-questions.md then reply in chat (e.g. answered)."
+
+---
+## Requirements Analysis — artifacts generated; awaiting approval
+**Timestamp**: 2026-08-19T11:01:00Z
+**User Input**: "answered"
+**AI Response**: "Validated Q1–Q8: A A X(enso-workflow-builder) A A A A B. Wrote npm-package-requirements.md. Extensions: Security Yes; Resiliency Yes; PBT Partial. User Stories will execute (host-facing npm API). Awaiting Approve & Continue to User Stories."
+**Context**: INCEPTION Requirements Analysis — npm package publish
+**Answers**: Q1=A · Q2=A · Q3=X (enso-workflow-builder) · Q4=A · Q5=A · Q6=A · Q7=A · Q8=B
+**AI Prompt**: "REVIEW REQUIRED: Please examine the requirements document at: aidlc-docs/inception/requirements/npm-package-requirements.md. Request Changes or Approve & Continue to User Stories."
+
+---
+## User Stories Part 1 — plan OPEN
+**Timestamp**: 2026-08-19T11:02:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Requirements approved. Assessment: execute stories (host-facing npm package). Opened npm-package-story-generation-plan.md (5 questions). No story artifacts yet."
+**Context**: INCEPTION User Stories Part 1 — npm package publish
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/npm-package-story-generation-plan.md then reply in chat (e.g. answered)."
+
+---
+## User Stories Part 2 — generated; awaiting approval
+**Timestamp**: 2026-08-19T11:04:00Z
+**User Input**: "answeres"
+**AI Response**: "Treated as answered. Validated Q1–Q5 all A. Generated npm-package-stories.md (US-NP-01..04); personas.md additive. Awaiting Approve & Continue to Workflow Planning."
+**Context**: INCEPTION User Stories Part 2 — npm package publish
+**Answers**: Q1=A · Q2=A · Q3=A · Q4=A · Q5=A
+**AI Prompt**: "REVIEW REQUIRED: Please examine the user stories and personas at: aidlc-docs/inception/user-stories/npm-package-stories.md and aidlc-docs/inception/user-stories/personas.md. Request Changes or Approve & Continue to Workflow Planning."
+
+---
+## Workflow Planning — plan OPEN
+**Timestamp**: 2026-08-19T11:05:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Stories approved. Opened npm-package-execution-plan.md. Recommended Q1=A: skip AD/FD/NFR/Infra; 1 unit then CG. Awaiting answers."
+**Context**: INCEPTION Workflow Planning — npm package publish
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/npm-package-execution-plan.md then reply in chat (e.g. answered)."
+
+---
+## Workflow Planning — Approved; Units Generation planning
+**Timestamp**: 2026-08-19T11:10:00Z
+**User Input**: "answered"
+**AI Response**: "Execution plan approved as Q1=A (skip AD/FD/NFR/Infra; 1 unit then CG). Opened npm-package-unit-of-work-plan.md (Q1–Q4). No unit artifacts yet. No code."
+**Context**: INCEPTION Units Generation Part 1 — npm package publish
+**Answers**: Execution plan Q1=A
+**AI Prompt**: "Fill [Answer]: tags in aidlc-docs/inception/plans/npm-package-unit-of-work-plan.md then reply in chat (e.g. answered)."
+
+---
+## Units Generation Part 1 — Q1 blank; not generating artifacts
+**Timestamp**: 2026-08-19T11:11:00Z
+**User Input**: "answered"
+**AI Response**: "Q2–Q4 are A. Question 1 [Answer]: is empty. Did not generate unit artifacts. Asked user to fill Q1 (recommended A — all stories in U-NP-01)."
+**Context**: INCEPTION Units Generation Part 1 — npm package publish
+**AI Prompt**: "Fill [Answer]: for Question 1 in aidlc-docs/inception/plans/npm-package-unit-of-work-plan.md (A recommended), then reply in chat."
+
+---
+## Units Generation Part 2 — artifacts generated
+**Timestamp**: 2026-08-19T11:12:00Z
+**User Input**: "answered"
+**AI Response**: "Q1–Q4 all A. Generated npm-package-unit-of-work.md, dependency.md, and story-map.md. Plan locked. Awaiting Approve & Continue to CONSTRUCTION (Code Generation for U-NP-01)."
+**Context**: INCEPTION Units Generation Part 2 — npm package publish
+**AI Prompt**: "Review aidlc-docs/inception/application-design/npm-package-unit-of-work*.md. Request Changes or Approve & Continue to CONSTRUCTION."
+
+---
+## Units Generation — approved; CONSTRUCTION Code Generation Part 1
+**Timestamp**: 2026-08-19T11:13:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Units Generation approved. Skipped Functional Design, NFR Requirements/Design, and Infrastructure Design per execution plan Q1=A. Created aidlc-docs/construction/plans/u-np-01-npm-package-code-generation-plan.md. Did not generate application code. Awaiting plan approval before Part 2."
+**Context**: INCEPTION Units Generation approved → CONSTRUCTION Code Generation Part 1 — U-NP-01 npm package publish
+**AI Prompt**: "Review aidlc-docs/construction/plans/u-np-01-npm-package-code-generation-plan.md. Request Changes or approve the plan to run Part 2 (library project, barrel, styles, pack, docs, SPA tests). Do not run npm publish."
+
+---
+## Code Generation Part 1 — plan approved; Part 2 started
+**Timestamp**: 2026-08-19T11:16:00Z
+**User Input**: "Approve this plan"
+**AI Response**: "CG plan approved. Started Part 2 for U-NP-01: library project, public-api barrel, styles, path mapping, pack (no npm publish), embed docs, SPA tests."
+**Context**: CONSTRUCTION Code Generation Part 2 — U-NP-01 npm package publish
+
+---
+## Code Generation Part 2 — complete
+**Timestamp**: 2026-08-19T11:25:00Z
+**User Input**: "Approve this plan"
+**AI Response**: "Generated ng-packagr library enso-workflow-builder@0.1.0, public-api barrel, tokens.css, npm pack tarball (no npm publish), embed docs, public API spec. npm test 300 passed; SPA build success. Awaiting Request Changes or Continue to Next Stage (Build and Test)."
+**Context**: CONSTRUCTION Code Generation Part 2 COMPLETE — U-NP-01
+**AI Prompt**: "Review generated library at projects/enso-workflow-builder and docs/workflow-builder-ui-embed.md. Request Changes or Continue to Next Stage (Build and Test)."
+
+---
+## Code Generation — approved; Build and Test generated
+**Timestamp**: 2026-08-19T13:17:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "Code Generation approved. Wrote aidlc-docs/construction/build-and-test instructions for U-NP-01 (library build, pack, SPA tests, tarball hygiene). Did not run npm publish. Awaiting Approve & Continue to Operations."
+**Context**: CONSTRUCTION Build and Test — U-NP-01 npm package publish
+**Build Status**: Success
+**Test Status**: Pass (300 unit tests; library pack verified)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- security-test-instructions.md
+- build-and-test-summary.md
+
+---
+## Build and Test — approved; Operations placeholder
+**Timestamp**: 2026-08-19T13:21:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Build and Test approved. Wrote aidlc-docs/operations/npm-package-operations-placeholder.md. Increment complete. Did not run npm publish. Workflow ends here until new work or an explicit publish request."
+**Context**: OPERATIONS PLACEHOLDER — npm package publish (U-NP-01) COMPLETE
+
+---
 
 
 
