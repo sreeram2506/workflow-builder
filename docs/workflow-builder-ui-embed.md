@@ -1,19 +1,19 @@
 # Embed Workflow Builder UI config
 
-Install **`enso-workflow-builder`** `@0.1.0` in a host Angular 20 app. Peer dependencies: `@angular/core`, `@angular/common`, `@angular/forms`, `@angular/platform-browser`, `@angular/router`, `@angular/cdk`, `rxjs`, `zone.js`. The library does **not** bundle Angular.
+Install **`enso-workflow-builder`** `@0.1.1` in a host Angular 20 app. Peer dependencies: `@angular/core`, `@angular/common`, `@angular/forms`, `@angular/platform-browser`, `@angular/router`, `@angular/cdk`, `rxjs`, `zone.js`. The library does **not** bundle Angular.
 
 ```bash
 npm install enso-workflow-builder
 ```
 
-Until the package is on a registry, pack it from this repo and install the tarball:
+Local tarball (optional):
 
 ```bash
 npm run pack:lib
-npm install ./dist/enso-workflow-builder/enso-workflow-builder-0.1.0.tgz
+npm install ./dist/enso-workflow-builder/enso-workflow-builder-0.1.1.tgz
 ```
 
-`npm publish` from `dist/enso-workflow-builder` is a later step (needs registry auth). This repo does not run publish as part of the library increment. `src/app/try/` is gitignored and is not in the tarball.
+Publish from `dist/enso-workflow-builder` (not the repo root). `src/app/try/` is gitignored and is not in the tarball.
 
 Host apps and the SPA can control chrome via `provideWorkflowBuilderUi` and/or `/assets/wb-ui-config.json`.
 

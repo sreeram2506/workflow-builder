@@ -11,9 +11,9 @@ npm run build:lib
 npm run pack:lib
 ```
 
-That produces `enso-workflow-builder-0.1.0.tgz` under `dist/enso-workflow-builder/`. Install the tarball in a host with `npm install ./path/to/enso-workflow-builder-0.1.0.tgz`.
+That produces `enso-workflow-builder-0.1.1.tgz` under `dist/enso-workflow-builder/`. Install the tarball in a host with `npm install ./path/to/enso-workflow-builder-0.1.1.tgz`.
 
-`npm publish` from `dist/enso-workflow-builder` is a later step (registry auth). Do not publish `src/app/try/` or secrets.
+Publish from `dist/enso-workflow-builder` (not the repo root). Do not publish `src/app/try/` or secrets.
 
 ## Host install
 

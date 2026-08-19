@@ -16,6 +16,8 @@ The product is a client Angular library plus the existing SPA demo:
 - `npm publish` was **not** run this increment
 - `src/app/try/` remains gitignored and is not in the tarball
 
+**Publish 2026-08-19:** `enso-workflow-builder@0.1.0` is already on npm (`sreeram2506`). `0.1.1` was built (tab-strip sticky `[ui]` + dblclick capture) but `npm publish` from `dist/enso-workflow-builder` failed with **EOTP** (authenticator code required).
+
 No cloud deployable, monitoring stack, or registry publish pipeline is generated here.
 
 ## Future scope (when Operations expands)

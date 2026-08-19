@@ -59,5 +59,5 @@
 - **Lifecycle Phase**: COMPLETE (npm package increment) + post-ops polish documented
 - **Current Stage**: Operations placeholder acknowledged; U-AE-01 dblclick follow-up recorded in construction summaries
 - **Post-ops (2026-08-19)**: Sticky instance `[ui]` so `/agent/:id` does not show the tab strip when `agentTabs.enabled` is false; pointer-capture delay for dblclick enter
-- **Blocked On**: Explicit new request before another increment (or later `npm publish` with OTP)
-- **Timestamp**: 2026-08-19T15:48:00Z
+- **Blocked On**: npm 2FA OTP to publish `enso-workflow-builder@0.1.1` (0.1.0 already on registry)
+- **Timestamp**: 2026-08-19T15:52:22Z

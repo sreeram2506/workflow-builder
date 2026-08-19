@@ -5095,3 +5095,27 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 **Context**: Post-ops follow-up — routed nested shell was resetting chrome to defaults and openAgentTab added a chip.
 
 ---
+
+## Operations — npm publish requested
+**Timestamp**: 2026-08-19T15:50:00Z
+**User Input**: "publish package"
+**AI Response**: "Rebuild enso-workflow-builder and publish from dist/enso-workflow-builder (not repo root). Do not write tokens into the repo."
+**Context**: Explicit user request to publish U-NP-01 package after post-ops tab-strip fix.
+
+---
+
+## Operations — npm publish blocked on OTP
+**Timestamp**: 2026-08-19T15:52:22Z
+**User Input**: "publish package"
+**AI Response**: "0.1.0 already on npm as sreeram2506. Bumped to 0.1.1, built dist, npm publish --access public from dist/enso-workflow-builder. Failed EOTP (2FA). Waiting for --otp from the user. Did not write tokens to the repo."
+**Context**: npm whoami=sreeram2506; registry already has 0.1.0; 0.1.1 not published yet.
+
+---
+
+## Operations — publish from repo root (wrong package)
+**Timestamp**: 2026-08-19T15:53:00Z
+**User Input**: "@/Users/sreeram/.cursor/projects/Users-sreeram-ofcwork-workflow-builder/terminals/8.txt:1028-1031"
+**AI Response**: "Command was not cd into dist: last_command was `d dist/enso-workflow-builder && npm publish`. npm packed the SPA workflow-builder@0.0.0 (907 files, aidlc-docs, src). Registry already has workflow-builder@0.4.3 so latest tag was refused. Do not --tag that. Publish only dist/enso-workflow-builder @ 0.1.1 with OTP."
+**Context**: User hit EOTP-adjacent latest-tag error from publishing the wrong package at repo root.
+
+---
