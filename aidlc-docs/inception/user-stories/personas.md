@@ -32,7 +32,7 @@
 - Connect steps correctly and configure node properties
 - See a host-loaded `[document]` on the canvas (not only the SPA empty graph)
 - Save still downloads JSON when the host did not supply a Save handler; Run still simulates when the host did not supply a Run handler
-- Double-click a Blank Agent / AIAgent to open its nested canvas even when the host hid the agent tab bar
+- Double-click a Blank Agent / AIAgent to open its nested canvas even when the host hid the agent tab bar, unless the host set `agentTabs.doubleClick` false
 - Return from nested canvas via tab Solution chip (bar on) or nested Back / Solution (bar off)
 - Validate flow with simulated Run
 - Export/import JSON for sharing within the team
@@ -63,7 +63,7 @@
 - Open/view an existing in-memory workflow state
 - Pan/zoom/inspect nodes and edges safely
 - Confirm configuration via properties panel in read-only presentation (including host schema fields)
-- Open a nested agent in view via double-click (read nested canvas; no structural edits)
+- Open a nested agent in view via double-click when `agentTabs.doubleClick` is true (read nested canvas; no structural edits); view dblclick does not enter when the flag is false
 - Optionally observe a simulated Run if enabled in view mode (if Run remains available; must not mutate structure)
 
 ### Frustrations
@@ -95,6 +95,7 @@
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
 - Pass optional `propertiesSchema` on palette items (copied onto the node) and/or `provideWorkflowBuilderUi({ properties })` so Properties is host-driven
 - Hide the agent tab strip (`agentTabs.enabled`) without blocking double-click enter or nested Back
+- Turn canvas double-click enter on or off via `agentTabs.doubleClick` (default true; independent of the strip)
 - Bind `[document]` and `(documentChange)` so the host owns persistence
 - Optionally hook Save and Run (`persist.save` / `persist.run`) so blob download and simulated Run are not used
 - Place the shell in a fixed-height panel and have it fill that box (`height: 100%`)
@@ -126,7 +127,8 @@
 - Extra logic cards replace the three built-in featured shapes when `[palettes]` is present
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
 - Properties schema on palettes / adapter renders generic fields; no Enso-named public API; blobs stay uninterpreted
-- `agentTabs.enabled` false hides the strip; double-click still opens `/agent/:id`; nested Back still returns
+- `agentTabs.enabled` false hides the strip; double-click still opens `/agent/:id` when `doubleClick` is true; nested Back still returns
+- `agentTabs.doubleClick: false` stops canvas dblclick enter; chip click still enters when the strip is on; both false means no builder enter
 - `[document]` loads a graph; invalid payload keeps last good + status
 - Save/Run handlers receive the document when set; otherwise download / simulate remain
 - Shell fills the host panel (`100%`), not `100vh`
@@ -157,7 +159,7 @@
 | Nested skills from agent-shell `[palettes]` | Sees matching nested list | Sees result | Primary |
 | Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
 | Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
-| Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`) |
+| Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`, `agentTabs.doubleClick`) |
 | Host `[document]` / Save / Run hooks / fill-host | Sees loaded graph; Save/Run defaults | View Save still off | Primary |
 | npm package `enso-workflow-builder` | Sees result in demo SPA | Sees result | Primary |
 | UI feature flags / embed provider | Sees result | Sees result | Primary |

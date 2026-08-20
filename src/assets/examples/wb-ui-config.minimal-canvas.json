@@ -3,7 +3,8 @@
     "enabled": true
   },
   "agentTabs": {
-    "enabled": true
+    "enabled": true,
+    "doubleClick": true
   },
   "agentsLibrary": {
     "enabled": false

@@ -33,6 +33,16 @@ const partialArb: fc.Arbitrary<UiFeaturesPartial> = fc.record(
       ),
       { nil: undefined },
     ),
+    agentTabs: fc.option(
+      fc.record(
+        {
+          enabled: fc.option(bool, { nil: undefined }),
+          doubleClick: fc.option(bool, { nil: undefined }),
+        },
+        { requiredKeys: [] },
+      ),
+      { nil: undefined },
+    ),
     canvas: fc.option(
       fc.record(
         {
@@ -176,6 +186,25 @@ describe('merge-ui-features PBT', () => {
         }
       }),
       { numRuns: 50 },
+    );
+  });
+
+  it('agentTabs.doubleClick: omit keeps true; explicit false wins; independent of enabled', () => {
+    fc.assert(
+      fc.property(bool, bool, (enabled, doubleClick) => {
+        const omitted = mergeUiFeatures(createDefaultUiFeatures(), { agentTabs: { enabled } });
+        expect(omitted.agentTabs.doubleClick).toBe(true);
+        const merged = mergeUiFeatures(createDefaultUiFeatures(), {
+          agentTabs: { enabled, doubleClick },
+        });
+        expect(merged.agentTabs.enabled).toBe(enabled);
+        expect(merged.agentTabs.doubleClick).toBe(doubleClick);
+        const fromFalse = mergeUiFeatures(createDefaultUiFeatures(), {
+          agentTabs: { doubleClick: false },
+        });
+        expect(fromFalse.agentTabs.doubleClick).toBe(false);
+      }),
+      { numRuns: 30 },
     );
   });
 });

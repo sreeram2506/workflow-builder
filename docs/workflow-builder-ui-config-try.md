@@ -86,4 +86,4 @@ See `all-on.json` for every path, or the flag table in [workflow-builder-ui-embe
 
 Dot paths for `UiConfigService.is()`:
 
-`topBar.*`, `agentTabs.enabled`, `agentsLibrary.enabled`, `skillsLibrary.enabled`, `propertiesPanel.enabled`, `canvas.*` (including `canvas.layoutControls`). Theme is `topBar.theme` (not a root `themeToggle` key). Palette is `features().palette` (not `is()` paths): `palette.solution.types`, `palette.solution.defaultAgents`, `palette.agent.types`.
+`topBar.*`, `agentTabs.enabled`, `agentTabs.doubleClick`, `agentsLibrary.enabled`, `skillsLibrary.enabled`, `propertiesPanel.enabled`, `canvas.*` (including `canvas.layoutControls`). Theme is `topBar.theme` (not a root `themeToggle` key). Palette is `features().palette` (not `is()` paths): `palette.solution.types`, `palette.solution.defaultAgents`, `palette.agent.types`.

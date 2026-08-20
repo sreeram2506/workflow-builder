@@ -388,6 +388,9 @@ export class CanvasViewportComponent implements AfterViewInit {
       if (!node || node.type !== 'AIAgent') {
         return;
       }
+      if (!this.ui.is('agentTabs.doubleClick')) {
+        return;
+      }
       this.facade.selectAgentTab(payload.nodeId);
     } catch (err) {
       this.facade.setCanvasError(err instanceof Error ? err.message : 'Agent tab error');

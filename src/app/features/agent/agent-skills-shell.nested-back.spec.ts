@@ -59,9 +59,24 @@ describe('AgentSkillsShell nested Back', () => {
     paramMap$.next(convertToParamMap({ nodeId: agentId }));
   });
 
-  it('shows nested Back when the tab strip is off and click returns to solution', () => {
+  it('hides nested Back when the strip is off and doubleClick is on (parent breadcrumb)', () => {
     fixture = TestBed.createComponent(AgentSkillsShellComponent);
-    fixture.componentRef.setInput('ui', { agentTabs: { enabled: false } });
+    fixture.componentRef.setInput('ui', {
+      topBar: { enabled: false },
+      agentTabs: { enabled: false, doubleClick: true },
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="nested-back-to-solution"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.header-overlay')).toBeNull();
+  });
+
+  it('shows nested Back when the strip is off and doubleClick is off', () => {
+    fixture = TestBed.createComponent(AgentSkillsShellComponent);
+    fixture.componentRef.setInput('ui', {
+      agentTabs: { enabled: false, doubleClick: false },
+    });
     fixture.detectChanges();
 
     const back = fixture.nativeElement.querySelector(
@@ -84,7 +99,7 @@ describe('AgentSkillsShell nested Back', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeTruthy();
   });
 
-  it('hides the tab strip on the routed shell when solution [ui] hid tabs (no nested [ui])', () => {
+  it('hides the tab strip and nested Back on the routed shell when solution [ui] hid tabs (dblclick default on)', () => {
     const uiConfig = TestBed.inject(UiConfigService);
     uiConfig.publishInstanceUiOverlay({ agentTabs: { enabled: false } });
     facade.setAgentTabsChromeEnabled(false);
@@ -92,7 +107,7 @@ describe('AgentSkillsShell nested Back', () => {
     fixture = TestBed.createComponent(AgentSkillsShellComponent);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('[data-testid="nested-back-to-solution"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="nested-back-to-solution"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="agent-tabs-strip"]')).toBeNull();
     expect(facade.agentTabsChromeEnabled()).toBe(false);
   });

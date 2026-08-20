@@ -84,7 +84,8 @@ Try steps: [workflow-builder-ui-config-try.md](./workflow-builder-ui-config-try.
 | `topBar.status` | Draft/saved pill |
 | `topBar.theme` | Theme toggle |
 | `topBar.editView` | Edit / View toggle |
-| `agentTabs.enabled` | Agent tabs **strip** (independent of top bar). Hides chips only — it does **not** block `/agent/:id`. Double-click a Blank Agent / AIAgent on the **solution** canvas still enters. When the strip is not mounted, the nested shell shows a **Solution** Back control. Clicking the same library agent still focuses the existing node instead of duplicating it (when the strip is on). |
+| `agentTabs.enabled` | Agent tabs **strip** (independent of top bar). Hides chips only — it does **not** block `/agent/:id`. Double-click a Blank Agent / AIAgent on the **solution** canvas still enters **when** `agentTabs.doubleClick` is true (default). Clicking the same library agent still focuses the existing node instead of duplicating it (when the strip is on). |
+| `agentTabs.doubleClick` | Canvas enter-on-dblclick for Blank Agent / AIAgent. Default `true`. Independent of `agentTabs.enabled`. When `false`, canvas dblclick does not navigate; chip single-click still enters if the strip is on. Both flags `false` means no nested enter from builder chrome. Nested **Solution** Back is shown only when the strip is off **and** this flag is `false`. When the strip is off and this flag is `true`, the nested shell does **not** show that pill — the host breadcrumb owns back. |
 | `agentsLibrary.enabled` | Solution left library |
 | `skillsLibrary.enabled` | Nested agent left library |
 | `propertiesPanel.enabled` | Right properties panel |
@@ -106,7 +107,19 @@ Palette allow-lists are independent per canvas. `"Router"` is not a type key (us
 
 ### Nested agent enter / exit
 
-`agentTabs.enabled` is tab-strip chrome. It does not gate `/agent/:id`. Double-click a solution **AIAgent** still enters when the strip is off.
+`agentTabs.enabled` is tab-strip chrome. It does not gate `/agent/:id`. Double-click a solution **AIAgent** still enters when the strip is off **and** `agentTabs.doubleClick` is true (default).
+
+Hosts pass both leaves like other chrome:
+
+```typescript
+provideWorkflowBuilderUi({
+  features: {
+    agentTabs: { enabled: false, doubleClick: true },
+  },
+});
+```
+
+`doubleClick: false` blocks canvas dblclick only. Chip single-click still enters when the strip is on. Both `enabled` and `doubleClick` false means no nested enter from builder chrome. The nested **Solution** pill is omitted for `{ enabled: false, doubleClick: true }` so a parent breadcrumb can own exit.
 
 Hosts **must** register the nested route (the library navigates to `/agent/:nodeId`):
 
@@ -121,11 +134,12 @@ export const routes: Routes = [
 
 If that route is missing, double-click does not show the nested canvas — the solution shell stays mounted.
 
-`selectAgentTab` **replaces** the solution shell with `wb-agent-skills-shell`. That nested instance often has **no** `[ui]` input. The last `[ui]` bound on `wb-shell-layout` stays applied so `agentTabs.enabled: false` still hides the chip strip and shows **Solution** Back. Bind `[ui]` on the nested shell (wrapper route) only when nested chrome should differ.
+`selectAgentTab` **replaces** the solution shell with `wb-agent-skills-shell`. That nested instance often has **no** `[ui]` input. The last `[ui]` bound on `wb-shell-layout` stays applied so `agentTabs.enabled: false` still hides the chip strip. Bind `[ui]` on the nested shell (wrapper route) only when nested chrome should differ.
 
-- **Enter:** double-click a Blank Agent / AIAgent on the solution canvas, or click a chip when the strip is on.
-- **Exit without the strip:** nested shell **Solution** control (`navigateBackToSolution`). It does not require open chips.
-- Nested canvas double-click does not enter another agent. View mode still enters; nested graph edits stay blocked.
+- **Enter:** double-click a Blank Agent / AIAgent on the solution canvas when `agentTabs.doubleClick` is true, or click a chip when the strip is on.
+- **Exit when strip off + dblclick on:** host breadcrumb (or router). The nested **Solution** pill is not mounted.
+- **Exit when strip off + dblclick off:** nested shell **Solution** control (`navigateBackToSolution`). It does not require open chips.
+- Nested canvas double-click does not enter another agent. View mode still enters when `doubleClick` is true; nested graph edits stay blocked. View-mode dblclick does not enter when `doubleClick` is false.
 
 Do not put secrets in UI config, palette items, or embed examples.
 

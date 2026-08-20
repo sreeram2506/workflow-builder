@@ -19,6 +19,7 @@ export interface TopBarFeatures {
 
 export interface AgentTabsFeatures {
   enabled: boolean;
+  doubleClick: boolean;
 }
 
 export interface AgentsLibraryFeatures {
@@ -131,6 +132,7 @@ export const UI_FEATURE_PATHS = [
   'topBar.theme',
   'topBar.editView',
   'agentTabs.enabled',
+  'agentTabs.doubleClick',
   'agentsLibrary.enabled',
   'skillsLibrary.enabled',
   'propertiesPanel.enabled',

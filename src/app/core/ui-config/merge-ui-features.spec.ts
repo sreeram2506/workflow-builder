@@ -16,6 +16,7 @@ describe('merge-ui-features', () => {
     expect(d.topBar.theme).toBe(true);
     expect(d.canvas.save).toBe(true);
     expect(d.agentTabs.enabled).toBe(true);
+    expect(d.agentTabs.doubleClick).toBe(true);
     expect(d.agentsLibrary.enabled).toBe(true);
     expect(d.skillsLibrary.enabled).toBe(true);
     expect(d.propertiesPanel.enabled).toBe(true);
@@ -130,7 +131,7 @@ describe('merge-ui-features', () => {
         theme: false,
         editView: false,
       },
-      agentTabs: { enabled: false },
+      agentTabs: { enabled: false, doubleClick: false },
       agentsLibrary: { enabled: false },
       skillsLibrary: { enabled: false },
       propertiesPanel: { enabled: false },
@@ -153,6 +154,7 @@ describe('merge-ui-features', () => {
     expect(resolved.canvas.minimap).toBe(false);
     expect(resolved.canvas.layoutControls).toBe(false);
     expect(resolved.topBar.theme).toBe(false);
+    expect(resolved.agentTabs.doubleClick).toBe(false);
   });
 
   it('palette defaults are show-all and omitted defaultAgents', () => {
@@ -272,5 +274,22 @@ describe('merge-ui-features', () => {
     const json = normalizePartial({ palette: { solution: { types: [] } } });
     const resolved = resolveUiFeatures(json, {});
     expect(resolved.palette.solution.types).toEqual({ mode: 'only', types: [] });
+  });
+
+  it('agentTabs.doubleClick defaults true and is independent of enabled', () => {
+    expect(createDefaultUiFeatures().agentTabs.doubleClick).toBe(true);
+    const omitted = mergeUiFeatures(createDefaultUiFeatures(), { agentTabs: { enabled: false } });
+    expect(omitted.agentTabs.enabled).toBe(false);
+    expect(omitted.agentTabs.doubleClick).toBe(true);
+    const bothOff = mergeUiFeatures(createDefaultUiFeatures(), {
+      agentTabs: { enabled: false, doubleClick: false },
+    });
+    expect(bothOff.agentTabs.enabled).toBe(false);
+    expect(bothOff.agentTabs.doubleClick).toBe(false);
+    const explicitFalse = mergeUiFeatures(createDefaultUiFeatures(), {
+      agentTabs: { doubleClick: false },
+    });
+    expect(explicitFalse.agentTabs.enabled).toBe(true);
+    expect(explicitFalse.agentTabs.doubleClick).toBe(false);
   });
 });

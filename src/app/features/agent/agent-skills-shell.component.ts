@@ -71,7 +71,7 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
             @if (effectiveUi.is('agentTabs.enabled')) {
               <wb-agent-tabs />
             }
-            @if (!effectiveUi.is('agentTabs.enabled')) {
+            @if (nestedSolutionBackShown()) {
               <button
                 type="button"
                 class="nested-back"
@@ -198,12 +198,20 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
     mergeInstanceUiFeatures(this.uiConfig.features(), this.uiConfig.instanceUiForMerge(this.ui())),
   );
   readonly effectiveUi = createEffectiveUiReader(() => this.effectiveFeatures());
-  /** Top bar, tab strip, or nested Back when the strip is not mounted. */
+  /**
+   * Nested Solution Back when the strip is off and canvas dblclick enter is off.
+   * Embed combo (strip off + dblclick on) leaves exit to the parent breadcrumb.
+   */
+  readonly nestedSolutionBackShown = computed(() => {
+    const tabs = this.effectiveFeatures().agentTabs;
+    return !tabs.enabled && !tabs.doubleClick;
+  });
+  /** Top bar, open chips, or nested Back when that control is mounted. */
   readonly headerOverlayShown = computed(() => {
     const features = this.effectiveFeatures();
     return (
       features.topBar.enabled ||
-      !features.agentTabs.enabled ||
+      this.nestedSolutionBackShown() ||
       this.facade.agentTabs().length > 0
     );
   });

@@ -28,7 +28,7 @@ export function createDefaultUiFeatures(): UiFeatures {
       theme: true,
       editView: true,
     },
-    agentTabs: { enabled: true },
+    agentTabs: { enabled: true, doubleClick: true },
     agentsLibrary: { enabled: true },
     skillsLibrary: { enabled: true },
     propertiesPanel: { enabled: true },
@@ -102,7 +102,7 @@ export function normalizePartial(raw: unknown): UiFeaturesPartial {
     };
   }
   if ('agentTabs' in raw) {
-    partial.agentTabs = pickBooleanLeaves(raw['agentTabs'], ['enabled']);
+    partial.agentTabs = pickBooleanLeaves(raw['agentTabs'], ['enabled', 'doubleClick']);
   }
   if ('agentsLibrary' in raw) {
     partial.agentsLibrary = pickBooleanLeaves(raw['agentsLibrary'], ['enabled']);
@@ -359,6 +359,7 @@ export function buildPathIndex(features: UiFeatures): ReadonlyMap<UiFeaturePath,
   map.set('topBar.theme', features.topBar.theme);
   map.set('topBar.editView', features.topBar.editView);
   map.set('agentTabs.enabled', features.agentTabs.enabled);
+  map.set('agentTabs.doubleClick', features.agentTabs.doubleClick);
   map.set('agentsLibrary.enabled', features.agentsLibrary.enabled);
   map.set('skillsLibrary.enabled', features.skillsLibrary.enabled);
   map.set('propertiesPanel.enabled', features.propertiesPanel.enabled);
