@@ -34,7 +34,6 @@ export interface ConnectionDraftView {
             class="edge"
             [attr.d]="edge.d"
             (pointerdown)="onEdgePointerDown($event, edge.id)"
-            (dblclick)="onEdgeDblClick($event, edge.id)"
           />
           <circle class="port-dot" [attr.cx]="edge.x1" [attr.cy]="edge.y1" [attr.r]="handleR" />
           <circle class="port-dot" [attr.cx]="edge.x2" [attr.cy]="edge.y2" [attr.r]="handleR" />
@@ -142,7 +141,6 @@ export class GraphRendererComponent {
   readonly focusedWaypointIndex = input<number | null>(null);
 
   readonly edgeSelect = output<{ edgeId: string; shift: boolean; event: PointerEvent }>();
-  readonly edgeDblClick = output<{ edgeId: string; worldHint: Point; event: MouseEvent }>();
   readonly waypointPointerDown = output<{
     edgeId: string;
     index: number;
@@ -195,16 +193,6 @@ export class GraphRendererComponent {
     event.stopPropagation();
     event.preventDefault();
     this.edgeSelect.emit({ edgeId, shift: event.shiftKey, event });
-  }
-
-  onEdgeDblClick(event: MouseEvent, edgeId: string): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.edgeDblClick.emit({
-      edgeId,
-      worldHint: { x: 0, y: 0 },
-      event,
-    });
   }
 
   onWaypointPointerDown(event: PointerEvent, edgeId: string, index: number): void {

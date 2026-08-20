@@ -88,7 +88,6 @@ const NODE_DRAG_THRESHOLD_PX = 5;
           [focusedEdgeId]="focusedEdgeId()"
           [focusedWaypointIndex]="focusedWaypointIndex()"
           (edgeSelect)="onEdgeSelect($event)"
-          (edgeDblClick)="onEdgeDblClick($event)"
           (waypointPointerDown)="onWaypointPointerDown($event)"
         />
         @for (node of facade.nodes(); track node.id) {
@@ -404,20 +403,6 @@ export class CanvasViewportComponent implements AfterViewInit {
       this.focusedEdgeId.set(payload.edgeId);
     } catch (err) {
       this.facade.setCanvasError(err instanceof Error ? err.message : 'Edge select error');
-    }
-  }
-
-  onEdgeDblClick(payload: { edgeId: string; worldHint: Point; event: MouseEvent }): void {
-    try {
-      const world = screenToWorld(this.toLocalScreen(payload.event), this.facade.viewport());
-      this.facade.selectEdges([payload.edgeId]);
-      const idx = this.facade.addWaypoint(payload.edgeId, world);
-      if (idx != null) {
-        this.focusedEdgeId.set(payload.edgeId);
-        this.focusedWaypointIndex.set(idx);
-      }
-    } catch (err) {
-      this.facade.setCanvasError(err instanceof Error ? err.message : 'Waypoint add error');
     }
   }
 

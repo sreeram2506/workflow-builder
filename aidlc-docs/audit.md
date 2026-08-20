@@ -5351,3 +5351,38 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 **Context**: CONSTRUCTION + OPERATIONS placeholder. Host combo agentTabs.enabled false + doubleClick true has no nested Solution pill.
 
 ---
+
+## Publish how-to requested
+**Timestamp**: 2026-08-20T03:08:00Z
+**User Input**: "how to publish this now "
+**AI Response**: "Documented rebuild + npm publish from dist/enso-workflow-builder @ 0.1.1 with --otp. Do not publish repo-root SPA workflow-builder. Did not run publish (needs authenticator OTP)."
+**Context**: Operations how-to. 0.1.0 already on npm as sreeram2506; 0.1.1 never published.
+
+---
+
+## Publish version question
+**Timestamp**: 2026-08-20T03:10:00Z
+**User Input**: "which package version should i update"
+**AI Response**: "Only projects/enso-workflow-builder/package.json. npm now has 0.1.0 and 0.1.1; next is 0.1.2 (already in that file). Do not bump root SPA package.json 0.0.0."
+**Context**: npm view enso-workflow-builder versions = 0.1.0, 0.1.1.
+
+---
+
+## More Changes R64 — User request (remove connector dblclick waypoints)
+**Timestamp**: 2026-08-20T04:08:00Z
+**User Input**: "i want to do one change after dragiging connector if i click on connector propertiens panel is opening that fine but if im doublie clicking on connector some dot is coming we dont need that i will attach reference remove that func"
+**AI Response**: "Started R64. The screenshot dots are edge waypoints from double-click (`onEdgeDblClick` → `addWaypoint`). Click-to-open-properties stays. Clarification questions written; waiting for answers before removing the handler."
+**Context**: INCEPTION Workspace Detection COMPLETE; Requirements Analysis awaiting answers in more-changes-r64-clarification-questions.md.
+
+---
+
+## More Changes R64 — Clarification answers
+**Timestamp**: 2026-08-20T04:10:00Z
+**User Input**: "answered"
+**AI Response**: "Locked Q1=A Q2=A Q3=A. Removed connector dblclick → addWaypoint. Click still selects. npm test 311 passed / 43 files. Increment COMPLETE."
+**Context**: Direct implement. graph-renderer and canvas-viewport no longer listen for edge dblclick.
+
+---
+
+
+
