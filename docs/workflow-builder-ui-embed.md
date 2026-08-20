@@ -175,16 +175,60 @@ Error copy never includes access tokens or the phrase “mock agents”.
 
 ## Properties schema (provider + palette)
 
-Hosts configure dropped-node Properties with a generic schema. This package only renders and writes `node.data`. It does not know host-specific config layouts.
+Hosts configure dropped-node Properties with a generic schema. **Values** for host/dynamic fields live in `node.data.properties` (`Record<string, unknown>`). Schema metadata still comes from palette / adapter first-win. This package does not know host-specific product names.
 
-First-win order:
+### Metadata supply (first-win)
 
-1. **`node.data.propertiesSchema`** — a plain object (including `{}`) copied from the palette item on drop. `{}` still wins; it is not a fall-through to built-ins.
-2. **`provideWorkflowBuilderUi({ properties: { schemaFor } })`** — sync adapter. Throw or a non-object return is treated as no adapter.
-3. **Built-ins** — Condition expression, Repeater workflow/version/pause (empty option lists), Decision empty.
-4. **Else** — General only (label, subtitle, status).
+Properties config applies to **nodes and agents only** (the cards you drop). It is **not** a separate catalog.
 
-There is no instance `[properties]` input.
+**Primary (keep with the card):**
+- Prefer a unified `properties` map on `[palettes]` / `[defaultAgents]` (type, label, `default`, optional `section` / `enabled` per path).
+- Legacy: `propertiesSchema` + plain seed `properties` still accepted.
+- Live `[palettes]` / default-agent rows win by matching `node.data.paletteKey`.
+
+**Optional override (same keys, not a new list):**
+- Instance `[properties]` — map keyed by `paletteKey`, or `{ schemaFor(node) => … }`. Use when you want schemas outside the palette row object. Still keyed to existing palette/agent keys.
+- Then drop snapshot `node.data.propertiesSchema`, then DI `provideWorkflowBuilderUi({ properties })`.
+
+**Library fallback:** Every node/agent starts with a single **General** section (`name` + `description`) unless those paths are disabled via `propertiesDefaults` / `libraryProperties`. Consumer apps add more fields with a **unified `properties` map** (one entry per path: type, label, optional `value`, `section`, `enabled`, …). That expands internally to schema + seeds. Legacy `propertiesSchema` + plain seed `properties` still work. Host fields **merge on top of** General. Name is seeded from the palette label; saving Name updates the canvas label. Description mirrors subtitle.
+
+If the host API uses a different config shape (e.g. XPMS `basic_config` / `adv_config`), convert it in the **consumer** to this unified map before passing palette / default-agent rows — the package does not interpret third-party config formats.
+
+```typescript
+properties: {
+  owner: { type: 'text', label: 'Owner', value: 'ops', section: 'Host' },
+  priority: {
+    type: 'select',
+    label: 'Priority',
+    value: 'low',
+    enabled: true, // omit or true = show; false hides type/label/value/section
+    options: [
+      { value: 'low', label: 'Low' },
+      { value: 'high', label: 'High' },
+    ],
+  },
+}
+```
+
+Hosts enable/disable the package library paths without changing package code:
+- Global: `provideWorkflowBuilderUi({ propertiesDefaults: { Action: { description: false } } })`
+- Per card: `libraryProperties: { description: false }` on a palette / default-agent row (overrides global for that card)
+
+At **drop**, enabled library fields are merged with any card `propertiesSchema` / `properties` (host wins on the same path). Changing enable maps later affects **new** drops only; existing nodes keep their drop snapshot / `node.data.properties`. Custom fields still use card `propertiesSchema` / `properties` or `[properties]` — no separate registry.
+
+**Logic built-ins** (Condition expression, Repeater workflow/version/pause, Decision empty) show **below General** for those node types, in addition to any host schema. Built-in values stay on `node.data` paths (e.g. `condition`). Keys in `properties` that collide with built-in field ids are omitted from the dynamic list.
+
+Optional palette/agent seed `properties` (plain object) is copied onto `node.data.properties` at drop — that is where you put **static** starting values. That field on a card is separate from the optional shell `[properties]` input (schema lookup map).
+
+### Value map + Dynamic Property
+
+- Schema field `path` is **relative to `node.data.properties`** (e.g. path `timeout` ↔ `node.data.properties.timeout`).
+- Extra keys in `properties` without schema metadata render via a Dynamic Property control (infer: string→text, number→number, boolean→toggle, nullish→text, other→read-only JSON).
+- Hosts that previously wrote schema values at top-level `node.data` paths must migrate into `properties`.
+
+### Add property chrome
+
+`propertiesPanel.addProperty` (default `false`). When `true`, Properties shows a minimal Add control (key + value text). Empty keys are ignored; duplicate keys overwrite.
 
 ```typescript
 provideWorkflowBuilderUi({
@@ -198,6 +242,8 @@ provideWorkflowBuilderUi({
 ```
 
 ```typescript
+const ui = { propertiesPanel: { addProperty: true } };
+
 const palettes: PaletteItem[] = [
   {
     key: 'timeout-action',
@@ -212,20 +258,22 @@ const palettes: PaletteItem[] = [
           title: 'Limits',
           fields: [
             { type: 'number', path: 'timeout', label: 'Timeout', required: true },
-            { type: 'text', path: 'taskMeta.note', label: 'Note' },
+            { type: 'text', path: 'note', label: 'Note' },
           ],
         },
       ],
     },
+    // Optional seed values copied to node.data.properties on drop
+    properties: { timeout: 30, note: '', extra: true },
   },
 ];
 ```
 
-Field `path` is relative to `node.data` (hosts may use `taskMeta.foo`). Built-in field types: `text`, `number`, `boolean`, `select`, `multiselect`, `textarea`. Unknown `ui_component` values render as disabled text — this package does not load host widgets.
+Built-in field types: `text`, `number`, `boolean` (toggle switch), `select`, `multiselect`, `textarea`. Unknown `ui_component` values render as disabled text — this package does not load host widgets.
 
 Optional `taskMeta` on a palette item is copied onto `node.data.taskMeta` as an opaque blob. Properties does not walk it into fields.
 
-Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed examples.
+Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, `properties`, or embed examples.
 
 ## Parent template inputs (Syncfusion-style)
 
@@ -236,6 +284,7 @@ Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed
   [ui]="ui"
   [palettes]="palettes"
   [defaultAgents]="defaultAgents"
+  [properties]="propertiesByKey"
   [document]="document"
   (documentChange)="onDocumentChange($event)"
   (save)="onSave($event)"
@@ -244,12 +293,27 @@ Do not put access tokens in `propertiesSchema`, `taskMeta`, `metadata`, or embed
 ```
 
 ```typescript
-import type { UiFeaturesPartial } from 'enso-workflow-builder';
+import type { HostPropertiesInput, UiFeaturesPartial } from 'enso-workflow-builder';
 
 const ui: UiFeaturesPartial = {
   agentsLibrary: { enabled: true },
   topBar: { save: false },
   propertiesPanel: { enabled: false },
+};
+
+/** Optional schema by paletteKey for cards that omit propertiesSchema on the row. */
+const propertiesByKey: HostPropertiesInput = {
+  'via-properties-input': {
+    sections: [
+      {
+        title: 'Message',
+        fields: [
+          { type: 'text', path: 'channel', label: 'Channel' },
+          { type: 'text', path: 'subject', label: 'Subject' },
+        ],
+      },
+    ],
+  },
 };
 ```
 
@@ -304,6 +368,10 @@ const defaultAgents: DefaultAgentCard[] = [
     description: 'Default from parent',
     iconUrl: '/assets/policy.png',
     metadata: { team: 'ops' },
+    propertiesSchema: {
+      sections: [{ fields: [{ type: 'text', path: 'desk', label: 'Desk' }] }],
+    },
+    properties: { desk: 'ops' },
   },
 ];
 ```
@@ -316,7 +384,9 @@ Optional library fields on palette items and default-agent cards:
 - `iconPath` — SVG path `d` (viewBox `0 0 24 24`) when there is no usable URL.
 - `metadata` — plain object copied onto the dropped node as `data.metadata`. Not shown in the library or Properties.
 - `taskMeta` — opaque object copied onto the dropped node as `data.taskMeta`. Not flattened into Properties fields.
-- `propertiesSchema` — plain object copied onto the dropped node as `data.propertiesSchema`. Wins for that node’s Properties form (see Properties schema above).
+- `properties` — preferred unified host property map (`path → { type, label, value?, section?, enabled?, … }`), or legacy plain seed values when used with `propertiesSchema`.
+- `propertiesSchema` — legacy schema object; still supported. Prefer unified `properties` when adding host fields.
+- `libraryProperties` — optional per-path booleans for package library defaults on this card (`false` disables that path for **new** drops; omit/`true` keeps on). Overrides global `propertiesDefaults` for the same paths.
 
 If an image fails to load, that card falls back to `iconPath` or the type glyph. On drop, the same `iconUrl` / `iconPath` are copied onto `node.data` so the canvas node shows the same icon (inside the Condition / Router / Repeater frame, or in the agent avatar).
 

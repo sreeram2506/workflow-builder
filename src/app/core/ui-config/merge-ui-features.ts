@@ -31,7 +31,7 @@ export function createDefaultUiFeatures(): UiFeatures {
     agentTabs: { enabled: true, doubleClick: true },
     agentsLibrary: { enabled: true },
     skillsLibrary: { enabled: true },
-    propertiesPanel: { enabled: true },
+    propertiesPanel: { enabled: true, addProperty: false },
     canvas: {
       enabled: true,
       zoomControls: true,
@@ -111,7 +111,7 @@ export function normalizePartial(raw: unknown): UiFeaturesPartial {
     partial.skillsLibrary = pickBooleanLeaves(raw['skillsLibrary'], ['enabled']);
   }
   if ('propertiesPanel' in raw) {
-    partial.propertiesPanel = pickBooleanLeaves(raw['propertiesPanel'], ['enabled']);
+    partial.propertiesPanel = pickBooleanLeaves(raw['propertiesPanel'], ['enabled', 'addProperty']);
   }
   if ('canvas' in raw) {
     partial.canvas = pickBooleanLeaves(raw['canvas'], [
@@ -363,6 +363,7 @@ export function buildPathIndex(features: UiFeatures): ReadonlyMap<UiFeaturePath,
   map.set('agentsLibrary.enabled', features.agentsLibrary.enabled);
   map.set('skillsLibrary.enabled', features.skillsLibrary.enabled);
   map.set('propertiesPanel.enabled', features.propertiesPanel.enabled);
+  map.set('propertiesPanel.addProperty', features.propertiesPanel.addProperty);
   map.set('canvas.enabled', features.canvas.enabled);
   map.set('canvas.zoomControls', features.canvas.zoomControls);
   map.set('canvas.minimap', features.canvas.minimap);

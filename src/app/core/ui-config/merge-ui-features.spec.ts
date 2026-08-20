@@ -20,6 +20,7 @@ describe('merge-ui-features', () => {
     expect(d.agentsLibrary.enabled).toBe(true);
     expect(d.skillsLibrary.enabled).toBe(true);
     expect(d.propertiesPanel.enabled).toBe(true);
+    expect(d.propertiesPanel.addProperty).toBe(false);
     expect(d.canvas.minimap).toBe(true);
     expect(d.canvas.layoutControls).toBe(true);
   });

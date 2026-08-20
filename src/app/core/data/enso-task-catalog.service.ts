@@ -221,8 +221,8 @@ export class EnsoTaskCatalogService {
     const cfg = this.uiConfig.features().palette.agent;
     const staticSource = omitStaticFeatured
       ? PALETTE_ITEMS.filter(
-          (item) => !(FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(item.type),
-        )
+        (item) => !(FEATURED_PALETTE_TYPES as readonly NodeType[]).includes(item.type),
+      )
       : PALETTE_ITEMS;
     const filteredStatic = filterPaletteItemsByAllowList(staticSource, cfg.types);
     const remoteFiltered = filterPaletteItemsByAllowList(remoteItems, cfg.types);

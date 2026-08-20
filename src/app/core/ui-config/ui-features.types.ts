@@ -1,5 +1,7 @@
 /** UI feature configuration types (U-UI-01 + U-PAL-01 palette) */
 
+import type { HostPropertiesSchema } from '../domain/host-properties.schema';
+import type { LibraryPropertyEnableMap } from '../domain/host-properties.library';
 import type { NodeType } from '../domain/workflow.models';
 import { ALLOWED_NODE_TYPES } from '../domain/workflow.models';
 
@@ -32,6 +34,8 @@ export interface SkillsLibraryFeatures {
 
 export interface PropertiesPanelFeatures {
   enabled: boolean;
+  /** When true, Properties shows Add property for `node.data.properties`. Default false. */
+  addProperty: boolean;
 }
 
 export interface CanvasFeatures {
@@ -60,6 +64,18 @@ export interface DefaultAgentCard {
   iconUrl?: string;
   iconPath?: string;
   metadata?: Record<string, unknown>;
+  /** Host properties schema — legacy; prefer unified `properties` config map. */
+  propertiesSchema?: HostPropertiesSchema;
+  /**
+   * Unified host property map, or legacy plain seed values with `propertiesSchema`.
+   * @see HostPropertyConfigEntry
+   */
+  properties?: Record<string, unknown>;
+  /**
+   * Per-path enable overlay for package library defaults on this card.
+   * Omit/`true` = on; `false` = disable that library path for **new** drops.
+   */
+  libraryProperties?: LibraryPropertyEnableMap;
 }
 
 export type DefaultAgentsState =
@@ -136,6 +152,7 @@ export const UI_FEATURE_PATHS = [
   'agentsLibrary.enabled',
   'skillsLibrary.enabled',
   'propertiesPanel.enabled',
+  'propertiesPanel.addProperty',
   'canvas.enabled',
   'canvas.zoomControls',
   'canvas.minimap',

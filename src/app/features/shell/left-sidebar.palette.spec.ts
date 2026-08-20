@@ -127,6 +127,29 @@ describe('LeftSidebar palette (U-PAL-02)', () => {
     expect(el.querySelector('[data-testid="solution-agent-claims"]')).toBeNull();
   });
 
+  it('shows host Action cards in the shapes row like Condition / Extra If', async () => {
+    const timeoutAction: PaletteItem = {
+      key: 'timeout-action',
+      type: 'Action',
+      label: 'Timeout Action',
+      description: 'Schema sample',
+      categoryId: 'flow',
+    };
+    const { fixture } = await mount(() =>
+      of(catalogLoad({ items: [condition, blank, timeoutAction, remoteAgent] })),
+    );
+    fixture.componentRef.setInput('palettes', [timeoutAction, remoteAgent]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="solution-nodes-heading"]')).toBeNull();
+    expect(el.querySelector('[data-testid="solution-nodes-strip"]')).toBeNull();
+    expect(el.querySelector('[data-testid="logic-shape-timeout-action"]')).toBeTruthy();
+    expect(el.querySelector('[data-testid="logic-shape-Condition"]')).toBeTruthy();
+    expect(el.querySelector('[data-testid="solution-agent-enso-agent-1"]')).toBeTruthy();
+  });
+
   it('reloads catalog when palette features change', async () => {
     const { loadCatalog, ui, fixture } = await mount(() =>
       of(catalogLoad({ items: [condition, blank] })),

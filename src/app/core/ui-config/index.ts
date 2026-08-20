@@ -44,8 +44,15 @@ export {
 } from './catalog-adapter';
 export {
   WORKFLOW_BUILDER_PROPERTIES,
+  asPropertiesSchemaSource,
+  type HostPropertiesInput,
   type WorkflowBuilderPropertiesAdapter,
 } from './properties-adapter';
+export { WORKFLOW_BUILDER_PROPERTIES_DEFAULTS } from './properties-defaults.token';
+export type {
+  LibraryPropertyEnableMap,
+  PropertiesDefaultsConfig,
+} from '../domain/host-properties.library';
 export {
   WORKFLOW_BUILDER_PERSIST,
   type WorkflowBuilderPersistAdapter,

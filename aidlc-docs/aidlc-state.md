@@ -8,6 +8,11 @@
 - **Current Phase**: OPERATIONS
 - **Current Unit**: Remove connector dblclick waypoints COMPLETE
 - **Active Increment**: More Changes R64 — remove connector double-click waypoints — COMPLETE
+- **Start Date**: 2026-08-19T10:55:26Z
+- **Current Stage**: OPERATIONS — COMPLETE (placeholder)
+- **Current Phase**: OPERATIONS
+- **Current Unit**: —
+- **Active Increment**: Dynamic Properties — COMPLETE
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -17,6 +22,7 @@
 - **Workspace Root**: `/Users/sreeram/ofcwork/workflow-builder`
 - **Reverse Engineering Needed**: No (skipped — scoped brownfield polish increment)
 - **Prior Increment**: More Changes R63 — hide nested Solution Back COMPLETE
+- **Workspace Root**: `/Users/trivenigogireddy/Work/workflow-builder`
 
 ## Extension Configuration
 | Extension | Enabled | Mode | Decided At |
@@ -66,3 +72,34 @@
 - **Blocked On**: None
 - **Carry-over**: Library publish is separate (`enso-workflow-builder@0.1.2`)
 - **Timestamp**: 2026-08-20T04:12:00Z
+| Security Baseline | Yes | Blocking constraints | Requirements Analysis |
+| Resiliency Baseline | Yes | Directional / design-time guidance; DR N/A this increment | Requirements Analysis |
+| Property-Based Testing | Partial | Pure functions + serialization round-trips only | Requirements Analysis |
+
+## Stage Progress
+
+### INCEPTION — Dynamic Properties
+- [x] Workspace Detection
+- [x] Reverse Engineering — SKIP
+- [x] Requirements Analysis
+- [x] User Stories
+- [x] Workflow Planning
+- [x] Application Design
+- [x] Units Generation
+
+### CONSTRUCTION — U-DP-01
+- [x] Functional Design
+- [x] NFR Requirements — SKIP
+- [x] NFR Design — SKIP
+- [x] Infrastructure Design — SKIP
+- [x] Code Generation
+- [x] Build and Test
+
+### OPERATIONS
+- [x] Operations — PLACEHOLDER (complete for this increment)
+
+## Current Status
+- **Lifecycle Phase**: COMPLETE
+- **Current Stage**: Operations placeholder recorded
+- **Result**: U-DP-01 Dynamic Properties delivered (310 tests; build OK)
+- **Timestamp**: 2026-08-19T14:32:00Z

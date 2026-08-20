@@ -6,6 +6,7 @@ import {
   mergeInstanceUiFeatures,
   UI_EFFECTIVE_FEATURES,
   UiConfigService,
+  type HostPropertiesInput,
   type UiFeaturesPartial,
 } from '../../core/ui-config';
 import type { PaletteItem } from '../../core/domain/palette.catalog';
@@ -98,6 +99,8 @@ import { ChromeInsetDirective } from '../shell/chrome-inset.directive';
           <wb-right-sidebar
             [collapsed]="facade.rightSidebarCollapsed()"
             [panelWidth]="facade.propertiesWidth()"
+            [palettes]="palettes()"
+            [properties]="properties()"
             (collapsedChange)="facade.setRightCollapsed($event)"
             (panelWidthChange)="facade.setPropertiesWidth($event)"
           />
@@ -188,6 +191,8 @@ export class AgentSkillsShellComponent implements OnInit, OnDestroy {
   /** Instance chrome overlay (omit = last shell overlay, else JSON/provider). */
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
+  /** Instance properties schema — adapter or map by paletteKey. */
+  readonly properties = input<HostPropertiesInput | undefined>();
   @Output() readonly save = new EventEmitter<WorkflowDocument>();
   @Output() readonly run = new EventEmitter<WorkflowDocument>();
   private readonly route = inject(ActivatedRoute);

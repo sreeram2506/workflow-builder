@@ -25,10 +25,12 @@
 - See nested Skills Library cards that match the agent-shell `[palettes]` (or empty when those palettes are omitted / `[]`)
 - Configure Repeater Properties without dummy Claims / Policy / Notify workflow options
 - Drop a host card and keep its metadata on the node for the host product to read
-- Configure host `propertiesSchema` fields in Properties (Save writes `node.data` paths)
+- Configure host `propertiesSchema` / unified `properties` fields in Properties (Save writes `node.data.properties` paths)
+- See extra keys in `node.data.properties` with inferred Dynamic Property controls
+- Add a new property key in Properties only when the host enabled `propertiesPanel.addProperty`
 - Keep using the standalone SPA demo after the library is extracted
 - See General only (no Ignore Keys, no flattened blob) on Action/Trigger when the host did not supply a schema
-- Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema
+- Keep Condition / Router / Repeater built-in configuration when the host did not supply a schema (dynamic keys additional; collisions omit the dynamic duplicate)
 - Connect steps correctly and configure node properties
 - See a host-loaded `[document]` on the canvas (not only the SPA empty graph)
 - Save still downloads JSON when the host did not supply a Save handler; Run still simulates when the host did not supply a Run handler
@@ -62,7 +64,7 @@
 ### Goals
 - Open/view an existing in-memory workflow state
 - Pan/zoom/inspect nodes and edges safely
-- Confirm configuration via properties panel in read-only presentation (including host schema fields)
+- Confirm configuration via properties panel in read-only presentation (including host schema fields and inferred dynamic keys)
 - Open a nested agent in view via double-click when `agentTabs.doubleClick` is true (read nested canvas; no structural edits); view dblclick does not enter when the flag is false
 - Optionally observe a simulated Run if enabled in view mode (if Run remains available; must not mutate structure)
 
@@ -94,6 +96,7 @@
 - Supply extra Condition / Router / Repeater cards (with `iconUrl` / `iconPath` and `metadata`) so the featured strip shows host logic shapes
 - Attach `metadata` on default agents and palettes so dropped nodes keep it in `node.data`
 - Pass optional `propertiesSchema` on palette items (copied onto the node) and/or `provideWorkflowBuilderUi({ properties })` so Properties is host-driven
+- Seed and update `node.data.properties` as the value map; enable `propertiesPanel.addProperty` when authors may add keys
 - Hide the agent tab strip (`agentTabs.enabled`) without blocking double-click enter or nested Back
 - Turn canvas double-click enter on or off via `agentTabs.doubleClick` (default true; independent of the strip)
 - Bind `[document]` and `(documentChange)` so the host owns persistence
@@ -126,7 +129,7 @@
 - Parent `[palettes]` / `[defaultAgents]` / `[ui]` work like Syncfusion instance props
 - Extra logic cards replace the three built-in featured shapes when `[palettes]` is present
 - Library icons and drop metadata match the parent payload (unsafe URLs never render)
-- Properties schema on palettes / adapter renders generic fields; no Enso-named public API; blobs stay uninterpreted
+- Properties schema on palettes / adapter renders generic fields bound to `node.data.properties`; inferred extras work; no Enso-named public API; blobs stay uninterpreted
 - `agentTabs.enabled` false hides the strip; double-click still opens `/agent/:id` when `doubleClick` is true; nested Back still returns
 - `agentTabs.doubleClick: false` stops canvas dblclick enter; chip click still enters when the strip is on; both false means no builder enter
 - `[document]` loads a graph; invalid payload keeps last good + status
@@ -159,6 +162,7 @@
 | Nested skills from agent-shell `[palettes]` | Sees matching nested list | Sees result | Primary |
 | Repeater Properties catalog | Sees empty pickers (no dummy workflows) | Read-only inspect | — |
 | Host properties schema / adapter | Sees schema fields or General only | Read-only inspect | Primary |
+| Dynamic `node.data.properties` + inference / addProperty | Sees map fields; add when chrome on | Read-only inspect | Primary (`properties` map + chrome) |
 | Agent tab bar vs double-click enter | Dblclick / chips / nested Back | View dblclick enter | Primary (`agentTabs.enabled`, `agentTabs.doubleClick`) |
 | Host `[document]` / Save / Run hooks / fill-host | Sees loaded graph; Save/Run defaults | View Save still off | Primary |
 | npm package `enso-workflow-builder` | Sees result in demo SPA | Sees result | Primary |

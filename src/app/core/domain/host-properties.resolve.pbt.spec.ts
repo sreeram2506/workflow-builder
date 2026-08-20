@@ -38,7 +38,7 @@ describe('resolveHostPropertiesSchema PBT (U-HP-01)', () => {
     );
   });
 
-  it('does not invent fields from taskMeta when there is no schema (P-HP-03)', () => {
+  it('does not invent fields from taskMeta; library defaults may apply (P-HP-03)', () => {
     fc.assert(
       fc.property(
         fc.dictionary(
@@ -48,7 +48,12 @@ describe('resolveHostPropertiesSchema PBT (U-HP-01)', () => {
         ),
         (taskMeta) => {
           const resolved = resolveHostPropertiesSchema(node('Action', { taskMeta }), null);
-          expect(resolved).toBeNull();
+          const paths = resolved?.sections.flatMap((s) => s.fields.map((f) => f.path)) ?? [];
+          for (const key of Object.keys(taskMeta)) {
+            expect(paths.includes(key)).toBe(false);
+          }
+          // Library Action defaults are allowed when host schema is absent.
+          expect(paths.every((p) => p === 'name' || p === 'description')).toBe(true);
         },
       ),
       { numRuns: 40, seed: 20260817 },

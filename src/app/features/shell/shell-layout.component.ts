@@ -17,6 +17,7 @@ import {
   mergeInstanceUiFeatures,
   UI_EFFECTIVE_FEATURES,
   UiConfigService,
+  type HostPropertiesInput,
   type UiFeaturesPartial,
 } from '../../core/ui-config';
 import type { DefaultAgentCard } from '../../core/ui-config/ui-features.types';
@@ -91,6 +92,9 @@ import { ChromeInsetDirective } from './chrome-inset.directive';
           <wb-right-sidebar
             [collapsed]="facade.rightSidebarCollapsed()"
             [panelWidth]="facade.propertiesWidth()"
+            [palettes]="palettes()"
+            [defaultAgents]="defaultAgents()"
+            [properties]="properties()"
             (collapsedChange)="facade.setRightCollapsed($event)"
             (panelWidthChange)="facade.setPropertiesWidth($event)"
           />
@@ -164,6 +168,8 @@ export class ShellLayoutComponent implements OnDestroy {
   readonly ui = input<UiFeaturesPartial | undefined>();
   readonly palettes = input<PaletteItem[] | undefined>();
   readonly defaultAgents = input<DefaultAgentCard[] | undefined>();
+  /** Instance properties schema — adapter or map by paletteKey (peer of `[palettes]`). */
+  readonly properties = input<HostPropertiesInput | undefined>();
   /** Host document to load. Omit/undefined keeps SPA initialize(). */
   readonly document = input<unknown>(undefined);
 

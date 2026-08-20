@@ -68,6 +68,7 @@ import { GraphStore } from '../stores/graph.store';
 import { UiStore } from '../stores/ui.store';
 import { ThemeApplicator } from '../theme/theme-applicator';
 import { WORKFLOW_BUILDER_PERSIST } from '../ui-config/persist-adapter';
+import { WORKFLOW_BUILDER_PROPERTIES_DEFAULTS } from '../ui-config/properties-defaults.token';
 
 export type { LayoutMode };
 
@@ -110,6 +111,9 @@ export class WorkflowFacade {
   private readonly runSim = inject(RunSimulationService);
   private readonly router = inject(Router);
   private readonly persist = inject(WORKFLOW_BUILDER_PERSIST, { optional: true });
+  private readonly propertiesDefaults = inject(WORKFLOW_BUILDER_PROPERTIES_DEFAULTS, {
+    optional: true,
+  });
   /** Stashed solution document while GraphStore holds an agent nested canvas. */
   private solutionDocument: WorkflowDocument | null = null;
   private instancePersist: InstancePersistHooks | null = null;
@@ -484,7 +488,7 @@ export class WorkflowFacade {
       if (!this.graph.document()) {
         return null;
       }
-      const node = createWorkflowNode(type, position);
+      const node = createWorkflowNode(type, position, this.propertiesDefaults);
       if (!node) {
         return null;
       }
@@ -514,7 +518,7 @@ export class WorkflowFacade {
         this.setCanvasError(null);
         return existing.id;
       }
-      const node = createWorkflowNodeFromPaletteItem(item, position);
+      const node = createWorkflowNodeFromPaletteItem(item, position, this.propertiesDefaults);
       if (!node) {
         return null;
       }

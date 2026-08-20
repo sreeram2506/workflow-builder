@@ -4,6 +4,15 @@ import type { NodeType, WorkflowNode } from './workflow.models';
 import type { Point } from './viewport.math';
 import { sanitizeIconUrl } from './icon-url';
 import { isPlainObject, sanitizeHostPropertiesSchema } from './host-properties.schema';
+import { resolveCardPropertiesConfig } from './host-properties.config';
+import {
+  libraryPropertiesSchemaForType,
+  libraryPropertiesSeedForType,
+  mergePropertiesSchemas,
+  mergePropertySeeds,
+  type LibraryPropertyEnableMap,
+  type PropertiesDefaultsConfig,
+} from './host-properties.library';
 
 const ID_PATTERN = /^n-[A-Za-z]+-[a-z0-9]+$/;
 
@@ -16,34 +25,93 @@ export function isValidCreatedNodeId(id: string, type: NodeType): boolean {
   return id.startsWith(`n-${type}-`) && ID_PATTERN.test(id);
 }
 
-export function createWorkflowNode(type: NodeType, position: Point): WorkflowNode | null {
+function applyLibraryAndHostProperties(
+  data: Record<string, unknown>,
+  type: NodeType,
+  item: {
+    propertiesSchema?: unknown;
+    properties?: unknown;
+    libraryProperties?: LibraryPropertyEnableMap;
+  },
+  globalDefaults?: PropertiesDefaultsConfig | null,
+  identity?: { label: string; description: string },
+): void {
+  const cardOverride = item.libraryProperties;
+  const libSchema = libraryPropertiesSchemaForType(type, globalDefaults, cardOverride);
+  const libSeed = libraryPropertiesSeedForType(type, globalDefaults, cardOverride);
+
+  // Unified properties config map, or legacy schema + seed map.
+  const resolved = resolveCardPropertiesConfig({
+    propertiesSchema: item.propertiesSchema,
+    properties: item.properties,
+  });
+  const hostSchema = resolved.propertiesSchema ?? null;
+  const hostSeed = resolved.properties ?? null;
+
+  const mergedSchema = mergePropertiesSchemas(libSchema, hostSchema);
+  if (mergedSchema) {
+    data['propertiesSchema'] = mergedSchema;
+  }
+  const mergedSeed = mergePropertySeeds(libSeed, hostSeed);
+  if (mergedSeed) {
+    if (identity && hostSeed && !Object.prototype.hasOwnProperty.call(hostSeed, 'name') && 'name' in mergedSeed) {
+      mergedSeed['name'] = identity.label;
+    } else if (identity && !hostSeed && 'name' in mergedSeed) {
+      mergedSeed['name'] = identity.label;
+    }
+    if (
+      identity &&
+      hostSeed &&
+      !Object.prototype.hasOwnProperty.call(hostSeed, 'description') &&
+      'description' in mergedSeed
+    ) {
+      mergedSeed['description'] = identity.description;
+    } else if (identity && !hostSeed && 'description' in mergedSeed) {
+      mergedSeed['description'] = identity.description;
+    }
+    data['properties'] = mergedSeed;
+  }
+}
+
+export function createWorkflowNode(
+  type: NodeType,
+  position: Point,
+  globalDefaults?: PropertiesDefaultsConfig | null,
+): WorkflowNode | null {
   if (!isAllowedNodeType(type)) {
     return null;
   }
   const item = findPaletteItem(type);
   if (item) {
-    return createWorkflowNodeFromPaletteItem(item, position);
+    return createWorkflowNodeFromPaletteItem(item, position, globalDefaults);
   }
   // Allowed types omitted from Nodes Library (e.g. AIAgent) still create via type.
+  const data: Record<string, unknown> = {};
+  const label = type === 'AIAgent' ? 'Blank Agent' : type;
+  applyLibraryAndHostProperties(data, type, {}, globalDefaults, {
+    label,
+    description: '',
+  });
   return {
     id: newNodeId(type),
     type,
-    label: type === 'AIAgent' ? 'Blank Agent' : type,
+    label,
     subtitle: '',
     position: { x: position.x, y: position.y },
     status: 'idle',
-    data: {},
+    data,
   };
 }
 
 export function createWorkflowNodeFromPaletteItem(
   item: PaletteItem,
   position: Point,
+  globalDefaults?: PropertiesDefaultsConfig | null,
 ): WorkflowNode | null {
   if (!isAllowedNodeType(item.type)) {
     return null;
   }
-    const data: Record<string, unknown> = {
+  const data: Record<string, unknown> = {
     paletteKey: item.key,
   };
   if (item.taskMeta) {
@@ -52,9 +120,10 @@ export function createWorkflowNodeFromPaletteItem(
   if (item.metadata) {
     data['metadata'] = { ...item.metadata };
   }
-  if (isPlainObject(item.propertiesSchema)) {
-    data['propertiesSchema'] = sanitizeHostPropertiesSchema(item.propertiesSchema);
-  }
+  applyLibraryAndHostProperties(data, item.type, item, globalDefaults, {
+    label: item.label,
+    description: (item.description ?? '').trim(),
+  });
   const iconUrl = sanitizeIconUrl(item.iconUrl);
   if (iconUrl) {
     data['iconUrl'] = iconUrl;
@@ -62,12 +131,15 @@ export function createWorkflowNodeFromPaletteItem(
   if (item.iconPath && item.iconPath.trim().length > 0) {
     data['iconPath'] = item.iconPath.trim();
   }
+  const props = isPlainObject(data['properties']) ? data['properties'] : null;
+  const subtitleFromProps =
+    props && typeof props['description'] === 'string' ? props['description'] : '';
   return {
     id: newNodeId(item.type),
     type: item.type,
     label: item.label,
-    // Never invent a description — empty stays empty so the name can center alone.
-    subtitle: (item.description ?? '').trim(),
+    // Keep canvas subtitle aligned with General description when seeded from library/host.
+    subtitle: subtitleFromProps || (item.description ?? '').trim(),
     position: { x: position.x, y: position.y },
     status: 'idle',
     data,

@@ -48,7 +48,11 @@ describe('node.factory', () => {
     expect(node!.label).toBe('Action');
     expect(node!.position).toEqual({ x: 10, y: 20 });
     expect(node!.status).toBe('idle');
-    expect(node!.data).toEqual({ paletteKey: 'Action' });
+    expect(node!.data['paletteKey']).toBe('Action');
+    expect(node!.data['properties']).toEqual({
+      name: 'Action',
+      description: 'Perform actions based on triggers',
+    });
     expect(isValidCreatedNodeId(node!.id, 'Action')).toBe(true);
   });
 

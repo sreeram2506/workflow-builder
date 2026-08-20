@@ -10,6 +10,8 @@ import {
   WORKFLOW_BUILDER_PROPERTIES,
   type WorkflowBuilderPropertiesAdapter,
 } from './properties-adapter';
+import { WORKFLOW_BUILDER_PROPERTIES_DEFAULTS } from './properties-defaults.token';
+import type { PropertiesDefaultsConfig } from '../domain/host-properties.library';
 import {
   WORKFLOW_BUILDER_PERSIST,
   type WorkflowBuilderPersistAdapter,
@@ -22,6 +24,8 @@ export interface ProvideWorkflowBuilderUiOptions {
     agent?: WorkflowBuilderCatalogAdapter;
   };
   properties?: WorkflowBuilderPropertiesAdapter;
+  /** Per node-type enable map for package library defaults (omit/`true` = on). */
+  propertiesDefaults?: PropertiesDefaultsConfig;
   persist?: WorkflowBuilderPersistAdapter;
 }
 
@@ -51,6 +55,12 @@ export function provideWorkflowBuilderUi(
     providers.push({
       provide: WORKFLOW_BUILDER_PROPERTIES,
       useValue: options.properties,
+    });
+  }
+  if (options.propertiesDefaults) {
+    providers.push({
+      provide: WORKFLOW_BUILDER_PROPERTIES_DEFAULTS,
+      useValue: options.propertiesDefaults,
     });
   }
   if (options.persist !== undefined) {

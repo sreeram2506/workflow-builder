@@ -38,7 +38,11 @@ import { screenToWorld } from '../../core/domain/viewport.math';
 import { WorkflowFacade } from '../../core/facade/workflow.facade';
 import { UiConfigService } from '../../core/ui-config';
 import type { DefaultAgentCard } from '../../core/ui-config/ui-features.types';
-import { CANVAS_DROP_LIST_ID, FEATURED_PALETTE_DROP_LIST_ID, PALETTE_DROP_LIST_ID } from './palette-dnd.ids';
+import {
+  CANVAS_DROP_LIST_ID,
+  FEATURED_PALETTE_DROP_LIST_ID,
+  PALETTE_DROP_LIST_ID,
+} from './palette-dnd.ids';
 
 /** Shared CDK drop-list ids for palette ↔ canvas connection. */
 export {
@@ -134,7 +138,11 @@ export {
                   [attr.aria-label]="'Add ' + item.label + ' node'"
                   [style.--accent]="accentFor(item.type)"
                   [title]="item.label"
-                  [attr.data-testid]="'logic-shape-' + item.type"
+                  [attr.data-testid]="
+                    featuredLogicType(item.type)
+                      ? 'logic-shape-' + item.type
+                      : 'logic-shape-' + item.key
+                  "
                 >
                   @if (showIconImg(item)) {
                     <img
@@ -308,60 +316,63 @@ export {
                 }
               </div>
 
-              <div
-                class="library-list"
-                role="list"
-                aria-label="Solution agents"
-                cdkDropList
-                [id]="paletteListId"
-                [cdkDropListData]="dragProxy"
-                [cdkDropListSortingDisabled]="true"
-                [cdkDropListEnterPredicate]="rejectEnter"
-              >
-                @for (item of solutionAgentItems(); track item.key) {
-                  <div
-                    class="node-card"
-                    role="listitem"
-                    tabindex="0"
-                    cdkDrag
-                    [cdkDragData]="item.key"
-                    [cdkDragDisabled]="facade.editorMode() === 'view'"
-                    (cdkDragStarted)="onDragStarted()"
-                    (cdkDragEnded)="onDragEnded($event, item)"
-                    (click)="onItemActivate(item, $event)"
-                    (keydown)="onItemKeydown(item, $event)"
-                    [attr.aria-label]="'Add ' + item.label + ' agent'"
-                    [attr.data-testid]="'solution-agent-' + item.key"
-                  >
-                    <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
-                      @if (showIconImg(item)) {
-                        <img
-                          class="palette-icon-img"
-                          [src]="item.iconUrl || ''"
-                          alt=""
-                          draggable="false"
-                          data-testid="palette-icon-img"
-                          (error)="onPaletteIconError(item)"
-                        />
-                      } @else {
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                          <path [attr.d]="cardIconPath(item)" />
-                        </svg>
-                      }
+              @if (solutionAgentItems().length) {
+                <h3 class="library-section-title" data-testid="solution-agents-heading">Agents</h3>
+                <div
+                  class="library-list"
+                  role="list"
+                  aria-label="Solution agents"
+                  cdkDropList
+                  [id]="paletteListId"
+                  [cdkDropListData]="dragProxy"
+                  [cdkDropListSortingDisabled]="true"
+                  [cdkDropListEnterPredicate]="rejectEnter"
+                >
+                  @for (item of solutionAgentItems(); track item.key) {
+                    <div
+                      class="node-card"
+                      role="listitem"
+                      tabindex="0"
+                      cdkDrag
+                      [cdkDragData]="item.key"
+                      [cdkDragDisabled]="facade.editorMode() === 'view'"
+                      (cdkDragStarted)="onDragStarted()"
+                      (cdkDragEnded)="onDragEnded($event, item)"
+                      (click)="onItemActivate(item, $event)"
+                      (keydown)="onItemKeydown(item, $event)"
+                      [attr.aria-label]="'Add ' + item.label + ' agent'"
+                      [attr.data-testid]="'solution-agent-' + item.key"
+                    >
+                      <div class="node-icon" [attr.data-icon]="item.type" aria-hidden="true">
+                        @if (showIconImg(item)) {
+                          <img
+                            class="palette-icon-img"
+                            [src]="item.iconUrl || ''"
+                            alt=""
+                            draggable="false"
+                            data-testid="palette-icon-img"
+                            (error)="onPaletteIconError(item)"
+                          />
+                        } @else {
+                          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path [attr.d]="cardIconPath(item)" />
+                          </svg>
+                        }
+                      </div>
+                      <div class="node-text" [class.no-desc]="!item.description.trim()">
+                        <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                        @if (item.description.trim()) {
+                          <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
+                        }
+                      </div>
                     </div>
-                    <div class="node-text" [class.no-desc]="!item.description.trim()">
-                      <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
-                      @if (item.description.trim()) {
-                        <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
-                      }
-                    </div>
-                  </div>
-                } @empty {
-                  @if (!catalogLoading()) {
-                    <p class="empty-hint">No agents loaded yet.</p>
                   }
-                }
-              </div>
+                </div>
+              }
+
+              @if (!catalogLoading() && !solutionAgentItems().length) {
+                <p class="empty-hint">No agents loaded yet.</p>
+              }
             } @else {
               <div class="search-row">
                 <label class="sr-only" for="palette-search">Search skills</label>
@@ -703,6 +714,15 @@ export {
       max-width: 100%;
       box-sizing: border-box;
     }
+    .library-section-title {
+      margin: 0.45rem 0 0.15rem;
+      padding: 0 0.15rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--wb-text-muted);
+    }
     .category-toggle {
       display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0.35rem 0.15rem;
       border: none; background: transparent; color: var(--wb-text-muted); font-size: 0.72rem;
@@ -927,11 +947,18 @@ export class LeftSidebarComponent {
     });
   }
 
-  /** API-loaded agents for solution palette (excludes default-agent cards). */
+  /**
+   * Solution Agents list: AIAgent cards only (excludes default-agent strip).
+   * Properties schemas live on these rows (or optional `[properties]` by paletteKey).
+   */
   solutionAgentItems(): PaletteItem[] {
     return this.filteredItems().filter(
       (i) => i.type === BLANK_AGENT_TYPE && i.origin !== 'default-agent',
     );
+  }
+
+  featuredLogicType(type: NodeType): boolean {
+    return (FEATURED_PALETTE_TYPES as readonly string[]).includes(type);
   }
 
   onSearchInput(value: string): void {
@@ -988,9 +1015,20 @@ export class LeftSidebarComponent {
     return accentTokenForType(type);
   }
 
-  /** Condition / Router / Repeater — featured row from filtered catalog items only. */
+  /** Condition / Router / Repeater plus host node cards (e.g. Action) in the same shapes row. */
   logicShapeItems(): PaletteItem[] {
-    return featuredLogicItems(this.allItems(), this.hostPalettesPresent());
+    const base = featuredLogicItems(this.allItems(), this.hostPalettesPresent());
+    if (!this.hostPalettesPresent()) {
+      return base;
+    }
+    const featured = new Set<string>(FEATURED_PALETTE_TYPES);
+    const hostNodes = this.allItems().filter(
+      (i) =>
+        i.origin !== 'default-agent' &&
+        i.type !== BLANK_AGENT_TYPE &&
+        !featured.has(i.type),
+    );
+    return [...base, ...hostNodes];
   }
 
   isCollapsed(id: PaletteCategoryId): boolean {

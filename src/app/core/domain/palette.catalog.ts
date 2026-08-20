@@ -1,4 +1,5 @@
 import type { HostPropertiesSchema } from './host-properties.schema';
+import type { LibraryPropertyEnableMap } from './host-properties.library';
 import type { NodeType } from './workflow.models';
 
 /** Category id is a stable slug (static: flow|logic|… or enso user_category slug). */
@@ -22,8 +23,20 @@ export interface PaletteItem {
   iconPath?: string;
   /** Host extras copied onto the dropped node. */
   metadata?: Record<string, unknown>;
-  /** Host properties schema copied onto the dropped node as `data.propertiesSchema`. */
+  /** Host properties schema (legacy; prefer unified `properties` config map). */
   propertiesSchema?: HostPropertiesSchema;
+  /**
+   * Host properties: either a **unified config map**
+   * (`{ path: { type, label, value?, section?, enabled?, … } }`) or a legacy
+   * plain seed map used with `propertiesSchema`.
+   */
+  properties?: Record<string, unknown>;
+  /**
+   * Per-path enable overlay for package library defaults on this card.
+   * Omit/`true` = on; `false` = disable that library path for **new** drops.
+   * Merges over global `propertiesDefaults` for the same paths.
+   */
+  libraryProperties?: LibraryPropertyEnableMap;
 }
 
 export interface PaletteCategory {

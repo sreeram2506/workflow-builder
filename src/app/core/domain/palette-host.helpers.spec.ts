@@ -144,6 +144,7 @@ describe('palette-host.helpers', () => {
         propertiesSchema: {
           sections: [{ fields: [{ type: 'text', path: 'timeout', label: 'Timeout' }] }],
         },
+        properties: { timeout: 5, tag: 'vip' },
       },
       {
         key: 'url',
@@ -167,6 +168,7 @@ describe('palette-host.helpers', () => {
         propertiesSchema: {
           sections: [{ fields: [{ type: 'text', path: 'timeout', label: 'Timeout' }] }],
         },
+        properties: { timeout: 5, tag: 'vip' },
       },
       {
         key: 'url',
@@ -179,7 +181,7 @@ describe('palette-host.helpers', () => {
     ]);
   });
 
-  it('sanitizeHostDefaultAgents copies extras and not taskMeta', () => {
+  it('sanitizeHostDefaultAgents copies propertiesSchema/properties and not taskMeta', () => {
     const out = sanitizeHostDefaultAgents([
       {
         key: 'policy',
@@ -187,6 +189,10 @@ describe('palette-host.helpers', () => {
         iconUrl: '/assets/a.png',
         metadata: { team: 'ops' },
         taskMeta: { ignored: true },
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'role', label: 'Role' }] }],
+        },
+        properties: { role: 'ops' },
       },
     ]);
     expect(out).toEqual([
@@ -196,6 +202,10 @@ describe('palette-host.helpers', () => {
         description: '',
         iconUrl: '/assets/a.png',
         metadata: { team: 'ops' },
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'role', label: 'Role' }] }],
+        },
+        properties: { role: 'ops' },
       },
     ]);
     expect(out[0]).not.toHaveProperty('taskMeta');
@@ -210,6 +220,10 @@ describe('palette-host.helpers', () => {
         iconUrl: 'https://cdn.example/a.png',
         iconPath: 'M0 0',
         metadata: { owner: 'host' },
+        propertiesSchema: {
+          sections: [{ fields: [{ type: 'text', path: 'desk', label: 'Desk' }] }],
+        },
+        properties: { desk: 'A1' },
       }),
     ).toEqual({
       key: 'claims',
@@ -221,6 +235,10 @@ describe('palette-host.helpers', () => {
       iconUrl: 'https://cdn.example/a.png',
       iconPath: 'M0 0',
       metadata: { owner: 'host' },
+      propertiesSchema: {
+        sections: [{ fields: [{ type: 'text', path: 'desk', label: 'Desk' }] }],
+      },
+      properties: { desk: 'A1' },
     });
   });
 

@@ -50,7 +50,7 @@ describe('createWorkflowNodeFromPaletteItem metadata', () => {
     expect(item.metadata['owner']).toBe('host');
   });
 
-  it('copies propertiesSchema onto node.data', () => {
+  it('copies propertiesSchema onto node.data (merged with library)', () => {
     const base = PALETTE_ITEMS.find((i) => i.type === 'Action')!;
     const schema = {
       sections: [{ fields: [{ type: 'text' as const, path: 'timeout', label: 'Timeout' }] }],
@@ -59,7 +59,30 @@ describe('createWorkflowNodeFromPaletteItem metadata', () => {
       { ...base, propertiesSchema: schema },
       { x: 0, y: 0 },
     )!;
-    expect(node.data['propertiesSchema']).toEqual(schema);
+    const paths = (
+      node.data['propertiesSchema'] as { sections: { fields: { path: string }[] }[] }
+    ).sections.flatMap((s) => s.fields.map((f) => f.path));
+    expect(paths).toContain('name');
+    expect(paths).toContain('description');
+    expect(paths).toContain('timeout');
+  });
+
+  it('copies properties seed onto node.data.properties (merged with library)', () => {
+    const base = PALETTE_ITEMS.find((i) => i.type === 'Action')!;
+    const properties = { timeout: 30, note: 'hi', extra: true };
+    const node = createWorkflowNodeFromPaletteItem(
+      { ...base, properties },
+      { x: 0, y: 0 },
+    )!;
+    expect(node.data['properties']).toEqual({
+      name: 'Action',
+      description: 'Perform actions based on triggers',
+      timeout: 30,
+      note: 'hi',
+      extra: true,
+    });
+    (node.data['properties'] as Record<string, unknown>)['note'] = 'mutated';
+    expect(properties.note).toBe('hi');
   });
 
   it('omits metadata when absent', () => {

@@ -3,6 +3,9 @@ import {
   sanitizeHostPropertiesSchema,
   type HostPropertiesSchema,
 } from './host-properties.schema';
+import { resolveCardPropertiesConfig } from './host-properties.config';
+import { sanitizeLibraryPropertyEnableMap } from './host-properties.library';
+import type { LibraryPropertyEnableMap } from './host-properties.library';
 import {
   BLANK_AGENT_TYPE,
   FEATURED_PALETTE_TYPES,
@@ -29,6 +32,8 @@ function applyHostExtras(
     metadata?: Record<string, unknown>;
     taskMeta?: Record<string, unknown>;
     propertiesSchema?: HostPropertiesSchema;
+    properties?: Record<string, unknown>;
+    libraryProperties?: LibraryPropertyEnableMap;
   },
   copyTaskMeta: boolean,
 ): void {
@@ -45,8 +50,17 @@ function applyHostExtras(
   if (copyTaskMeta && isPlainObject(rec['taskMeta'])) {
     target.taskMeta = { ...rec['taskMeta'] };
   }
-  if (copyTaskMeta && isPlainObject(rec['propertiesSchema'])) {
-    target.propertiesSchema = sanitizeHostPropertiesSchema(rec['propertiesSchema']);
+  // Unified `properties` config map, or legacy propertiesSchema + seed properties.
+  const resolved = resolveCardPropertiesConfig(rec);
+  if (resolved.propertiesSchema) {
+    target.propertiesSchema = resolved.propertiesSchema;
+  }
+  if (resolved.properties) {
+    target.properties = resolved.properties;
+  }
+  const libMap = sanitizeLibraryPropertyEnableMap(rec['libraryProperties']);
+  if (libMap) {
+    target.libraryProperties = libMap;
   }
 }
 
@@ -136,6 +150,15 @@ export function defaultAgentCardToPaletteItem(card: DefaultAgentCard): PaletteIt
   }
   if (card.metadata) {
     item.metadata = { ...card.metadata };
+  }
+  if (card.propertiesSchema) {
+    item.propertiesSchema = card.propertiesSchema;
+  }
+  if (card.properties) {
+    item.properties = { ...card.properties };
+  }
+  if (card.libraryProperties) {
+    item.libraryProperties = card.libraryProperties;
   }
   return item;
 }

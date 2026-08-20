@@ -5386,3 +5386,455 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 
 
 
+## More Changes R61 — Done
+**Timestamp**: 2026-08-19T10:15:14Z
+**User Input**: "Done"
+**AI Response**: "Recorded Done. Post-ops polish closed at R61. Ready for a new development request when you are."
+**Context**: User accepted R61; More Changes loop ended
+
+---
+
+## More Changes R62 — Request Changes (clarification opened)
+**Timestamp**: 2026-08-19T10:48:41Z
+**User Input**: "Request Changes"
+**AI Response**: "Opened more-changes-r62-clarification-questions.md (includes Properties / deferred host items after status discussion)."
+**Context**: User chose Request Changes after R61 Done + Properties progress Q&A
+
+---
+
+## More Changes R62 — Answers; escalate to Full AI-DLC
+**Timestamp**: 2026-08-19T10:55:26Z
+**User Input**: "answered"
+**AI Response**: "Q1=B Properties; Q2=C Full AI-DLC; Q3=B. Freeform: dynamic KV properties + Dynamic Property component; host-supplied config; no Enso names. Started Dynamic Properties increment. Workspace Detection complete; RE SKIP. Opened dynamic-properties-requirement-verification-questions.md."
+**Context**: INCEPTION Requirements Analysis — awaiting answers
+
+---
+
+## Requirements Analysis — Verification answers received
+**Timestamp**: 2026-08-19T11:18:00Z
+**User Input**: "answered"
+**AI Response**: "Parsed Q1–Q13. Ambiguities: storage key name; built-in vs dynamic collisions; Add-property chrome flag; schema vs properties-map binding. Opened dynamic-properties-requirement-follow-up-questions.md. Extensions: Security=Yes, Resiliency=Yes, PBT=Partial."
+**Context**: INCEPTION Requirements Analysis — follow-up gate (Step 6)
+
+---
+
+## Requirements Analysis — Follow-up answers; requirements document
+**Timestamp**: 2026-08-19T11:20:00Z
+**User Input**: "answered"
+**AI Response**: "F1=A node.data.properties; F2=B built-in wins; F3=A propertiesPanel.addProperty; F4=A schema binds to properties map. Wrote dynamic-properties-requirements.md. Awaiting Approve & Continue or Request Changes. Next proposed: User Stories."
+**Context**: INCEPTION Requirements Analysis — approval gate (Step 9)
+
+---
+
+## Requirements Analysis — Approved; start User Stories
+**Timestamp**: 2026-08-19T11:29:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Requirements approved. Assessment: Execute User Stories = Yes. Opened dynamic-properties-story-generation-plan.md with Q1–Q5. Awaiting answers."
+**Context**: INCEPTION User Stories Part 1 — planning gate
+
+---
+
+## User Stories — Plan answers received
+**Timestamp**: 2026-08-19T11:31:00Z
+**User Input**: "answered"
+**AI Response**: "Q1–Q5 all A (reuse personas; ~5 stories; hybrid; Gherkin; table order). No ambiguities. Plan locked; awaiting Approve & Continue to generate stories."
+**Context**: INCEPTION User Stories Part 1 — plan approval gate
+
+---
+
+## User Stories — Plan approved; stories generated
+**Timestamp**: 2026-08-19T11:32:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Generated dynamic-properties-stories.md (US-DP-01..05); updated personas.md additively. Awaiting story approval before Workflow Planning."
+**Context**: INCEPTION User Stories Part 2 — story approval gate
+
+---
+
+## User Stories — Approved; Workflow Planning
+**Timestamp**: 2026-08-19T11:44:00Z
+**User Input**: " Approve & Continue"
+**AI Response**: "Stories approved. Wrote dynamic-properties-execution-plan.md: recommend App Design + 1 unit U-DP-01; skip NFR/Infra; FD→CG→Build/Test. Awaiting Q1 / Approve & Continue."
+**Context**: INCEPTION Workflow Planning — approval gate
+
+---
+
+## Workflow Planning — Approved; start Application Design
+**Timestamp**: 2026-08-19T11:46:00Z
+**User Input**: "answered"
+**AI Response**: "Execution plan Q1=A. Opened dynamic-properties-application-design-plan.md (Q1–Q5). Awaiting answers before design artifacts."
+**Context**: INCEPTION Application Design — planning gate
+
+---
+
+## Application Design — Answers; artifacts generated
+**Timestamp**: 2026-08-19T11:47:00Z
+**User Input**: "answered"
+**AI Response**: "Q1–Q5=A. Generated dynamic-properties components/methods/services/dependency/summary. Awaiting Approve & Continue → Units Generation."
+**Context**: INCEPTION Application Design — approval gate
+
+---
+
+## Application Design — Approved; start Units Generation
+**Timestamp**: 2026-08-19T11:50:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "App Design approved. Opened dynamic-properties-unit-of-work-plan.md (Q1–Q4). Awaiting answers before unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — planning gate
+
+---
+
+## Units Generation — Partial answers; Q1 blank
+**Timestamp**: 2026-08-19T11:52:00Z
+**User Input**: "answered"
+**AI Response**: "Q2–Q4=A recorded. Q1 [Answer] was empty — follow-up required before plan approval."
+**Context**: INCEPTION Units Generation Part 1 — follow-up gate
+
+---
+
+## Units Generation — Q1 filled; plan approval
+**Timestamp**: 2026-08-19T11:58:00Z
+**User Input**: "answered"
+**AI Response**: "Follow-up Q1=A. Locked Q1–Q4=A (single U-DP-01; FD→CG→Build/Test; in-place paths; same stream). Awaiting Approve & Continue to generate unit artifacts."
+**Context**: INCEPTION Units Generation Part 1 — plan approval gate
+
+---
+
+## Units Generation — Plan approved; artifacts generated
+**Timestamp**: 2026-08-19T12:07:00Z
+**User Input**: " Approve & Continue "
+**AI Response**: "Generated dynamic-properties-unit-of-work.md, dependency, story-map. Awaiting Approve & Continue → CONSTRUCTION Functional Design for U-DP-01."
+**Context**: INCEPTION Units Generation Part 2 — unit approval gate
+
+---
+
+## Units Generation — Approved; start Functional Design
+**Timestamp**: 2026-08-19T12:09:00Z
+**User Input**: "Approve & Continue "
+**AI Response**: "Units approved. Opened u-dp-01-dynamic-properties-functional-design-plan.md (Q1–Q7). NFR/Infra remain SKIP. Awaiting FD answers."
+**Context**: CONSTRUCTION Functional Design — planning gate
+
+---
+
+## Functional Design — Answers; artifacts generated
+**Timestamp**: 2026-08-19T14:03:00Z
+**User Input**: "answered"
+**AI Response**: "FD Q1–Q7=A. Generated business-logic-model, business-rules, domain-entities, frontend-components under u-dp-01-dynamic-properties/functional-design/. Awaiting Continue to Next Stage → Code Generation."
+**Context**: CONSTRUCTION Functional Design — approval gate
+
+---
+
+## Functional Design — Approved; Code Generation plan
+**Timestamp**: 2026-08-19T14:07:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "FD approved. Opened u-dp-01-dynamic-properties-code-generation-plan.md (Steps 1–10: chrome, helpers+PBT, Dynamic Property, sidebar, docs, try, summaries, verify). Awaiting Approve & Continue before Part 2."
+**Context**: CONSTRUCTION Code Generation Part 1 — plan approval gate
+
+---
+
+## Code Generation — Plan approved; Part 2 complete
+**Timestamp**: 2026-08-19T14:22:00Z
+**User Input**: "Approve & Continue  "
+**AI Response**: "Implemented U-DP-01: properties map helpers+PBT, wb-dynamic-property, sidebar bind/save/remaining/Add, chrome addProperty, embed docs, try host. npm test 310 passed; npm run build OK. Awaiting Continue to Build and Test."
+**Context**: CONSTRUCTION Code Generation — code approval gate
+
+---
+
+## Code Generation — Approved; Build and Test
+**Timestamp**: 2026-08-19T14:23:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "CG approved. Wrote U-DP-01 build-and-test instructions + summary (310 tests / build OK). Ops placeholder drafted. Awaiting approval to proceed to Operations."
+**Context**: CONSTRUCTION Build and Test — approval gate
+
+---
+
+## Build and Test — Approved; Operations placeholder; increment COMPLETE
+**Timestamp**: 2026-08-19T14:32:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "Build and Test approved. Operations placeholder recorded. Dynamic Properties (U-DP-01) COMPLETE — 310 tests; build OK. Workflow ends at Operations placeholder for this increment."
+**Context**: OPERATIONS placeholder — increment complete
+
+---
+
+## Change Request — Properties try-host / test data
+**Timestamp**: 2026-08-19T14:49:10Z
+**User Input**: "Request changes"
+**AI Response**: "Logged Request Changes after guidance on SAMPLE_HOST_PROPERTIES_PALETTES. Opened change-request questions to clarify what to update (richer schema samples, seed properties on drop, factory support, docs)."
+**Context**: Post-increment polish — Dynamic Properties try-host testing; awaiting answers
+
+---
+
+## Change Request — Answers; try-host schema visibility fixed
+**Timestamp**: 2026-08-19T14:58:24Z
+**User Input**: "answered"
+**AI Response**: "Q1: note field not showing after try-ui-host edit. Fixed: Properties prefers live [palettes] propertiesSchema for paletteKey; seed properties on drop; enriched SAMPLE_HOST_PROPERTIES_PALETTES; docs updated. Awaiting re-approval."
+**Context**: Post-increment change request — Dynamic Properties try-host / live schema
+
+### Answers
+- Q1: Changes not working — added note in try-ui-host not reflecting in UI
+- Q2: X
+- Q3: X
+
+---
+
+## Change Request — Round 2 (try-host / properties)
+**Timestamp**: 2026-08-19T15:49:34Z
+**User Input**: "Request Changes "
+**AI Response**: "Logged Request Changes after live-schema / seed-properties fix. Opened Round 2 change-request questions."
+**Context**: Post-increment change request Round 2 — awaiting answers
+
+---
+
+## Change Request Round 2 — Answers; instance [properties] input
+**Timestamp**: 2026-08-19T15:55:10Z
+**User Input**: "answered"
+**AI Response**: "Q1=C (want [properties] like [palettes]/[defaultAgents]); Q2=A try-ui; Q3=A. Added shell [properties] input (map by paletteKey or schemaFor), wired through Properties, try-host Via [properties] input card + SAMPLE_HOST_PROPERTIES_BY_KEY, docs updated. Awaiting re-approval."
+**Context**: Post-increment change request Round 2 applied
+
+### Answers
+- Q1: C — Why can't we pass configs like [palettes]/[defaultAgents] for properties
+- Q2: A
+- Q3: A
+
+---
+
+## Bugfix — timeout-action not in solution library UI
+**Timestamp**: 2026-08-20T01:34:50Z
+**User Input**: "timeout-action this palette is not displaying in Ui"
+**AI Response**: "Root cause: solutionAgentItems() only listed AIAgent. Expanded to include host non-featured cards (Action). Timeout Action now appears under Agents Library on /try-ui Host properties."
+**Context**: Dynamic Properties try-host — palette visibility bugfix
+
+---
+
+## Change Request — Round 3 (properties / try-host)
+**Timestamp**: 2026-08-20T01:38:47Z
+**User Input**: "Request Changes"
+**AI Response**: "Logged Request Changes after Action palette visibility fix. Opened Round 3 change-request questions."
+**Context**: Post-increment change request Round 3 — awaiting answers
+
+---
+
+## Change Request Round 3 — Answers applied
+**Timestamp**: 2026-08-20T01:44:27Z
+**User Input**: "answered"
+**AI Response**: "Q1: properties for nodes+agents only — keep with palettes/defaultAgents (optional [properties] keyed override). Split library Agents vs Nodes; defaultAgents support propertiesSchema; live resolve includes defaultAgents. 320 tests OK. Awaiting re-approval."
+**Context**: Post-increment change request Round 3 applied
+
+### Answers
+- Q1: properties for nodes and agents only — with them, not a separate catalog
+- Q2: A
+- Q3: B
+
+---
+
+## Change Request — Round 4 (properties / nodes+agents)
+**Timestamp**: 2026-08-20T01:47:35Z
+**User Input**: "Request changes"
+**AI Response**: "Logged Request Changes after Round 3 (properties with palettes/agents; Agents vs Nodes split). Opened Round 4 change-request questions."
+**Context**: Post-increment change request Round 4 — awaiting answers
+
+---
+
+## Change Request Round 4 — Answers applied
+**Timestamp**: 2026-08-20T01:50:03Z
+**User Input**: "answered"
+**AI Response**: "Moved host Nodes strip above search (with palettes, not under Agents). Documented static seeds via palette/defaultAgent `properties: {…}`. Awaiting re-approval."
+**Context**: Post-increment change request Round 4 applied
+
+### Answers
+- Q1: Nodes not under search — part of palettes above; where to add static properties
+- Q2: A
+- Q3: A
+
+---
+
+## Change Request — Round 5 (properties / nodes strip)
+**Timestamp**: 2026-08-20T01:52:11Z
+**User Input**: "Request Changes "
+**AI Response**: "Logged Request Changes after Round 4 (Nodes above search; static properties on card). Opened Round 5 change-request questions."
+**Context**: Post-increment change request Round 5 — awaiting answers
+
+---
+
+## Change Request Round 5 — Answers applied
+**Timestamp**: 2026-08-20T02:01:03Z
+**User Input**: "answered"
+**AI Response**: "Merged host property samples into SAMPLE_SOLUTION_PALETTES; Actions in shapes row like Condition; library fallback defaults for Action/AIAgent when host omits config. Awaiting re-approval."
+**Context**: Post-increment change request Round 5 applied
+
+### Answers
+- Q1: Nodes should look like Condition/Extra If; SAMPLE_HOST_PROPERTIES not separate; predefined library properties when host omits config
+- Q2: A
+- Q3: B
+
+---
+
+## Change Request Round 6 — Request Changes
+**Timestamp**: 2026-08-20T02:07:39Z
+**User Input**: "Request Changes"
+**AI Response**: "Opened Round 6 clarification questions; waiting for answers before implementing."
+**Context**: Post-increment change request after Round 5
+
+---
+
+## Change Request Round 6 — Request Changes (reiterated)
+**Timestamp**: 2026-08-20T06:24:26Z
+**User Input**: "Request changes"
+**AI Response**: "Round 6 questions already open; waiting for filled [Answer] tags. User recently asked where library defaults live (host-properties.library.ts)."
+**Context**: Post-increment change request Round 6
+
+---
+
+## Change Request Round 6 — Answers received
+**Timestamp**: 2026-08-20T06:26:24Z
+**User Input**: "answered"
+**AI Response**: "Reading Round 6 answers and applying changes."
+**Context**: Post-increment change request Round 6
+
+---
+
+## Change Request Round 6 — Ambiguity clarification
+**Timestamp**: 2026-08-20T06:26:49Z
+**User Input**: "answered"
+**Answers captured**:
+- Q1: i want to set some default Properties for agents and other nodes but they can be configurable by setting true or false if user wants or if he wants he can add and remove but by default they should be set to true
+- Q2: A
+- Q3: B
+**AI Response**: "Q1 ambiguous; opened r6 clarification questions (flag vs boolean seeds vs addProperty vs which types). Waiting for answers before implementing."
+**Context**: Post-increment change request Round 6
+
+---
+
+## Change Request Round 7 — Request Changes
+**Timestamp**: 2026-08-20T06:43:12Z
+**User Input**: "Request changes"
+**AI Response**: "Paused Round 6 implementation mid-flight (library defaults for all types + per-card useLibraryProperties). Opened Round 7 clarification questions."
+**Context**: Post-increment change request after Round 6 clarification answers; Round 6 code partially applied
+
+---
+
+## Change Request Round 7 — Answers received; clarification needed
+**Timestamp**: 2026-08-20T06:44:12Z
+**User Input**: "answered"
+**Answers captured**:
+- Q1: For each node type, including Agents and other configurable nodes, the workflow builder should support a set of default properties that are automatically available when the node is created, with each default property being enabled (true) by default. These default properties should be defined and controlled through the application/package configuration, so the consuming application can explicitly set a property to true or false depending on whether it wants that property to be available for that node type. When a property is configured as true, it should appear in the node’s Properties panel by default and be stored under node.data.properties; when configured as false, it should not be available or shown for that node. The consuming application should also have the ability to add additional custom properties beyond the predefined defaults and remove/disable properties it does not want to expose. The important distinction is that the workflow builder provides a predefined set of default properties for each supported node type, all enabled by default, while the consuming application has full configuration control to enable, disable, add, or remove properties without requiring changes to the workflow builder’s core implementation.
+- Q2: A
+- Q3: B
+**AI Response**: "Opened r7 clarification (config surface, useLibraryProperties fate, add API, field inventory, false semantics). Waiting before implementing."
+**Context**: Post-increment change request Round 7
+
+---
+
+## Change Request Round 7 — Clarification applied
+**Timestamp**: 2026-08-20T06:49:16Z
+**User Input**: "answered"
+**Answers**:
+- Q1: C (global propertiesDefaults + per-card libraryProperties)
+- Q2: B (remove useLibraryProperties)
+- Q3: A (existing propertiesSchema/properties/[properties] for custom)
+- Q4: C (Action note/timeout; AIAgent owner/paused; others note/enabled)
+- Q5: C (false affects new drops only)
+**AI Response**: "Implemented per-path library enable maps, drop-time merge, removed useLibraryProperties, docs/try-host/tests updated. Awaiting re-approval."
+**Context**: Post-increment change request Round 7
+
+---
+
+## Change Request Round 8 — Request Changes
+**Timestamp**: 2026-08-20T06:55:17Z
+**User Input**: "request changes"
+**AI Response**: "Opened Round 8 clarification questions; waiting for answers before implementing."
+**Context**: Post-increment change request after Round 7 (library propertiesDefaults / libraryProperties)
+
+---
+
+## Change Request Round 8 — Answers applied
+**Timestamp**: 2026-08-20T06:58:20Z
+**User Input**: "answered"
+**Answers**:
+- Q1: Only name and description as built-in library defaults for every node type; remove note/timeout/owner/paused/enabled; host supplies other properties; per-property true/false; global + card; new drops only
+- Q2: A
+- Q3: B
+**AI Response**: "Replacing package library defaults with name+description only; updating samples, docs, tests."
+**Context**: Post-increment change request Round 8
+
+---
+
+## Change Request Round 9 — Unified General properties
+**Timestamp**: 2026-08-20T07:06:48Z
+**User Input**: "there shouldn't be any separate genreal and libarry properties we need to display only library Properties with general label if user wants to add any section and its properties he can add but by default only genarl will be there with name and description name can be label value"
+**AI Response**: "Unifying to a single General section (name+description); name seeded from label; removing separate hardcoded General vs Library defaults UI."
+**Context**: Post-increment change request Round 9
+
+---
+
+## Change Request — Default properties name+description only
+**Timestamp**: 2026-08-20T07:10:57Z
+**User Input**: "For all nodes including agent and palettes the properties should be only name and Description until and unless user add his properties in configuration through the consumer application"
+**AI Response**: "Ensuring General name+description always apply; host schema merges on top (not replace); cleaning try-host samples so defaults are name+description only."
+**Context**: Post-increment properties UX
+
+---
+
+## Change Request Round 10 — Request Changes
+**Timestamp**: 2026-08-20T07:14:40Z
+**User Input**: "Request changes"
+**AI Response**: "Opened Round 10 clarification questions; waiting for answers before implementing."
+**Context**: Post-increment after unified General name+description + host merge
+
+---
+
+## Change Request Round 10 — Answers received
+**Timestamp**: 2026-08-20T07:17:00Z
+**User Input**: "answered."
+**Answers**:
+- Q1: General section should be at the top and do we need both properties and propetyschema , can we set it into one ?
+- Q2: A
+- Q3: A
+**AI Response**: "Moving General section to top; clarifying properties vs propertiesSchema — will ask/clarify consolidation if needed while applying layout fix."
+**Context**: Post-increment change request Round 10
+
+---
+
+## Change Request Round 10 — Clarification applied
+**Timestamp**: 2026-08-20T07:21:24Z
+**User Input**: "answered"
+**Answer**: X — unified properties map (metadata + default per path); package keeps name/description only
+**AI Response**: "Implemented unified properties config expand; General already at top; docs/try-host/tests updated."
+**Context**: Post-increment Round 10
+
+---
+
+---
+
+## Change Request — Boolean toggle switch
+**Timestamp**: 2026-08-20T07:44:39Z
+**User Input**: "if type is boolean then will display switch like this"
+**AI Response**: "Boolean properties now render as pill toggle switches (role=switch) in Properties panel and dynamic-property control; docs note updated."
+**Context**: Post-increment UI change — boolean type visual control
+
+
+---
+
+## Change Request Round 11 — XPMS x_config mapping
+**Timestamp**: 2026-08-20T07:55:13Z
+**User Input**: "@try-ui-host.component.ts (143-289)  this is the data that will get from API and i want to render properties this config based on this config"
+**AI Response**: "Opened Round 11 questions; raw x_config inside properties cannot render — need mapper from basic_config/adv_config to unified properties."
+**Context**: Post-increment change request — XPMS API config → Properties
+
+
+---
+
+## Change Request Round 11 — Implemented
+**Timestamp**: 2026-08-20T08:27:34Z
+**User Input**: "answered"
+**Answers**: Q1=D (consumer path mapping; Try uses full config_path); Q2=A Basic/Advanced; Q3=converter omits hidden (default false); Q4=B try-host only; Q5=A type table
+**AI Response**: "Added try mapXConfigToHostProperties; wired host-condition; package nests dotted seeds + remaining-key filter; tests pass."
+**Context**: Post-increment Round 11 XPMS x_config → Properties
+
+
+---
+
+## Change Request — string multi_select → text
+**Timestamp**: 2026-08-20T08:37:22Z
+**User Input**: "why datatype string is displaying as textarea instead of textabox"
+**AI Response**: "Explained Round 11 multi_select→textarea rule; changed converter to use text (textbox) for string without categorical options."
+**Context**: Post-increment try-host mapper tweak
+
