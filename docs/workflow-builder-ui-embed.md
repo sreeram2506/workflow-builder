@@ -10,10 +10,10 @@ Local tarball (optional):
 
 ```bash
 npm run pack:lib
-npm install ./dist/enso-workflow-builder/enso-workflow-builder-0.1.1.tgz
+npm install ./dist/enso-workflow-builder/enso-workflow-builder-*.tgz
 ```
 
-Publish from `dist/enso-workflow-builder` (not the repo root). `src/app/try/` is gitignored and is not in the tarball.
+Publish with `npm run publish:lib` from the repo root (rebuilds first, then publishes `dist/enso-workflow-builder`). Do not publish from `projects/` or a stale `dist/` without rebuilding. `src/app/try/` is gitignored and is not in the tarball.
 
 Host apps and the SPA can control chrome via `provideWorkflowBuilderUi` and/or `/assets/wb-ui-config.json`.
 
