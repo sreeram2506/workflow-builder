@@ -4,6 +4,7 @@ import {
   accentTokenForType,
   initialsFromLabel,
   isShapedNodeType,
+  labelUsesTwoLines,
   logicShapeKind,
   nodeSizeForType,
 } from '../../core/domain/node-visuals';
@@ -19,6 +20,7 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
       [class.node-card]="!isShaped()"
       [class.node-shape]="isShaped()"
       [class.selected]="selected()"
+      [class.no-status]="node().status === 'idle'"
       [attr.data-shape]="shapeKind() ?? null"
       [attr.data-type]="node().type"
       [style.left.px]="node().position.x"
@@ -155,7 +157,7 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
             <path [attr.d]="hostIconPath()" fill="currentColor" />
           </svg>
         }
-        <div class="shape-label">{{ node().label }}</div>
+        <div class="shape-label" [class.wrap-2]="labelWraps()">{{ node().label }}</div>
       } @else {
         <div class="accent" aria-hidden="true"></div>
         <div class="avatar" aria-hidden="true">
@@ -177,12 +179,14 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
           }
         </div>
         <div class="body" [class.no-subtitle]="!node().subtitle.trim()">
-          <div class="label">{{ node().label }}</div>
+          <div class="label" [class.wrap-2]="labelWraps()">{{ node().label }}</div>
           @if (node().subtitle.trim()) {
             <div class="subtitle">{{ node().subtitle }}</div>
           }
         </div>
-        <span class="status" [attr.data-status]="node().status">{{ node().status }}</span>
+        @if (node().status !== 'idle') {
+          <span class="status" [attr.data-status]="node().status">{{ node().status }}</span>
+        }
       }
     </article>
   `,
@@ -206,6 +210,9 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
       border: 1px solid var(--wb-border);
       border-radius: 10px;
       box-shadow: var(--wb-shadow-soft);
+    }
+    .node-card.no-status {
+      grid-template-columns: 4px 40px 1fr;
     }
     .node-shape {
       display: block;
@@ -274,8 +281,19 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
       font-weight: 600;
       line-height: 1.2;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       color: var(--wb-text);
       pointer-events: none;
+    }
+    .shape-label.wrap-2 {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
     }
     .handle {
       position: absolute;
@@ -397,6 +415,16 @@ import { sanitizeIconUrl } from '../../core/domain/icon-url';
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .label.wrap-2 {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
+      line-height: 1.2;
+    }
     .subtitle {
       font-size: 0.7rem;
       color: var(--wb-text-muted);
@@ -424,6 +452,7 @@ export class WorkflowNodeComponent {
   readonly size = computed(() => nodeSizeForType(this.node().type));
   readonly accent = computed(() => accentTokenForType(this.node().type));
   readonly initials = computed(() => initialsFromLabel(this.node().label));
+  readonly labelWraps = computed(() => labelUsesTwoLines(this.node().label));
   readonly isShaped = computed(() => isShapedNodeType(this.node().type));
   readonly shapeKind = computed(() => logicShapeKind(this.node().type));
   readonly hostIconUrl = computed(() => sanitizeIconUrl(this.node().data?.['iconUrl']));

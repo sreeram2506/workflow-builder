@@ -18,6 +18,8 @@ import type { CatalogLoadMode, CatalogLoadOptions } from '../../core/data/catalo
 import {
   accentTokenForType,
   iconPathForType,
+  initialsFromLabel,
+  labelUsesTwoLines,
   logicShapeKind,
 } from '../../core/domain/node-visuals';
 import type { NodeType } from '../../core/domain/workflow.models';
@@ -282,13 +284,19 @@ export {
                             (error)="onPaletteIconError(item)"
                           />
                         } @else {
-                          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path [attr.d]="cardIconPath(item)" />
-                          </svg>
+                          <span class="palette-initials" data-testid="palette-initials">{{
+                            initialsFor(item)
+                          }}</span>
                         }
                       </div>
                       <div class="node-text" [class.no-desc]="!item.description.trim()">
-                        <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                        <div
+                          class="node-title"
+                          [class.wrap-2]="labelWraps(item.label)"
+                          [attr.title]="item.label"
+                        >
+                          {{ item.label }}
+                        </div>
                         @if (item.description.trim()) {
                           <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
                         }
@@ -354,13 +362,19 @@ export {
                             (error)="onPaletteIconError(item)"
                           />
                         } @else {
-                          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path [attr.d]="cardIconPath(item)" />
-                          </svg>
+                          <span class="palette-initials" data-testid="palette-initials">{{
+                            initialsFor(item)
+                          }}</span>
                         }
                       </div>
                       <div class="node-text" [class.no-desc]="!item.description.trim()">
-                        <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                        <div
+                          class="node-title"
+                          [class.wrap-2]="labelWraps(item.label)"
+                          [attr.title]="item.label"
+                        >
+                          {{ item.label }}
+                        </div>
                         @if (item.description.trim()) {
                           <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
                         }
@@ -443,13 +457,19 @@ export {
                                       (error)="onPaletteIconError(item)"
                                     />
                                   } @else {
-                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                      <path [attr.d]="cardIconPath(item)" />
-                                    </svg>
+                                    <span class="palette-initials" data-testid="palette-initials">{{
+                                      initialsFor(item)
+                                    }}</span>
                                   }
                                 </div>
                                 <div class="node-text" [class.no-desc]="!item.description.trim()">
-                                  <div class="node-title" [attr.title]="item.label">{{ item.label }}</div>
+                                  <div
+                                    class="node-title"
+                                    [class.wrap-2]="labelWraps(item.label)"
+                                    [attr.title]="item.label"
+                                  >
+                                    {{ item.label }}
+                                  </div>
                                   @if (item.description.trim()) {
                                     <div class="node-desc" [attr.title]="item.description">{{ item.description }}</div>
                                   }
@@ -757,6 +777,14 @@ export {
       width: 36px; height: 36px; border-radius: 8px; background: var(--wb-icon-well);
       color: var(--wb-accent); display: grid; place-items: center; flex-shrink: 0;
     }
+    .palette-initials {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      color: var(--wb-accent);
+      user-select: none;
+    }
     .palette-icon-img {
       width: 20px;
       height: 20px;
@@ -794,6 +822,15 @@ export {
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 100%;
+    }
+    .node-title.wrap-2 {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
     }
     .node-text.no-desc .node-title {
       /* Vertically centered name when description is absent (agent cards). */
@@ -988,6 +1025,14 @@ export class LeftSidebarComponent {
 
   cardIconPath(item: PaletteItem): string {
     return item.iconPath || iconPathForType(item.type);
+  }
+
+  initialsFor(item: PaletteItem): string {
+    return initialsFromLabel(item.label);
+  }
+
+  labelWraps(label: string): boolean {
+    return labelUsesTwoLines(label);
   }
 
   hostPalettesPresent(): boolean {

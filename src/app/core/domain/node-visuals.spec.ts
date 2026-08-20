@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { iconPathForType, initialsFromLabel, isLogicNodeType } from './node-visuals';
+import { iconPathForType, initialsFromLabel, isLogicNodeType, labelUsesTwoLines } from './node-visuals';
 
 describe('node-visuals', () => {
   it('initialsFromLabel uses first letters of words', () => {
@@ -7,6 +7,12 @@ describe('node-visuals', () => {
     expect(initialsFromLabel('Enrich Payload')).toBe('EP');
     expect(initialsFromLabel('Webhook Trigger')).toBe('WT');
     expect(initialsFromLabel('  ')).toBe('?');
+  });
+
+  it('labelUsesTwoLines when label has two or more words', () => {
+    expect(labelUsesTwoLines('Complete')).toBe(false);
+    expect(labelUsesTwoLines('Enrich Payload')).toBe(true);
+    expect(labelUsesTwoLines('  Known Headings  ')).toBe(true);
   });
 
   it('isLogicNodeType marks Condition, Decision (Router), and Repeater', () => {

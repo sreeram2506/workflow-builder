@@ -5838,3 +5838,32 @@ Follow existing embed style: host passes data in (like [palettes] / catalog). Pa
 **AI Response**: "Explained Round 11 multi_select→textarea rule; changed converter to use text (textbox) for string without categorical options."
 **Context**: Post-increment try-host mapper tweak
 
+
+---
+
+## Change Request Round 12 — Request Changes
+**Timestamp**: 2026-08-20T11:06:38Z
+**User Input**: "Request changes"
+**AI Response**: "Opened Round 12 clarification questions; waiting for answers before implementing."
+**Context**: Post-increment U-DP-01 after Round 11 x_config converter
+
+
+---
+
+## Change Request Round 12 — Implemented
+**Timestamp**: 2026-08-20T11:13:48Z
+**User Input**: "answered"
+**Answers**: Q1=G; Q2=A; Q3=A; freeform=remove idle badge, 2-line label ellipsis, left pane initials
+**AI Response**: "Hid idle status badge; two-line clamp for multi-word labels; palette initials from label."
+**Context**: Post-increment Round 12 canvas/left-pane polish
+
+
+---
+
+## Change Request Round 12 — Answers received
+**Timestamp**: 2026-08-20T11:20:00Z
+**User Input**: "answered"
+**Answers**: Q1=G freeform UI; Q2=A; Q3=A
+**AI Response**: "Implementing idle badge removal, 2-line labels, palette initials."
+**Context**: Round 12
+

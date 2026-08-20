@@ -47,6 +47,16 @@ export function initialsFromLabel(label: string): string {
   return (words[0]!.charAt(0) + words[1]!.charAt(0)).toUpperCase();
 }
 
+/** True when label has 2+ words — allow wrapping to two lines with clamp/ellipsis. */
+export function labelUsesTwoLines(label: string): boolean {
+  return (
+    label
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean).length >= 2
+  );
+}
+
 /** @deprecated Prefer initialsFromLabel(node.label) */
 export function iconGlyphForType(type: NodeType): string {
   switch (type) {

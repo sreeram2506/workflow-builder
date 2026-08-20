@@ -1,6 +1,6 @@
 {
   "name": "enso-workflow-builder",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "peerDependencies": {
     "@angular/cdk": "^20.0.0",
     "@angular/common": "^20.0.0",
@@ -19,5 +19,7 @@
       "default": "./styles/tokens.css"
     }
   },
-  "sideEffects": ["**/*.css"]
+  "sideEffects": [
+    "**/*.css"
+  ]
 }
